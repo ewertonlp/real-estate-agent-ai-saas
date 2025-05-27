@@ -12,6 +12,11 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        poppins: ['var(--font-poppins)', 'sans-serif'], // Define 'poppins' como sua classe de fonte
+        // Você pode ter outras fontes aqui, por exemplo:
+        // sans: ['var(--font-inter)', 'sans-serif'], // Se você estiver usando o Inter também
+      },
     },
   },
   plugins: [],

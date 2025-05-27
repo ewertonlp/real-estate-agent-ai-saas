@@ -5,8 +5,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
-import toast from 'react-hot-toast'; // Para notificações toast
-import { changeUserPassword } from '@/lib/api'; // Vamos criar esta função no api.ts
+import toast from 'react-hot-toast'; 
+import { changeUserPassword } from '@/lib/api'; 
 
 export default function SettingsPage() {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -81,10 +81,10 @@ export default function SettingsPage() {
   // Se não autenticado e carregamento terminou, redirecionamento já ocorreu
   // Então, se chegar aqui, o usuário está autenticado
   return (
-    <div className="flex flex-col items-center justify-center py-10">
-      <main className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
+    
+      <main className="bg-white p-8 rounded-lg shadow-md w-full max-w-full">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">
+          <h1 className="text-2xl font-medium text-gray-800">
             Configurações da Conta
           </h1>
          
@@ -97,11 +97,11 @@ export default function SettingsPage() {
           </div>
         )}
 
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4 border-b pb-2">Alterar Senha</h2>
+        <section className="my-12 w-1/3">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Alterar Senha</h2>
           <form onSubmit={handleSubmitPasswordChange} className="space-y-4">
             <div>
-              <label htmlFor="current-password" className="block text-gray-700 text-sm font-bold mb-2">
+              <label htmlFor="current-password" className="block text-gray-700 text-sm font-medium mb-2">
                 Senha Atual:
               </label>
               <input
@@ -116,7 +116,7 @@ export default function SettingsPage() {
               />
             </div>
             <div>
-              <label htmlFor="new-password" className="block text-gray-700 text-sm font-bold mb-2">
+              <label htmlFor="new-password" className="block text-gray-700 text-sm font-medium mb-2">
                 Nova Senha:
               </label>
               <input
@@ -131,7 +131,7 @@ export default function SettingsPage() {
               />
             </div>
             <div>
-              <label htmlFor="confirm-new-password" className="block text-gray-700 text-sm font-bold mb-2">
+              <label htmlFor="confirm-new-password" className="block text-gray-700 text-sm font-medium mb-2">
                 Confirmar Nova Senha:
               </label>
               <input
@@ -178,6 +178,6 @@ export default function SettingsPage() {
         </section>
         */}
       </main>
-    </div>
+   
   );
 }

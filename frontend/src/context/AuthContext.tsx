@@ -6,10 +6,12 @@ import { useRouter } from 'next/navigation';
 import { loginUser, registerUser } from '../lib/api'; // Vamos criar estas funções no api.ts
 import { AxiosError } from 'axios'; // Se usar Axios, ou 'Response' se usar Fetch padrão
 import Cookies from 'js-cookie';
+import { jwtDecode } from 'jwt-decode';
 
 // Definir as interfaces de tipos para o contexto
 interface AuthContextType {
   userToken: string | null;
+  userEmail: string | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
@@ -23,14 +25,29 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Provedor do Contexto de Autenticação
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [userToken, setUserToken] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true); // Começa como true para verificar token ao carregar
   const router = useRouter();
+
+   // Função auxiliar para decodificar o token e extrair o e-mail
+  const decodeTokenAndSetUserEmail = (token: string) => {
+    try {
+      const decoded: { sub: string } = jwtDecode(token);
+      setUserEmail(decoded.sub); // O 'sub' (subject) do JWT é tipicamente o e-mail
+    } catch (error) {
+      console.error('Erro ao decodificar token JWT:', error);
+      setUserEmail(null);
+      // Opcional: Se o token for inválido, você pode forçar o logout aqui
+      // logout();
+    }
+  };
 
   // Efeito para carregar o token do localStorage ao montar o componente
   useEffect(() => {
     const token =  Cookies.get('access_token'); 
     if (token) {
       setUserToken(token);
+      decodeTokenAndSetUserEmail(token); 
     }
     setIsLoading(false); // Token verificado, carregamento concluído
   }, []);
@@ -42,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await loginUser(email, password); // Chama a função de login do backend
       Cookies.set('access_token', data.access_token, { expires: 1, secure: process.env.NODE_ENV === 'production' });
       setUserToken(data.access_token);
+      decodeTokenAndSetUserEmail(data.access_token);
       router.push('/dashboard'); // Redireciona para a página principal após o login
     } catch (error) {
       console.error('Erro no login:', error);
@@ -77,15 +95,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Função de Logout
  const logout = () => {
-    Cookies.remove('access_token'); // <--- MUDANÇA AQUI: Remove do cookie
+    Cookies.remove('access_token');
     setUserToken(null);
+     setUserEmail(null);
     router.push('/login');
   };
 
   const isAuthenticated = !!userToken;
 
   return (
-    <AuthContext.Provider value={{ userToken, isLoading, login, register, logout, isAuthenticated }}>
+    <AuthContext.Provider value={{ userToken, userEmail, isLoading, login, register, logout, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

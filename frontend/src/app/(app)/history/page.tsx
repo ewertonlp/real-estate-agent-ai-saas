@@ -1,19 +1,23 @@
-// frontend/src/app/history/page.tsx
+// frontend/src/app/(app)/history/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { getGeneratedContentHistory } from "@/lib/api"; // Importa a função para buscar o histórico
+import { getGeneratedContentHistory } from "@/lib/api";
 import Link from "next/link";
 import toast from "react-hot-toast";
+
+// Importar ícones para os botões de ação
+import { FaEdit, FaShareAlt, FaWhatsapp, FaFacebook, FaEnvelope, FaClipboard } from 'react-icons/fa'; // Ícones para edição, compartilhamento, etc.
+import { IoIosArchive } from "react-icons/io";
 
 interface GeneratedContentItem {
   id: number;
   prompt_used: string;
   generated_text: string;
   owner_id: number;
-  created_at: string; // Como vem da API, pode ser string. Converte para Date se precisar formatar.
+  created_at: string;
 }
 
 export default function HistoryPage() {
@@ -27,28 +31,29 @@ export default function HistoryPage() {
   // Efeito para verificar autenticação e carregar histórico
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
-      router.push("/login"); // Redireciona se não estiver autenticado
-      return; // Interrompe a execução para evitar buscar histórico sem autenticação
+      router.push("/login");
+      return;
     }
 
     if (isAuthenticated) {
       const fetchHistory = async () => {
+        setIsLoadingHistory(true); // Garante que o estado de carregamento é ativado
+        setError(null); // Limpa erros anteriores
         try {
-          // ... (código existente para setar estados) ...
           const data = await getGeneratedContentHistory();
           setHistory(data);
-          toast.success("Histórico carregado com sucesso!"); // <--- Toast de sucesso
+          toast.success("Histórico carregado com sucesso!");
         } catch (err: any) {
           console.error("Erro ao carregar histórico:", err);
           if (
             err.message === "Sessão expirada. Por favor, faça login novamente."
           ) {
             router.push("/login");
-            toast.error("Sessão expirada. Por favor, faça login novamente."); // <--- Toast de erro
+            toast.error("Sessão expirada. Por favor, faça login novamente.");
           } else {
             toast.error(
               err.message || "Ocorreu um erro ao carregar o histórico."
-            ); // <--- Toast de erro
+            );
           }
           setError(err.message || "Ocorreu um erro ao carregar o histórico.");
         } finally {
@@ -58,7 +63,41 @@ export default function HistoryPage() {
 
       fetchHistory();
     }
-  }, [isAuthenticated, isAuthLoading, router]); // Dependências do useEffect
+  }, [isAuthenticated, isAuthLoading, router]);
+
+  // Função para lidar com a edição/reutilização de um item do histórico
+  const handleEdit = (item: GeneratedContentItem) => {
+    // Redireciona para o dashboard, passando o prompt e o texto gerado como parâmetros de URL
+    // Isso permitirá que o dashboard preencha o formulário automaticamente.
+    // Usamos encodeURIComponent para garantir que os caracteres especiais sejam tratados corretamente.
+    const promptParam = encodeURIComponent(item.prompt_used);
+    const generatedTextParam = encodeURIComponent(item.generated_text);
+    router.push(`/dashboard?prompt=${promptParam}&generatedText=${generatedTextParam}`);
+  };
+
+  // Funções de Compartilhamento (podem ser aprimoradas para abrir pop-ups)
+  const shareOnWhatsapp = (text: string) => {
+    const encodedText = encodeURIComponent(text);
+    window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
+  };
+
+  const shareOnFacebook = (text: string) => {
+    const encodedText = encodeURIComponent(text);
+    // URL de compartilhamento do Facebook. Pode precisar de um App ID para ser mais robusto.
+    window.open(`https://www.facebook.com/sharer/sharer.php?quote=${encodedText}`, '_blank');
+  };
+
+  const shareOnEmail = (text: string) => {
+    const encodedText = encodeURIComponent(text);
+    window.open(`mailto:?body=${encodedText}`, '_blank');
+  };
+
+  const shareOnInstagram = (text: string) => {
+    // Instagram não permite compartilhamento de texto direto via URL.
+    // A melhor abordagem é copiar para a área de transferência e instruir o usuário.
+    navigator.clipboard.writeText(text);
+    toast.success("Texto copiado para o Instagram! Agora cole-o na legenda.");
+  };
 
   // Exibe tela de carregamento da autenticação
   if (isAuthLoading) {
@@ -69,11 +108,9 @@ export default function HistoryPage() {
     );
   }
 
-  // Se não autenticado e carregamento terminou, redirecionamento já ocorreu
-  // Então, se chegar aqui, o usuário está autenticado
   return (
-    <div className="bg-stone-50 flex flex-col items-center justify-center py-10">
-      <main className="bg-[#ffffff]  p-8 rounded-lg shadow-md w-full max-w-4xl">
+    
+      <main className="bg-[#ffffff] p-8 rounded-lg shadow-md w-full max-w-4xl">
         <h1 className="text-2xl font-bold text-gray-800 text-center mb-4">
           Meu Histórico de Conteúdo
         </h1>
@@ -149,37 +186,61 @@ export default function HistoryPage() {
                 >
                   {item.generated_text}
                 </div>
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(item.generated_text);
-                    toast.success(
-                      "Conteúdo copiado para a área de transferência!"
-                    );
-                  }}
-                  className="absolute top-4 right-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-1 px-2 rounded text-sm flex items-center space-x-1"
-                  title="Copiar conteúdo gerado"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-4 h-4"
+
+                {/* Botões de Ação para cada item */}
+                <div className="flex flex-wrap gap-2 mt-4 justify-end">
+                  <button
+                    onClick={() => handleEdit(item)}
+                    className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-1 px-3 rounded text-sm flex items-center space-x-1"
+                    title="Editar ou Reutilizar no Dashboard"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75m1.5 0h-.75A1.125 1.125 0 0 0 6 7.875v8.25c0 .621.504 1.125 1.125 1.125h8.25c.621 0 1.125-.504 1.125-1.125v-3.375m-1.5-1.5-.75.75-.75-.75m3-6v6m0 0-3-3m3 3L18 7.5"
-                    />
-                  </svg>
-                  <span>Copiar</span>
-                </button>
+                    <FaEdit />
+                    <span>Editar/Reutilizar</span>
+                  </button>
+
+                  {/* Grupo de botões de Compartilhamento */}
+                  <div className="relative group">
+                    <button
+                      className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded text-sm flex items-center space-x-1"
+                      title="Compartilhar Conteúdo"
+                    >
+                      <FaShareAlt />
+                      <span>Compartilhar</span>
+                    </button>
+                    <div className="absolute right-0 top-full mt-1 w-auto bg-white rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
+                      <button
+                        onClick={() => shareOnWhatsapp(item.generated_text)}
+                        className=" w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                      >
+                        <FaWhatsapp className="text-green-500" /> <span>WhatsApp</span>
+                      </button>
+                      <button
+                        onClick={() => shareOnFacebook(item.generated_text)}
+                        className=" w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                      >
+                        <FaFacebook className="text-blue-600" /> <span>Facebook</span>
+                      </button>
+                       <button
+                        onClick={() => shareOnInstagram(item.generated_text)}
+                        className=" w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                      >
+                        <FaClipboard className="text-purple-500" /> <span>Instagram (Copiar)</span>
+                      </button>
+                      <button
+                        onClick={() => shareOnEmail(item.generated_text)}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                      >
+                        <FaEnvelope className="text-orange-500" /> <span>E-mail</span>
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
               </div>
             ))}
           </div>
         )}
       </main>
-    </div>
+    
   );
 }
