@@ -16,7 +16,6 @@ class User(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     content_generations_count = Column(Integer, default=0, nullable=False)
-    # Adicione este relacionamento com GeneratedContent
     generated_contents = relationship("GeneratedContent", back_populates="owner")
 
 
@@ -28,6 +27,7 @@ class GeneratedContent(Base):
     prompt_used = Column(Text, nullable=False) # Armazena o prompt completo que gerou o conteúdo
     generated_text = Column(Text, nullable=False) # Armazena o conteúdo gerado pela IA
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    is_favorite = Column(Boolean, default=False) 
 
     # Relacionamento de volta para o User
     owner = relationship("User", back_populates="generated_contents")

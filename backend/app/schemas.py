@@ -60,3 +60,8 @@ class UserAnalytics(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# --- NOVO Esquema para Atualizar Favorito ---
+class GeneratedContentUpdateFavorite(BaseModel):
+    is_favorite: bool #

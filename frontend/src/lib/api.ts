@@ -1,5 +1,5 @@
 // frontend/src/lib/api.ts
-import Cookies from 'js-cookie'; 
+import Cookies from 'js-cookie';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -23,13 +23,13 @@ interface RegisterResponse {
 
 export async function loginUser(email: string, password: string): Promise<LoginResponse> {
   const formData = new URLSearchParams();
-  formData.append('username', email); // O backend espera 'username' para o email
+  formData.append('username', email);
   formData.append('password', password);
 
   const response = await fetch(`${BACKEND_URL}/api/v1/auth/token`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded', // Importante para form_data
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: formData.toString(),
   });
@@ -77,7 +77,7 @@ export async function generateContent(prompt: string): Promise<string> {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`, // ADICIONA O TOKEN DE AUTORIZAÇÃO AQUI
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({ prompt }),
     });
@@ -85,7 +85,6 @@ export async function generateContent(prompt: string): Promise<string> {
     if (!response.ok) {
       const errorData = await response.json();
       console.error('Erro na resposta do backend:', errorData);
-      // Se for um erro de autenticação (401), pode ser um token expirado
       if (response.status === 401) {
           throw new Error('Sessão expirada. Por favor, faça login novamente.');
       }
@@ -93,7 +92,7 @@ export async function generateContent(prompt: string): Promise<string> {
     }
 
     const data = await response.json();
-    const generatedText = data.generated_content; // Captura o texto gerado
+    const generatedText = data.generated_content;
 
     // --- ADICIONE ESTA LINHA: CHAMADA PARA SALVAR O CONTEÚDO ---
     await saveGeneratedContent(prompt, generatedText);
@@ -108,8 +107,6 @@ export async function generateContent(prompt: string): Promise<string> {
 export async function saveGeneratedContent(promptUsed: string, generatedText: string): Promise<void> {
   const token = getAuthToken();
   if (!token) {
-    // Se não há token, não é possível salvar, mas não lançamos erro fatal aqui
-    // A geração principal já tratou a falta de autenticação
     console.warn('Tentativa de salvar conteúdo sem autenticação. Ignorando salvamento.');
     return;
   }
@@ -122,15 +119,14 @@ export async function saveGeneratedContent(promptUsed: string, generatedText: st
         'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({
-        prompt_used: promptUsed, // O prompt que foi enviado para a IA
-        generated_text: generatedText, // O texto que a IA retornou
+        prompt_used: promptUsed,
+        generated_text: generatedText,
       }),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
       console.error('Erro ao salvar conteúdo no histórico:', errorData);
-      // Aqui você pode adicionar um tratamento específico para 401/403 se quiser
     } else {
       console.log('Conteúdo salvo no histórico com sucesso!');
     }
@@ -139,23 +135,45 @@ export async function saveGeneratedContent(promptUsed: string, generatedText: st
   }
 }
 
-// --- NOVA FUNÇÃO: Obter Histórico de Conteúdo ---
-interface GeneratedContentItem {
+// --- NOVA FUNÇÃO: Obter Histórico de Conteúdo com Filtros ---
+export interface GeneratedContentItem {
   id: number;
   prompt_used: string;
   generated_text: string;
   owner_id: number;
-  created_at: string; // Ou Date, dependendo de como você quer parsear
+  created_at: string;
+  is_favorite: boolean; // Add this
 }
 
-export async function getGeneratedContentHistory(): Promise<GeneratedContentItem[]> {
+export async function getGeneratedContentHistory(
+  isFavorite: boolean | null = null, // New filter parameter
+  searchQuery: string | null = null, // New search parameter
+  startDate: string | null = null, // New date filter
+  endDate: string | null = null // New date filter
+): Promise<GeneratedContentItem[]> {
   const token = getAuthToken();
   if (!token) {
     throw new Error('Usuário não autenticado. Faça login para ver o histórico.');
   }
 
+  const queryParams = new URLSearchParams();
+  if (isFavorite !== null) {
+    queryParams.append('is_favorite', isFavorite.toString()); //
+  }
+  if (searchQuery) {
+    queryParams.append('search_query', searchQuery); //
+  }
+  if (startDate) {
+    queryParams.append('start_date', startDate); //
+  }
+  if (endDate) {
+    queryParams.append('end_date', endDate); //
+  }
+
+  const url = `${BACKEND_URL}/api/v1/history/contents/?${queryParams.toString()}`;
+
   try {
-    const response = await fetch(`${BACKEND_URL}/api/v1/history/contents/`, {
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -172,13 +190,46 @@ export async function getGeneratedContentHistory(): Promise<GeneratedContentItem
       throw new Error(errorData.detail || 'Erro ao carregar histórico.');
     }
 
-    return response.json(); // Retorna a lista de itens do histórico
+    return response.json();
   } catch (error) {
     console.error('Erro de rede ao tentar obter histórico:', error);
     throw error;
   }
 }
 
+
+// --- NOVA FUNÇÃO: Alternar Status de Favorito ---
+export async function toggleFavoriteStatus(contentId: number, isFavorite: boolean): Promise<GeneratedContentItem> {
+  const token = getAuthToken();
+  if (!token) {
+    throw new Error('Usuário não autenticado. Faça login para marcar como favorito.');
+  }
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/v1/history/contents/${contentId}/favorite`, {
+      method: 'PATCH', // Use PATCH for partial update
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ is_favorite: isFavorite }), // Send the new status
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Erro ao alternar favorito no backend:', errorData);
+      if (response.status === 401) {
+          throw new Error('Sessão expirada. Por favor, faça login novamente.');
+      }
+      throw new Error(errorData.detail || 'Falha ao atualizar status de favorito.');
+    }
+
+    return response.json(); // Return the updated item
+  } catch (error) {
+    console.error('Erro de rede ao tentar alternar favorito:', error);
+    throw error;
+  }
+}
 
 // --- FUNÇÃO: Alterar Senha do Usuário ---
 export async function changeUserPassword(currentPassword: string, newPassword: string): Promise<void> {
@@ -189,7 +240,7 @@ export async function changeUserPassword(currentPassword: string, newPassword: s
 
     try {
         const response = await fetch(`${BACKEND_URL}/api/v1/users/me/password`, {
-            method: 'PUT', // Método PUT para atualização
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
@@ -209,45 +260,41 @@ export async function changeUserPassword(currentPassword: string, newPassword: s
             throw new Error(errorData.detail || 'Falha ao alterar a senha.');
         }
 
-        // Se a resposta for OK (200), não precisamos retornar dados específicos, apenas que foi bem-sucedido.
         console.log('Senha alterada com sucesso via API.');
 
     } catch (error) {
         console.error('Erro de rede ao tentar alterar senha:', error);
-        throw error; // Propaga o erro para ser tratado no componente
+        throw error;
     }
 }
 
 // --- NOVA FUNÇÃO: Gerar Imagem com Overlay de Texto ---
 export async function generateImageWithTextOverlay(
-  imageFile: File, // Recebe o objeto File do input
+  imageFile: File,
   textContent: string,
   imageTemplate: string
-): Promise<Blob> { // Retorna um Blob da imagem
+): Promise<Blob> {
   const token = getAuthToken();
   if (!token) {
     throw new Error('Usuário não autenticado. Faça login para gerar imagens.');
   }
 
-  // FormData é usado para enviar arquivos junto com outros dados de formulário
   const formData = new FormData();
-  formData.append('image', imageFile); // 'image' deve corresponder ao nome do campo no backend (@File(...))
-  formData.append('text', textContent); // 'text' deve corresponder ao nome do campo no backend (@Form(...))
-  formData.append('template', imageTemplate); // 'template' deve corresponder ao nome do campo no backend (@Form(...))
+  formData.append('image', imageFile);
+  formData.append('text', textContent);
+  formData.append('template', imageTemplate);
 
   try {
     const response = await fetch(`${BACKEND_URL}/api/v1/images/generate-image`, {
       method: 'POST',
       headers: {
-        // NÃO defina 'Content-Type': 'multipart/form-data' manualmente aqui.
-        // O navegador fará isso automaticamente e definirá o boundary correto.
-        'Authorization': `Bearer ${token}`, // O token ainda é necessário
+        'Authorization': `Bearer ${token}`,
       },
-      body: formData, // Envie o FormData diretamente
+      body: formData,
     });
 
     if (!response.ok) {
-      const errorData = await response.json(); // Tenta ler como JSON se for um erro do backend
+      const errorData = await response.json();
       console.error('Erro na resposta do backend (gerar imagem):', errorData);
       if (response.status === 401) {
           throw new Error('Sessão expirada. Por favor, faça login novamente.');
@@ -255,9 +302,8 @@ export async function generateImageWithTextOverlay(
       throw new Error(errorData.detail || 'Erro ao gerar imagem no backend.');
     }
 
-    // A resposta é um Blob de imagem, não JSON
     const imageBlob = await response.blob();
-    return imageBlob; // Retorna o Blob
+    return imageBlob;
   } catch (error) {
     console.error('Erro de rede ao tentar gerar imagem:', error);
     throw error;
@@ -267,7 +313,7 @@ export async function generateImageWithTextOverlay(
 
 // Interface para o objeto de analytics do usuário
 interface UserAnalyticsResponse {
-  total_generated_content: number; //
+  total_generated_content: number;
 }
 
 export async function getUserAnalytics(): Promise<UserAnalyticsResponse> {
@@ -277,7 +323,7 @@ export async function getUserAnalytics(): Promise<UserAnalyticsResponse> {
   }
 
   try {
-    const response = await fetch(`${BACKEND_URL}/api/v1/users/me/analytics`, { //
+    const response = await fetch(`${BACKEND_URL}/api/v1/users/me/analytics`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -294,7 +340,7 @@ export async function getUserAnalytics(): Promise<UserAnalyticsResponse> {
       throw new Error(errorData.detail || 'Erro ao carregar analytics.');
     }
 
-    return response.json(); // Retorna os dados de analytics
+    return response.json();
   } catch (error) {
     console.error('Erro de rede ao tentar obter analytics:', error);
     throw error;
