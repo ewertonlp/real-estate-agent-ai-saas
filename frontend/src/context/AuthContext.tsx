@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     try {
       const data = await loginUser(email, password); // Chama a função de login do backend
-     Cookies.set('access_token', data.access_token, { expires: 1, secure: process.env.NODE_ENV === 'production' });
+      Cookies.set('access_token', data.access_token, { expires: 1, secure: process.env.NODE_ENV === 'production' });
       setUserToken(data.access_token);
       router.push('/dashboard'); // Redireciona para a página principal após o login
     } catch (error) {

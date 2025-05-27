@@ -36,3 +36,14 @@ def change_my_password(
     db.refresh(current_user) # Atualiza o objeto com os dados do DB
 
     return current_user # Retorna o usuário com a senha atualizada (mas o hash, não a nova senha em texto puro)
+
+
+# === NOVO ENDPOINT DE ANALYTICS ===
+@router.get("/me/analytics", response_model=schemas.UserAnalytics) #
+def get_user_analytics(
+    current_user: models.User = Depends(get_current_user) # Protege o endpoint
+):
+    """
+    Retorna estatísticas de uso para o usuário logado.
+    """
+    return schemas.UserAnalytics(total_generated_content=current_user.content_generations_count) #

@@ -21,9 +21,20 @@ def create_user_generated_content(db: Session, content: schemas.GeneratedContent
     """
     db_content = models.GeneratedContent(**content.model_dump(), owner_id=user_id)
     db.add(db_content)
+
+     # === NOVO CÓDIGO AQUI ===
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if user:
+        user.content_generations_count += 1
+        db.add(user) # Adiciona o usuário modificado de volta à sessão para ser salvo
+    # =========================
+        
     db.commit()
     db.refresh(db_content)
+    if user: # Refrescar o usuário também para ter o contador atualizado se precisar
+        db.refresh(user)
     return db_content
+    
 
 def get_user_generated_contents(db: Session, user_id: int, skip: int = 0, limit: int = 100):
     """

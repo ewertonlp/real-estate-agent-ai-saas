@@ -26,6 +26,11 @@ export default function Header() {
               </Link>
             </li>
             <li>
+              <Link href="/analytics" className="text-blue-600 hover:underline font-semibold">
+    Ver Meus Analytics
+  </Link>
+            </li>
+            <li>
               <Link href="/settings" className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-1 px-3 rounded text-sm flex items-center space-x-1">
                 <IoMdSettings />
                 <span>Configurações</span>

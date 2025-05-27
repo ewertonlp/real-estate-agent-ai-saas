@@ -49,3 +49,14 @@ class GeneratedContentResponse(BaseModel):
 class PasswordChange(BaseModel):
     current_password: str
     new_password: str        
+
+
+# --- NOVO Esquema para Analytics do Usuário ---
+class UserAnalytics(BaseModel):
+    total_generated_content: int #
+    # Você pode adicionar mais métricas aqui no futuro, como:
+    # daily_generations: int
+    # last_7_days_generations: int
+
+    class Config:
+        from_attributes = True

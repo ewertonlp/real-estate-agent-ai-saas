@@ -263,3 +263,40 @@ export async function generateImageWithTextOverlay(
     throw error;
   }
 }
+
+
+// Interface para o objeto de analytics do usuário
+interface UserAnalyticsResponse {
+  total_generated_content: number; //
+}
+
+export async function getUserAnalytics(): Promise<UserAnalyticsResponse> {
+  const token = getAuthToken();
+  if (!token) {
+    throw new Error('Usuário não autenticado. Faça login para ver seus analytics.');
+  }
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/v1/users/me/analytics`, { //
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Erro ao obter analytics do backend:', errorData);
+      if (response.status === 401) {
+          throw new Error('Sessão expirada. Por favor, faça login novamente.');
+      }
+      throw new Error(errorData.detail || 'Erro ao carregar analytics.');
+    }
+
+    return response.json(); // Retorna os dados de analytics
+  } catch (error) {
+    console.error('Erro de rede ao tentar obter analytics:', error);
+    throw error;
+  }
+}

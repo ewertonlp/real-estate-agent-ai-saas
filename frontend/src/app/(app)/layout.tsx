@@ -1,7 +1,8 @@
 // frontend/src/app/(app)/layout.tsx
 'use client';
 
-import { useAuth } from '@/context/AuthContext';
+import Header from '@/components/header';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -36,11 +37,14 @@ export default function AppLayout({
     // ESTE É O CONTAINER GLOBAL PARA TODAS AS PÁGINAS AUTENTICADAS
     // Ele terá o fundo cinza, altura mínima, e flexbox para o cabeçalho e conteúdo.
     <div className="flex flex-col min-h-screen bg-stone-50 ">
-     
+     <AuthProvider>
+      <Header>
       {/* O main-content-wrapper dará o espaçamento horizontal e centralizará o conteúdo */}
       <div className="flex-grow flex flex-col items-center py-10 px-4 sm:px-6 lg:px-8 bg-stone-50 ">
         {children} {/* Aqui as páginas filhas serão renderizadas */}
       </div>
+      </Header>
+     </AuthProvider>
     </div>
   );
 }
