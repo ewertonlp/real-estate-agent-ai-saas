@@ -29,7 +29,7 @@ interface GeneratedContentItem {
   generated_text: string;
   owner_id: number;
   created_at: string;
-  is_favorite: boolean; // Add this
+  is_favorite: boolean;
 }
 
 export default function HistoryPage() {
@@ -95,25 +95,39 @@ export default function HistoryPage() {
   }, [isAuthenticated, isAuthLoading, fetchHistory, router]);
 
   // Função para lidar com a alternância de favorito
-  const handleToggleFavorite = async (item: GeneratedContentItem) => {
-    try {
-      const updatedItem = await toggleFavoriteStatus(
-        item.id,
-        !item.is_favorite
-      ); //
-      setHistory((prevHistory) =>
-        prevHistory.map((h) => (h.id === updatedItem.id ? updatedItem : h))
-      );
-      toast.success(
-        updatedItem.is_favorite
-          ? "Conteúdo adicionado aos favoritos!"
-          : "Conteúdo removido dos favoritos."
-      );
-    } catch (err: any) {
-      console.error("Erro ao alternar favorito:", err);
-      toast.error(err.message || "Falha ao atualizar favorito.");
-    }
-  };
+const handleToggleFavorite = async (item: GeneratedContentItem) => {
+  const newFavoriteStatus = !item.is_favorite;
+  
+  // Atualização otimista imediata na UI
+  setHistory(prevHistory => 
+    prevHistory.map(h => 
+      h.id === item.id ? { ...h, is_favorite: newFavoriteStatus } : h
+    )
+  );
+
+  try {
+    // Chamada à API sem esperar por retorno
+    toggleFavoriteStatus(item.id, newFavoriteStatus);
+    
+    // Toast de sucesso imediato
+    toast.success(
+      newFavoriteStatus
+        ? "Conteúdo adicionado aos favoritos!"
+        : "Conteúdo removido dos favoritos."
+    );
+  } catch (err: any) {
+    console.error("Erro ao alternar favorito:", err);
+    
+    // Reverter em caso de erro
+    setHistory(prevHistory => 
+      prevHistory.map(h => 
+        h.id === item.id ? { ...h, is_favorite: item.is_favorite } : h
+      )
+    );
+    
+    toast.error(err.message || "Falha ao atualizar favorito.");
+  }
+};
 
   // Função para lidar com a edição/reutilização de um item do histórico
   const handleEdit = (item: GeneratedContentItem) => {
@@ -309,25 +323,11 @@ export default function HistoryPage() {
                   Gerado em: {new Date(item.created_at).toLocaleString("pt-BR")}
                 </p>
                 {/* Botão de Favoritar */}
-                <button
-                  onClick={() => handleToggleFavorite(item)}
-                  className={`p-1  focus:outline-none transition-colors duration-200
-    ${
-      item.is_favorite
-        ? "bg-yellow-400  hover:bg-yellow-500"
-        : "text-gray-700 "
-    }
-  `}
-                  title={
-                    item.is_favorite
-                      ? "Remover de favoritos"
-                      : "Adicionar aos favoritos"
-                  }
-                >
+                <button onClick={() => handleToggleFavorite(item)}>
                   {item.is_favorite ? (
-                    <IoMdStar className="w-6 h-6" />
+                    <FaStar className="text-yellow-400" />
                   ) : (
-                    <IoMdStar className="w-6 h-6" />
+                    <FaRegStar className="text-gray-400" />
                   )}
                 </button>
               </div>

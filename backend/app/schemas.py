@@ -39,6 +39,7 @@ class GeneratedContentResponse(BaseModel):
     generated_text: str
     owner_id: int
     created_at: datetime
+    is_favorite: bool
 
     class Config:
         from_attributes = True
