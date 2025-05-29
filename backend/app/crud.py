@@ -3,15 +3,44 @@
 from sqlalchemy.orm import Session
 from app import models, schemas
 from app.core.security import get_password_hash
-from sqlalchemy import desc, func # Import func for date filtering
-from datetime import datetime #
+from app.core.config import settings
+from sqlalchemy import desc, func
+from datetime import datetime
 
 def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
 def create_user(db: Session, user: schemas.UserCreate):
+    db_user = get_user_by_email(db, email=user.email) # Verificação já feita no endpoint, mas reforce
+    if db_user:
+        return None # Usuário já existe
+
     hashed_password = get_password_hash(user.password)
-    db_user = models.User(email=user.email, hashed_password=hashed_password)
+
+    # --- NOVO: Atribuir plano "Free" ao usuário ao registrar ---
+    free_plan = db.query(models.SubscriptionPlan).filter(models.SubscriptionPlan.name == "Free").first()
+    if not free_plan:
+        # Se o plano "Free" não existe no DB, pode criar um aqui ou lançar erro
+        # Para simplificar o desenvolvimento, vamos criar se não existir
+        free_plan = models.SubscriptionPlan(
+            name="Free",
+            description="Plano gratuito com gerações limitadas",
+            max_generations=5, # Exemplo: 5 gerações grátis
+            price_id_stripe=settings.STRIPE_FREE_PLAN_PRICE_ID, # Usar o ID do .env
+            is_active=True
+        )
+        db.add(free_plan)
+        db.commit() # Commita para que free_plan tenha um ID
+        db.refresh(free_plan)
+        print("Plano 'Free' criado automaticamente no banco de dados.")
+    # --------------------------------------------------------
+
+    db_user = models.User(
+        email=user.email,
+        hashed_password=hashed_password,
+        subscription_plan_id=free_plan.id, # Atribui o plano Free
+        content_generations_count=0 # Inicia o contador
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -41,10 +70,10 @@ def get_user_generated_contents(
     user_id: int,
     skip: int = 0,
     limit: int = 100,
-    is_favorite: bool | None = None, # New filter parameter
-    search_query: str | None = None, # New search parameter
-    start_date: datetime | None = None, # New date filter
-    end_date: datetime | None = None # New date filter
+    is_favorite: bool | None = None,
+    search_query: str | None = None,
+    start_date: datetime | None = None,
+    end_date: datetime | None = None
 ):
     """
     Retorna o histórico de conteúdo gerado por um usuário, com opções de filtragem.
@@ -55,7 +84,6 @@ def get_user_generated_contents(
         query = query.filter(models.GeneratedContent.is_favorite == is_favorite)
 
     if search_query:
-        # Search in prompt_used or generated_text
         query = query.filter(
             (models.GeneratedContent.prompt_used.ilike(f"%{search_query}%")) |
             (models.GeneratedContent.generated_text.ilike(f"%{search_query}%"))
@@ -83,5 +111,3 @@ def update_generated_content_favorite_status(db: Session, content_id: int, user_
         db.commit()
         db.refresh(db_content)
     return db_content
-
-# Futuramente: Funções para atualizar/deletar usuários

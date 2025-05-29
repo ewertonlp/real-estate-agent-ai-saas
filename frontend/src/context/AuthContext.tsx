@@ -1,10 +1,10 @@
 // frontend/src/context/AuthContext.tsx
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { loginUser, registerUser } from '../lib/api'; // Vamos criar estas funções no api.ts
-import { AxiosError } from 'axios'; // Se usar Axios, ou 'Response' se usar Fetch padrão
+import { loginUser, registerUser } from '../lib/api'; 
+import { AxiosError } from 'axios'; 
 import Cookies from 'js-cookie';
 import { jwtDecode } from 'jwt-decode';
 
@@ -12,11 +12,15 @@ import { jwtDecode } from 'jwt-decode';
 interface AuthContextType {
   userToken: string | null;
   userEmail: string | null;
+  userPlanName: string | null; // Adicionado
+  userGenerationsCount: number | null; // Adicionado
+  userMaxGenerations: number | null; // Adicionado
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
+  fetchUserData: () => Promise<void>; // Nova função para buscar dados atualizados
 }
 
 // Criar o Contexto
@@ -26,7 +30,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [userToken, setUserToken] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // Começa como true para verificar token ao carregar
+  const [userPlanName, setUserPlanName] = useState<string | null>(null); // Adicionado
+  const [userGenerationsCount, setUserGenerationsCount] = useState<number | null>(null); // Adicionado
+  const [userMaxGenerations, setUserMaxGenerations] = useState<number | null>(null); // Adicionado
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
    // Função auxiliar para decodificar o token e extrair o e-mail
@@ -42,28 +49,56 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Função para buscar dados completos do usuário
+  const fetchUserData = useCallback(async () => {
+    const token = Cookies.get('access_token');
+    if (token) {
+      try {
+        // Importe getCurrentUser de api.ts
+        const { getCurrentUser } = await import('../lib/api'); // Importação dinâmica
+        const userData = await getCurrentUser(); // Chama a nova função da API
+        setUserEmail(userData.email);
+        setUserPlanName(userData.subscription_plan?.name || 'Não Atribuído');
+        setUserGenerationsCount(userData.content_generations_count);
+        setUserMaxGenerations(userData.subscription_plan?.max_generations || null);
+      } catch (error) {
+        console.error('Erro ao carregar dados do usuário:', error);
+        // Se a sessão expirar, faça logout
+        if ((error as any).message === 'Sessão expirada. Por favor, faça login novamente.') {
+            logout(); // Isso vai remover o token e redirecionar
+        }
+        setUserEmail(null);
+        setUserPlanName(null);
+        setUserGenerationsCount(null);
+        setUserMaxGenerations(null);
+        // Opcional: toast.error('Falha ao carregar dados do usuário.');
+      }
+    }
+  }, []);
+
   // Efeito para carregar o token do localStorage ao montar o componente
   useEffect(() => {
     const token =  Cookies.get('access_token'); 
     if (token) {
       setUserToken(token);
       decodeTokenAndSetUserEmail(token); 
+      fetchUserData();
     }
     setIsLoading(false); // Token verificado, carregamento concluído
-  }, []);
+  }, [fetchUserData]);
 
   // Função de Login
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const data = await loginUser(email, password); // Chama a função de login do backend
+      const data = await loginUser(email, password);
       Cookies.set('access_token', data.access_token, { expires: 1, secure: process.env.NODE_ENV === 'production' });
       setUserToken(data.access_token);
       decodeTokenAndSetUserEmail(data.access_token);
-      router.push('/dashboard'); // Redireciona para a página principal após o login
+      await fetchUserData(); // Busca dados do usuário após o login bem-sucedido
+      router.push('/dashboard');
     } catch (error) {
       console.error('Erro no login:', error);
-      // Aqui você pode adicionar lógica para mostrar mensagens de erro ao usuário
       if (error instanceof AxiosError && error.response?.data?.detail) {
         throw new Error(error.response.data.detail);
       } else {
@@ -97,14 +132,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
  const logout = () => {
     Cookies.remove('access_token');
     setUserToken(null);
-     setUserEmail(null);
+    setUserEmail(null);
+    setUserPlanName(null);
+    setUserGenerationsCount(null);
+    setUserMaxGenerations(null);
     router.push('/login');
   };
 
   const isAuthenticated = !!userToken;
 
   return (
-    <AuthContext.Provider value={{ userToken, userEmail, isLoading, login, register, logout, isAuthenticated }}>
+    <AuthContext.Provider value={{ userToken, userEmail, userPlanName, userGenerationsCount, userMaxGenerations, isLoading, login, register, logout, isAuthenticated, fetchUserData }}>
       {children}
     </AuthContext.Provider>
   );

@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext"; // Importa o hook de autentica�
 import { IoIosArchive, IoIosExit, IoMdPerson} from "react-icons/io";
 import { FiUser } from "react-icons/fi"; 
 import { useRef, useState, useEffect } from "react";
+import { FaCrown } from "react-icons/fa";
 
 export default function Header() {
   const { logout, userEmail } = useAuth(); // Obtém a função de logout do contexto de autenticação
@@ -69,7 +70,17 @@ export default function Header() {
                 href="/analytics"
                 className="border border-slate-500 hover:bg-slate-300 text-gray-800 font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
               >
-                Ver Meus Analytics
+                Analytics
+              </Link>
+            </li>
+             {/* Novo link para a página de planos */}
+            <li>
+              <Link
+                href="/plans"
+                className="border border-orange-500 bg-orange-400 hover:bg-orange-500 text-slate-50 font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
+              >
+                <FaCrown /> {/* Ícone da coroa */}
+                <span>Upgrade</span>
               </Link>
             </li>
           </ul>

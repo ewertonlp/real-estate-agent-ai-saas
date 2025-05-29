@@ -2,6 +2,7 @@
 
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
+from typing import Optional
 
 # Esquema para criar um novo usuário (registro)
 class UserCreate(BaseModel):
@@ -66,3 +67,32 @@ class UserAnalytics(BaseModel):
 # --- NOVO Esquema para Atualizar Favorito ---
 class GeneratedContentUpdateFavorite(BaseModel):
     is_favorite: bool #
+
+
+# --- Novo Esquema: SubscriptionPlanBase ---
+class SubscriptionPlanBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+    max_generations: int
+    price_id_stripe: str
+    is_active: bool = True
+
+# --- Novo Esquema: SubscriptionPlan (para retorno) ---
+class SubscriptionPlan(SubscriptionPlanBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+# --- Atualizar UserInDB para incluir plano de assinatura ---
+class UserInDB(BaseModel):
+    id: int
+    email: EmailStr
+    is_active: bool
+    stripe_customer_id: Optional[str] = None
+    stripe_subscription_id: Optional[str] = None
+    subscription_plan_id: Optional[int] = None
+    subscription_plan: Optional[SubscriptionPlan] = None # Para carregar o objeto do plano
+
+    class Config:
+        from_attributes = True    

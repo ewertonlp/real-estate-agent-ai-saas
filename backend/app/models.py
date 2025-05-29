@@ -1,9 +1,23 @@
 # backend/app/models.py
 
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Text # Importe 'Text' e 'ForeignKey'
-from sqlalchemy.orm import relationship # Já deve estar importado
+from sqlalchemy.orm import relationship 
 from sqlalchemy.sql import func
 from app.core.database import Base
+
+# --- Novo Modelo: SubscriptionPlan ---
+class SubscriptionPlan(Base):
+    __tablename__ = "subscription_plans"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True, nullable=False) # Ex: "Free", "Basic", "Premium"
+    description = Column(String, nullable=True)
+    max_generations = Column(Integer, nullable=False, default=0) # 0 para ilimitado, ou um número
+    price_id_stripe = Column(String, unique=True, nullable=False) # ID do preço no Stripe
+    is_active = Column(Boolean, default=True) # Para ativar/desativar planos
+
+    users = relationship("User", back_populates="subscription_plan") # Relacionamento com usuários
+
 
 class User(Base):
     __tablename__ = "users"
@@ -15,6 +29,12 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
+    stripe_customer_id = Column(String, unique=True, nullable=True) # ID do cliente no Stripe
+    stripe_subscription_id = Column(String, unique=True, nullable=True) # ID da assinatura no Stripe
+    subscription_plan_id = Column(Integer, ForeignKey("subscription_plans.id"), nullable=True) # Plano atual do usuário
+
+    subscription_plan = relationship("SubscriptionPlan", back_populates="users")
+    
     content_generations_count = Column(Integer, default=0, nullable=False)
     generated_contents = relationship("GeneratedContent", back_populates="owner")
 

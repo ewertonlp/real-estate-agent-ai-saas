@@ -23,6 +23,16 @@ class Settings(BaseSettings):
     # Chave da API Gemini (já temos isso no .env)
     GOOGLE_API_KEY: str
 
+     # --- Adicione as configurações do Stripe aqui ---
+    STRIPE_SECRET_KEY: str
+    STRIPE_WEBHOOK_SECRET: str
+    STRIPE_SUCCESS_URL: str
+    STRIPE_CANCEL_URL: str
+    STRIPE_FREE_PLAN_PRICE_ID: str
+    STRIPE_BASIC_PLAN_PRICE_ID: str
+    STRIPE_PREMIUM_PLAN_PRICE_ID: str
+    # -----------------------------------------------
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 

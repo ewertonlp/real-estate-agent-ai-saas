@@ -16,12 +16,16 @@ import {
   FaFacebook,
   FaEnvelope,
   FaClipboard,
-  FaStar, // Icone de estrela para favorito
-  FaRegStar, // Icone de estrela vazia
-  FaSearch, // Icone de busca
-  FaFilter, // Icone de filtro
+  FaStar,
+  FaRegStar,
+  FaSearch,
+  FaFilter,
+  FaExpandAlt,
+  FaHome,
+  FaMapMarkerAlt,
+  FaWindowClose,
 } from "react-icons/fa";
-import { IoIosArchive, IoMdStar } from "react-icons/io";
+import { IoIosAlbums } from "react-icons/io";
 
 interface GeneratedContentItem {
   id: number;
@@ -31,6 +35,55 @@ interface GeneratedContentItem {
   created_at: string;
   is_favorite: boolean;
 }
+
+const extractPromptDetails = (prompt: string) => {
+  const propertyTypeMatch = prompt.match(/Tipo de imóvel:\s*([^.]+)\./);
+  const locationMatch = prompt.match(/Localização:\s*([^.]+)\./);
+
+  const propertyType = propertyTypeMatch
+    ? propertyTypeMatch[1].trim()
+    : "Não especificado";
+  const location = locationMatch ? locationMatch[1].trim() : "Não especificado";
+
+  return { propertyType, location };
+};
+// Função para truncar texto por linhas
+const truncateTextByLines = (text: string, maxLines: number): string => {
+  const lines = text.split("\n");
+  if (lines.length > maxLines) {
+    return lines.slice(0, maxLines).join("\n") + "...";
+  }
+  return text;
+};
+
+// --- Componente Modal (simples, pode ser mais complexo) ---
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  content: string;
+}
+
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, content }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-slate-50 p-6 rounded-lg shadow-xl max-w-[50vw] w-full max-h-[90vh] overflow-y-auto relative">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">{title}</h2>
+        <pre className="whitespace-pre-wrap text-gray-800 mb-6 font-poppins">
+          {content}
+        </pre>
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 hover:bg-gray-200 rounded-full p-2 text-slate-800"
+        >
+          <FaWindowClose />
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export default function HistoryPage() {
   const [history, setHistory] = useState<GeneratedContentItem[]>([]);
@@ -42,6 +95,11 @@ export default function HistoryPage() {
   const [searchTerm, setSearchTerm] = useState(""); //
   const [startDate, setStartDate] = useState(""); //
   const [endDate, setEndDate] = useState(""); //
+
+  // Estados para o Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalContent, setModalContent] = useState("");
 
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const router = useRouter();
@@ -95,39 +153,39 @@ export default function HistoryPage() {
   }, [isAuthenticated, isAuthLoading, fetchHistory, router]);
 
   // Função para lidar com a alternância de favorito
-const handleToggleFavorite = async (item: GeneratedContentItem) => {
-  const newFavoriteStatus = !item.is_favorite;
-  
-  // Atualização otimista imediata na UI
-  setHistory(prevHistory => 
-    prevHistory.map(h => 
-      h.id === item.id ? { ...h, is_favorite: newFavoriteStatus } : h
-    )
-  );
+  const handleToggleFavorite = async (item: GeneratedContentItem) => {
+    const newFavoriteStatus = !item.is_favorite;
 
-  try {
-    // Chamada à API sem esperar por retorno
-    toggleFavoriteStatus(item.id, newFavoriteStatus);
-    
-    // Toast de sucesso imediato
-    toast.success(
-      newFavoriteStatus
-        ? "Conteúdo adicionado aos favoritos!"
-        : "Conteúdo removido dos favoritos."
-    );
-  } catch (err: any) {
-    console.error("Erro ao alternar favorito:", err);
-    
-    // Reverter em caso de erro
-    setHistory(prevHistory => 
-      prevHistory.map(h => 
-        h.id === item.id ? { ...h, is_favorite: item.is_favorite } : h
+    // Atualização otimista imediata na UI
+    setHistory((prevHistory) =>
+      prevHistory.map((h) =>
+        h.id === item.id ? { ...h, is_favorite: newFavoriteStatus } : h
       )
     );
-    
-    toast.error(err.message || "Falha ao atualizar favorito.");
-  }
-};
+
+    try {
+      // Chamada à API sem esperar por retorno
+      toggleFavoriteStatus(item.id, newFavoriteStatus);
+
+      // Toast de sucesso imediato
+      toast.success(
+        newFavoriteStatus
+          ? "Conteúdo adicionado aos favoritos!"
+          : "Conteúdo removido dos favoritos."
+      );
+    } catch (err: any) {
+      console.error("Erro ao alternar favorito:", err);
+
+      // Reverter em caso de erro
+      setHistory((prevHistory) =>
+        prevHistory.map((h) =>
+          h.id === item.id ? { ...h, is_favorite: item.is_favorite } : h
+        )
+      );
+
+      toast.error(err.message || "Falha ao atualizar favorito.");
+    }
+  };
 
   // Função para lidar com a edição/reutilização de um item do histórico
   const handleEdit = (item: GeneratedContentItem) => {
@@ -171,11 +229,27 @@ const handleToggleFavorite = async (item: GeneratedContentItem) => {
     );
   }
 
+  // Função para abrir o modal com o conteúdo completo
+  const openModal = (title: string, content: string) => {
+    setModalTitle(title);
+    setModalContent(content);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalTitle("");
+    setModalContent("");
+  };
+
   return (
-    <main className="bg-[#ffffff] p-8 rounded-lg shadow-md w-full max-w-4xl">
-      <h1 className="text-2xl font-medium text-gray-800 text-center mb-10">
+    <main className="bg-[#ffffff] p-8 rounded-lg shadow-md w-full max-w-full">
+      <div className="flex items-center justify-start gap-4 text-gray-800 mb-10">
+      <IoIosAlbums size={25} />
+      <h1 className="text-2xl font-medium ">
         Meu Histórico de Conteúdo
       </h1>
+      </div>
 
       {error && (
         <div
@@ -188,11 +262,11 @@ const handleToggleFavorite = async (item: GeneratedContentItem) => {
       )}
 
       {/* Seção de Filtros e Busca */}
-      <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="mb-6 p-4 bg-slate-100 border border-blue-200 rounded-lg">
         <h2 className="text-xl font-medium text-gray-800 mb-8 flex items-center gap-2">
           <FaFilter className="text-slate-500" /> Filtrar e Buscar
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Busca por texto */}
           <div>
             <label
@@ -251,9 +325,9 @@ const handleToggleFavorite = async (item: GeneratedContentItem) => {
               type="date"
               id="startDate"
               name="startDate"
-              className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full rounded-md sm:text-sm border-gray-300 px-3 py-2"
+              className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full rounded-md sm:text-sm border-gray-300 placeholder:text-slate-700 px-3 py-2"
               value={startDate}
-              onChange={(e) => setSearchTerm(e.target.value)} // Corrigido para setSearchTerm
+              onChange={(e) => setStartDate(e.target.value)}
             />
           </div>
 
@@ -312,98 +386,153 @@ const handleToggleFavorite = async (item: GeneratedContentItem) => {
           </Link>
         </div>
       ) : (
-        <div className="space-y-6">
-          {history.map((item) => (
-            <div
-              key={item.id}
-              className="bg-blue-50 border border-blue-200 rounded-lg shadow-inner p-6 relative"
-            >
-              <div className="flex justify-between items-start mb-2">
-                <p className="text-xs text-gray-500">
-                  Gerado em: {new Date(item.created_at).toLocaleString("pt-BR")}
-                </p>
-                {/* Botão de Favoritar */}
-                <button onClick={() => handleToggleFavorite(item)}>
-                  {item.is_favorite ? (
-                    <FaStar className="text-yellow-400" />
-                  ) : (
-                    <FaRegStar className="text-gray-400" />
-                  )}
-                </button>
-              </div>
-
-              <h3 className="text-lg font-semibold text-blue-800 mb-2">
-                Prompt Utilizado:
-              </h3>
-              <div className="whitespace-pre-wrap text-gray-700 text-sm mb-4 border-l-4 border-blue-300 pl-3 py-1 bg-white">
-                {item.prompt_used}
-              </div>
-              <h3 className="text-lg font-semibold text-blue-800 mb-2">
-                Conteúdo Gerado:
-              </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {history.map((item) => {
+            const { propertyType, location } = extractPromptDetails(
+              item.prompt_used
+            );
+            const truncatedPrompt = truncateTextByLines(item.prompt_used, 2); // Limita o prompt a 3 linhas
+            const truncatedGeneratedText = truncateTextByLines(
+              item.generated_text,
+              8
+            ); // Limita o texto gerado a 8 linhas
+            return (
               <div
-                className="whitespace-pre-wrap text-gray-800 text-base"
-                style={{ lineHeight: "1.6" }}
+                key={item.id}
+                className="bg-slate-100 border border-blue-200 rounded-lg shadow-inner p-6 relative"
               >
-                {item.generated_text}
-              </div>
-
-              {/* Botões de Ação para cada item */}
-              <div className="flex flex-wrap gap-2 mt-4 justify-end">
-                <button
-                  onClick={() => handleEdit(item)}
-                  className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-1 px-3 rounded text-sm flex items-center space-x-1"
-                  title="Editar ou Reutilizar no Dashboard"
-                >
-                  <FaEdit />
-                  <span>Editar/Reutilizar</span>
-                </button>
-
-                {/* Grupo de botões de Compartilhamento */}
-                <div className="relative group">
-                  <button
-                    className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded text-sm flex items-center space-x-1"
-                    title="Compartilhar Conteúdo"
-                  >
-                    <FaShareAlt />
-                    <span>Compartilhar</span>
+                <div className="flex justify-between items-start mb-2">
+                  <p className="text-xs text-gray-500">
+                    Gerado em:{" "}
+                    {new Date(item.created_at).toLocaleString("pt-BR")}
+                  </p>
+                  {/* Botão de Favoritar */}
+                  <button onClick={() => handleToggleFavorite(item)}>
+                    {item.is_favorite ? (
+                      <FaStar className="text-yellow-400" />
+                    ) : (
+                      <FaRegStar className="text-gray-400" />
+                    )}
                   </button>
-                  <div className="absolute right-0 top-full mt-1 w-auto bg-white rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
+                </div>
+
+                <div className="mb-4 text-sm text-gray-700">
+                  <p className="flex items-center mb-1">
+                    <FaHome className="mr-2 text-blue-600" /> **Tipo:**{" "}
+                    {propertyType}
+                  </p>
+                  <p className="flex items-center">
+                    <FaMapMarkerAlt className="mr-2 text-blue-600" />{" "}
+                    **Localização:** {location}
+                  </p>
+                </div>
+                <div className="flex-grow">
+                  <h3 className="text-lg font-semibold text-blue-800 mb-2">
+                    Prompt Utilizado:
+                  </h3>
+                  <div className="whitespace-pre-wrap text-gray-700 text-sm mb-2 border-l-4 border-blue-300 pl-3 py-1 bg-white max-h-24 overflow-hidden">
+                    {truncatedPrompt}
+                  </div>
+                  {item.prompt_used.split("\n").length > 6 && ( // Adiciona botão "Ver Mais" para prompt
                     <button
-                      onClick={() => shareOnWhatsapp(item.generated_text)}
-                      className=" w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                      onClick={() =>
+                        openModal("Prompt Completo", item.prompt_used)
+                      }
+                      className="text-blue-600 hover:underline text-sm mb-4 flex items-center justify-end"
                     >
-                      <FaWhatsapp className="text-green-500" />{" "}
-                      <span>WhatsApp</span>
+                      Ver Mais <FaExpandAlt className="ml-2 text-xs" />
                     </button>
+                  )}
+
+                  <h3 className="text-lg font-semibold text-blue-800 mb-2">
+                    Conteúdo Gerado:
+                  </h3>
+                  <div
+                    className="whitespace-pre-wrap text-gray-800 text-base flex-grow overflow-hidden"
+                    style={{ lineHeight: "1.6" }}
+                  >
+                    {truncatedGeneratedText}
+                  </div>
+                  <div className="flex justify-center">
+                    {item.generated_text.split("\n").length > 6 && ( // Adiciona botão "Ver Mais" para conteúdo
+                      <button
+                        onClick={() =>
+                          openModal(
+                            "Conteúdo Gerado Completo",
+                            item.generated_text
+                          )
+                        }
+                        className="mt-8 py-1 px-2 rounded-md text-blue-500 hover:bg-blue-500 hover:text-slate-50 text-md font-medium flex items-center justify-center border border-blue-500 transition-colors"
+                      >
+                        Ver Mais <FaExpandAlt className="ml-2 text-sm" />
+                      </button>
+                    )}
+                  </div>
+                  {/* Botões de Ação para cada item */}
+                  <div className="flex flex-wrap gap-4 mt-10 justify-center items-end">
                     <button
-                      onClick={() => shareOnFacebook(item.generated_text)}
-                      className=" w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                      onClick={() => handleEdit(item)}
+                      className="bg-zinc-500 hover:bg-zinc-600 text-white font-medium py-1 px-3 rounded text-sm flex items-center space-x-1 transition-all"
+                      title="Editar ou Reutilizar no Dashboard"
                     >
-                      <FaFacebook className="text-blue-600" />{" "}
-                      <span>Facebook</span>
+                      <FaEdit />
+                      <span>Editar/Reutilizar</span>
                     </button>
-                    <button
-                      onClick={() => shareOnInstagram(item.generated_text)}
-                      className=" w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
-                    >
-                      <FaClipboard className="text-purple-500" />{" "}
-                      <span>Instagram (Copiar)</span>
-                    </button>
-                    <button
-                      onClick={() => shareOnEmail(item.generated_text)}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
-                    >
-                      <FaEnvelope className="text-orange-500" />{" "}
-                      <span>E-mail</span>
-                    </button>
+
+                    {/* Grupo de botões de Compartilhamento */}
+                    <div className="relative group">
+                      <button
+                        className="bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-1 px-3 rounded text-sm flex items-center space-x-1 transition-all"
+                        title="Compartilhar Conteúdo"
+                      >
+                        <FaShareAlt />
+                        <span>Compartilhar</span>
+                      </button>
+                      <div className="absolute right-0 top-full mt-1 w-auto bg-white rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
+                        <button
+                          onClick={() => shareOnWhatsapp(item.generated_text)}
+                          className=" w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                        >
+                          <FaWhatsapp className="text-green-500" />{" "}
+                          <span>WhatsApp</span>
+                        </button>
+                        <button
+                          onClick={() => shareOnFacebook(item.generated_text)}
+                          className=" w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                        >
+                          <FaFacebook className="text-blue-600" />{" "}
+                          <span>Facebook</span>
+                        </button>
+                        <button
+                          onClick={() => shareOnInstagram(item.generated_text)}
+                          className=" w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                        >
+                          <FaClipboard className="text-purple-500" />{" "}
+                          <span>Instagram (Copiar)</span>
+                        </button>
+                        <button
+                          onClick={() => shareOnEmail(item.generated_text)}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                        >
+                          <FaEnvelope className="text-orange-500" />{" "}
+                          <span>E-mail</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title={modalTitle}
+        content={modalContent}
+      />
     </main>
   );
 }

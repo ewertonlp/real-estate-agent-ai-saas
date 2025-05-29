@@ -59,6 +59,35 @@ export async function registerUser(email: string, password: string): Promise<Reg
   return response.json();
 }
 
+// Adicione esta função em `frontend/src/lib/api.ts` (se ainda não existir uma para users/me completa):
+
+export async function getCurrentUser(): Promise<UserWithPlan> {
+  const token = getAuthToken();
+  if (!token) {
+    throw new Error('Usuário não autenticado.');
+  }
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/v1/users/me`, { // Crie este endpoint no backend/users.py
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      if (response.status === 401) {
+          throw new Error('Sessão expirada. Por favor, faça login novamente.');
+      }
+      const errorData = await response.json();
+      throw new Error(errorData.detail || 'Erro ao carregar dados do usuário.');
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Erro de rede ao tentar obter dados do usuário:', error);
+    throw error;
+  }
+}
+
 // --- Funções de Geração de Conteúdo (AGORA AUTENTICADA) ---
 
 // Função para obter o token JWT do localStorage
@@ -346,3 +375,98 @@ export async function getUserAnalytics(): Promise<UserAnalyticsResponse> {
     throw error;
   }
 }
+
+// --- NOVAS FUNÇÕES DE ASSINATURA ---
+
+// Interface para um plano de assinatura
+export interface SubscriptionPlan {
+  id: number;
+  name: string;
+  description: string | null;
+  max_generations: number;
+  price_id_stripe: string;
+  is_active: boolean;
+}
+
+// Interface para o usuário com o plano de assinatura incluído
+export interface UserWithPlan {
+    id: number;
+    email: string;
+    is_active: boolean;
+    stripe_customer_id: string | null;
+    stripe_subscription_id: string | null;
+    subscription_plan_id: number | null;
+    subscription_plan: SubscriptionPlan | null;
+    content_generations_count: number; // Adicionado
+}
+
+// Função para obter todos os planos de assinatura disponíveis
+export async function getSubscriptionPlans(): Promise<SubscriptionPlan[]> {
+  const token = getAuthToken();
+  if (!token) {
+    throw new Error('Usuário não autenticado. Faça login para ver os planos.');
+  }
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/v1/subscriptions/plans`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Erro ao obter planos do backend:', errorData);
+      if (response.status === 401) {
+          throw new Error('Sessão expirada. Por favor, faça login novamente.');
+      }
+      throw new Error(errorData.detail || 'Erro ao carregar planos de assinatura.');
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Erro de rede ao tentar obter planos:', error);
+    throw error;
+  }
+}
+
+// Função para criar uma sessão de checkout no Stripe
+export async function createStripeCheckoutSession(priceId: string): Promise<{ checkout_url: string }> {
+  const token = getAuthToken();
+  if (!token) {
+    throw new Error('Usuário não autenticado. Faça login para iniciar o pagamento.');
+  }
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/v1/subscriptions/create-checkout-session/${priceId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Erro ao criar sessão de checkout:', errorData);
+      if (response.status === 401) {
+          throw new Error('Sessão expirada. Por favor, faça login novamente.');
+      }
+      throw new Error(errorData.detail || 'Erro ao criar sessão de checkout do Stripe.');
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Erro de rede ao tentar criar sessão de checkout:', error);
+    throw error;
+  }
+}
+
+
+// --- ATUALIZAR FUNÇÃO GET_CURRENT_USER NO AuthContext PARA PEGAR INFORMAÇÕES DE PLANO ---
+// Não há uma função `get_current_user` exportada aqui no api.ts para o frontend.
+// Mas o AuthContext precisará buscar as informações do usuário atualizadas, incluindo o plano.
+// Isso será abordado na seção do AuthContext e/ou na página de dashboard.
+// Por enquanto, a interface UserWithPlan é o mais importante para o frontend.

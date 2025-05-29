@@ -16,6 +16,11 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "
 # Importe o Base.metadata do seu banco de dados
 from app.core.database import Base # <--- ADICIONE ESTA LINHA
 
+# Importe o Base.metadata do seu banco de dados
+from app.core.database import Base
+import app.models # <--- ADICIONE ESTA LINHA para garantir que os modelos sejam carregados
+
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
