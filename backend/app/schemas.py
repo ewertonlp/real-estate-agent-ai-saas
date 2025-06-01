@@ -92,7 +92,8 @@ class UserInDB(BaseModel):
     stripe_customer_id: Optional[str] = None
     stripe_subscription_id: Optional[str] = None
     subscription_plan_id: Optional[int] = None
-    subscription_plan: Optional[SubscriptionPlan] = None # Para carregar o objeto do plano
+    subscription_plan: Optional[SubscriptionPlan] = None 
+    content_generations_count: int 
 
     class Config:
         from_attributes = True    

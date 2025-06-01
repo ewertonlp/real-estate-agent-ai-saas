@@ -1,6 +1,6 @@
 # backend/app/crud.py
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload 
 from app import models, schemas
 from app.core.security import get_password_hash
 from app.core.config import settings
@@ -8,7 +8,10 @@ from sqlalchemy import desc, func
 from datetime import datetime
 
 def get_user_by_email(db: Session, email: str):
-    return db.query(models.User).filter(models.User.email == email).first()
+    return db.query(models.User)\
+             .options(joinedload(models.User.subscription_plan))\
+             .filter(models.User.email == email)\
+             .first()
 
 def create_user(db: Session, user: schemas.UserCreate):
     db_user = get_user_by_email(db, email=user.email) # Verificação já feita no endpoint, mas reforce

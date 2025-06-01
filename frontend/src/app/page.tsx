@@ -1,121 +1,375 @@
 // frontend/src/app/page.tsx
+"use client"
 import Link from "next/link";
 import Image from "next/image";
+import { FaRocket, FaLightbulb, FaChartLine, FaShieldAlt, FaCheckCircle } from 'react-icons/fa'; // Novos ícones para persuasão
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-indigo-800 text-white flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-card text-white flex flex-col items-center justify-center overflow-hidden">
+      <header className="bg-card-light py-4  shadow-sm w-full flex justtify-between">
+        <div className=" max-w-7xl flex justify-between items-center ">
+        {/* Título/Logo */}
+        <Link
+          href="/"
+          className="text-2xl font-bold text-text hover:text-slate-300 transition-colors"
+        >
+          Corretor AI
+        </Link>
+         <nav className="">
+          <ul className="flex items-center justify-center gap-4">
+            <li>
+              <Link
+                href="/services"
+                className="  text-text hover:text-hover font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all">
+                <span>Serviços</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/aboutus"
+                className=" text-text hover:text-hover font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
+              >
+                Sobre nós
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/price"
+                className=" text-text hover:text-hover  font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
+              >
+                Preços
+              </Link>
+            </li>
+             {/* Novo link para a página de planos */}
+            <li>
+              <Link
+                href="/contact"
+                className="  text-text hover:text-hover font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
+              >
+               
+                <span>Contato</span>
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div className="flex">
+        
+         <nav className="">
+          <ul className="flex items-center justify-center gap-4">
+            <li>
+              <Link
+                href="/login"
+                className="  text-text hover:text-hover font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all">
+                <span>Login</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/register"
+                className=" text-white bg-button hover:bg-hover font-medium py-2 px-3 rounded-lg text-md flex items-center space-x-1 transition-all"
+              >
+                Cadastre-se
+              </Link>
+            </li>
+           
+          </ul>
+        </nav>
+      </div>
+      </header>
       {/* Hero Section */}
-      <section className="text-center mb-16 px-4">
-        <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-4 animate-fade-in-down">
-          Corretor AI: Seu Assistente Imobiliário Inteligente
+      <section className="grid grid-cols-1 md:grid-cols-2 relative text-start my-20 px-4 pt-20 max-w-7xl w-full">
+        <div className="">
+        
+        <h1 className="text-4xl md:text-6xl font-medium mb-6 leading-5 md:leading-[1.5] tracking-tight animate-fade-in-down drop-shadow-lg">
+          Domine o Mercado Imobiliário com Conteúdo Imbatível.
         </h1>
-        <p className="text-xl md:text-2xl mb-8 opacity-90 animate-fade-in-up">
-          Gere conteúdo de marketing imobiliário de alta qualidade em segundos, otimizado para redes sociais e SEO.
+        <p className="text-xl md:text-2xl mb-16  animate-fade-in-up max-w-3xl mx-auto">
+         Gere conteúdo através de Inteligência Artificial. Fácil, Rápido e Direto.
         </p>
-        <div className="space-x-4 animate-scale-in">
+        
           <Link
             href="/register"
-            className="bg-yellow-400 text-blue-900 font-bold py-3 px-8 rounded-full text-lg shadow-lg hover:bg-yellow-300 transition duration-300 transform hover:scale-105"
+            className="bg-button border border-button text-white font-semibold py-4 px-10 rounded-lg text-lg shadow-2xl hover:bg-hover transition-all duration-300 transform hover:scale-105 active:scale-95  mr-4"
           >
-            Comece Grátis Agora!
+            Comece a Vender Mais Hoje!
           </Link>
           <Link
             href="/login"
-            className="border-2 border-white text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg hover:bg-white hover:text-blue-800 transition duration-300 transform hover:scale-105"
+            className="border border-white text-white font-semibold py-4 px-10 rounded-lg text-lg shadow-xl hover:bg-white hover:text-blue-800 transition-all duration-300 transform hover:scale-105 active:scale-95"
           >
-            Login
+            Já sou Corretor AI
           </Link>
         </div>
+        <div className="bg-transparent -mt-20 animate-fade-in-up ml-10">
+          <Image src="/corretor-hero-3d.png" alt="Corretora de imóveis" width={600} height={100} />
+        </div>
       </section>
 
-      {/* Features Section */}
-      <section className="bg-white text-gray-800 p-10 rounded-lg shadow-2xl max-w-4xl w-full mb-16 animate-fade-in">
-        <h2 className="text-4xl font-bold text-center mb-10 text-blue-700">Recursos Poderosos</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="flex items-start p-4 rounded-md bg-gray-50 shadow-sm">
-            <Image src="/icons/ai-content.svg" alt="AI Content" width={50} height={50} className="mr-4" />
-            <div>
-              <h3 className="text-2xl font-semibold mb-2">Geração de Conteúdo Inteligente</h3>
-              <p className="text-gray-600">Crie descrições de imóveis, legendas para redes sociais e textos para anúncios com IA avançada.</p>
-            </div>
+      {/* Benefits/Why Choose Us Section */}
+      <section className="bg-gradient-to-br from-button/25 to-card text-gray-800 p-12 rounded-xl shadow-2xl max-w-7xl w-full mb-20  transition-transform duration-500">
+        <h2 className="text-[2.5rem] font-medium text-center mb-12 text-text">Por Que Corretor AI?</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="flex flex-col items-center p-6 rounded-lg bg-card-light border border-border shadow-md text-center transform hover:scale-105 transition duration-300">
+            <FaRocket className="text-button text-5xl mb-4 animate-bounce-slow" />
+            <h3 className="text-2xl font-semibold mb-2 text-button">Acelere Suas Vendas</h3>
+            <p className="text-text text-sm">Gere conteúdo otimizado instantaneamente e nunca mais perca uma oportunidade por falta de tempo.</p>
           </div>
-          <div className="flex items-start p-4 rounded-md bg-gray-50 shadow-sm">
-            <Image src="/icons/seo-optimized.svg" alt="SEO Optimized" width={50} height={50} className="mr-4" />
-            <div>
-              <h3 className="text-2xl font-semibold mb-2">Otimização para SEO e GMB</h3>
-              <p className="text-gray-600">Conteúdo otimizado para motores de busca e Google Meu Negócio, aumentando sua visibilidade online.</p>
-            </div>
+          <div className="flex flex-col items-center p-6 rounded-lg bg-card-light border border-green-400 shadow-md text-center transform hover:scale-105 transition duration-300">
+            <FaLightbulb className="text-green-400 text-5xl mb-4 animate-pulse-slow" />
+            <h3 className="text-2xl font-semibold mb-2 text-green-400">Inovação ao Seu Alcance</h3>
+            <p className="text-text text-sm">Aproveite a Inteligência Artificial para criar textos que realmente se conectam com seu público.</p>
           </div>
-          <div className="flex items-start p-4 rounded-md bg-gray-50 shadow-sm">
-            <Image src="/icons/social-media.svg" alt="Social Media" width={50} height={50} className="mr-4" />
-            <div>
-              <h3 className="text-2xl font-semibold mb-2">Adaptação para Plataformas</h3>
-              <p className="text-gray-600">Gere conteúdo personalizado para Instagram, Facebook, WhatsApp e blogs.</p>
-            </div>
+          <div className="flex flex-col items-center p-6 rounded-lg bg-card-light border border-purple-400 shadow-md text-center transform hover:scale-105 transition duration-300">
+            <FaChartLine className="text-purple-400 text-5xl mb-4 animate-fade-in-left-slow" />
+            <h3 className="text-2xl font-semibold mb-2 text-purple-400">Maximize Sua Visibilidade</h3>
+            <p className="text-text text-sm">Conteúdo otimizado para SEO e redes sociais que coloca seus imóveis em destaque.</p>
           </div>
-          <div className="flex items-start p-4 rounded-md bg-gray-50 shadow-sm">
-            <Image src="/icons/history.svg" alt="History" width={50} height={50} className="mr-4" />
-            <div>
-              <h3 className="text-2xl font-semibold mb-2">Histórico e Favoritos</h3>
-              <p className="text-gray-600">Acesse e organize todo o seu conteúdo gerado, marque favoritos e reutilize-os facilmente.</p>
-            </div>
+          <div className="flex flex-col items-center p-6 rounded-lg bg-card-light border border-red-400 shadow-md text-center transform hover:scale-105 transition duration-300">
+            <FaShieldAlt className="text-red-400 text-5xl mb-4 animate-fade-in-right-slow" />
+            <h3 className="text-2xl font-semibold mb-2 text-red-400">Foque no Que Importa</h3>
+            <p className="text-text text-sm">Deixe a criação de texto com a IA e dedique-se ao atendimento e fechamento de negócios.</p>
           </div>
         </div>
       </section>
 
-      {/* Pricing Section - Simplified for this example */}
-      <section className="bg-white text-gray-800 p-10 rounded-lg shadow-2xl max-w-4xl w-full mb-16 animate-fade-in">
-        <h2 className="text-4xl font-bold text-center mb-10 text-blue-700">Planos Flexíveis</h2>
-        <div className="flex flex-col md:flex-row justify-center items-center gap-8">
+      {/* How It Works Section (Optional, but adds clarity) */}
+      <section className="text-center mb-20 max-w-4xl w-full animate-fade-in-up-slow">
+        <h2 className="text-[2.5rem] font-medium mb-10 text-white">Como Funciona? Simples e Rápido!</h2>
+        <div className="relative flex justify-center items-center">
+            <div className="absolute top-1/2 left-0 right-0 h-1 bg-button -z-10 hidden md:block"></div> {/* Linha conectora */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <div className="flex flex-col items-center bg-card-light text-gray-800 p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
+                    <div className="w-16 h-16 rounded-full bg-button text-white flex items-center justify-center text-3xl font-bold mb-4 z-10 step-number">1</div>
+                    <h3 className="text-2xl font-semibold mb-2 text-button">Descreva o Imóvel</h3>
+                    <p className="text-text text-md">Insira detalhes como tipo, quartos, localização e diferenciais.</p>
+                </div>
+                <div className="flex flex-col items-center bg-card-light text-gray-800 p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
+                    <div className="w-16 h-16 rounded-full bg-button text-white flex items-center justify-center text-3xl font-bold mb-4 z-10 step-number">2</div>
+                    <h3 className="text-2xl font-semibold mb-2 text-button">Escolha o Estilo</h3>
+                    <p className="text-text text-md">Selecione tom de voz, plataforma e otimizações (SEO, CTA, Emojis).</p>
+                </div>
+                <div className="flex flex-col items-center bg-card-light text-gray-800 p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
+                    <div className="w-16 h-16 rounded-full bg-button text-white flex items-center justify-center text-3xl font-bold mb-4 z-10 step-number">3</div>
+                    <h3 className="text-2xl font-semibold mb-2 text-button">Gere e Publique!</h3>
+                    <p className="text-text text-md">Receba seu conteúdo exclusivo em segundos e publique onde quiser!</p>
+                </div>
+            </div>
+        </div>
+      </section>
+
+
+      {/* Pricing Section - Highly Persuasive */}
+      <section className="bg-white text-gray-800 p-12 rounded-xl shadow-2xl max-w-5xl w-full mb-20 animate-fade-in-up">
+        <h2 className="text-4xl font-bold text-center mb-12 text-blue-800">Planos Que Impulsionam Seu Sucesso</h2>
+        <div className="flex flex-col md:flex-row justify-center items-stretch gap-8">
           {/* Free Tier */}
-          <div className="bg-gray-50 p-8 rounded-lg shadow-lg text-center transform hover:scale-105 transition duration-300 w-full md:w-1/2">
-            <h3 className="text-3xl font-bold text-blue-600 mb-4">Gratuito</h3>
-            <p className="text-5xl font-extrabold mb-4">R$0<span className="text-xl font-normal">/mês</span></p>
-            <ul className="text-gray-600 mb-6 space-y-2">
-              <li>5 Geração de Conteúdo/Mês</li>
-              <li>Acesso ao Histórico</li>
-              <li>Otimização Básica</li>
-            </ul>
-            <Link href="/register" className="bg-blue-600 text-white font-bold py-3 px-6 rounded-full hover:bg-blue-700 transition duration-300">
-              Comece Grátis
+          <div className="bg-gray-50 p-8 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full md:w-1/3 border-2 border-transparent hover:border-gray-300">
+            <div>
+              <h3 className="text-3xl font-bold text-gray-800 mb-4">Plano Grátis</h3>
+              <p className="text-gray-600 mb-6">Experimente o poder da IA sem custo.</p>
+              <div className="text-5xl font-extrabold text-blue-600 mb-6">R$0<span className="text-xl font-normal">/mês</span></div>
+              <p className="text-gray-700 mb-6">**5 Gerações de Conteúdo por Mês**</p>
+              <ul className="text-gray-700 text-left space-y-2 mb-8">
+                <li className="flex items-center"><FaCheckCircle className="text-green-500 mr-2" /> Acesso Completo ao Histórico</li>
+                <li className="flex items-center"><FaCheckCircle className="text-green-500 mr-2" /> Geração de Textos Básicos</li>
+                <li className="flex items-center text-gray-500 line-through"><FaCheckCircle className="text-gray-400 mr-2" /> Otimização Avançada (SEO/GMB)</li>
+                <li className="flex items-center text-gray-500 line-through"><FaCheckCircle className="text-gray-400 mr-2" /> Suporte Prioritário</li>
+              </ul>
+            </div>
+            <Link href="/register" className="bg-gray-400 text-white font-bold py-3 px-6 rounded-full cursor-not-allowed opacity-75">
+              Comece Grátis (Já Incluso)
             </Link>
           </div>
-          {/* Pro Tier - Example */}
-          <div className="bg-blue-600 text-white p-8 rounded-lg shadow-lg text-center transform hover:scale-105 transition duration-300 w-full md:w-1/2 border-4 border-yellow-400">
-            <h3 className="text-3xl font-bold mb-4">Premium</h3>
-            <p className="text-5xl font-extrabold mb-4">R$49<span className="text-xl font-normal">/mês</span></p>
-            <ul className="mb-6 space-y-2">
-              <li>Gerações Ilimitadas</li>
-              <li>Todos os Recursos Premium</li>
-              <li>Suporte Prioritário</li>
-              <li>Novos Recursos Exclusivos</li>
-            </ul>
-            <button className="bg-yellow-400 text-blue-900 font-bold py-3 px-6 rounded-full hover:bg-yellow-300 transition duration-300">
-              Assinar Premium
-            </button>
+
+          {/* Basic Tier - Example */}
+          <div className="bg-blue-600 text-white p-8 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full md:w-1/3 border-4 border-yellow-400 scale-105 relative z-10">
+            <div>
+              <div className="absolute -top-4 right-1/2 translate-x-1/2 bg-yellow-400 text-blue-900 text-sm font-bold px-4 py-1 rounded-full shadow-lg">MAIS POPULAR!</div>
+              <h3 className="text-3xl font-bold mb-4">Plano Essencial</h3>
+              <p className="opacity-90 mb-6">Desbloqueie o potencial máximo de suas campanhas.</p>
+              <div className="text-5xl font-extrabold mb-6">R$29,90<span className="text-xl font-normal">/mês</span></div>
+              <p className="mb-6">**100 Gerações de Conteúdo por Mês**</p>
+              <ul className="text-left space-y-2 mb-8">
+                <li className="flex items-center"><FaCheckCircle className="text-yellow-400 mr-2" /> Tudo do Plano Grátis</li>
+                <li className="flex items-center"><FaCheckCircle className="text-yellow-400 mr-2" /> **Otimização para SEO & GMB**</li>
+                <li className="flex items-center"><FaCheckCircle className="text-yellow-400 mr-2" /> Suporte Prioritário</li>
+                <li className="flex items-center"><FaCheckCircle className="text-yellow-400 mr-2" /> Acesso a Templates Premium</li>
+              </ul>
+            </div>
+            <Link href="/plans" className="bg-yellow-400 text-blue-900 font-bold py-3 px-6 rounded-full hover:bg-yellow-300 transition duration-300 active:scale-95 glow-button">
+              Escolher Essencial
+            </Link>
+          </div>
+
+          {/* Premium Tier - Example (or Unlimited) */}
+          <div className="bg-gray-50 p-8 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full md:w-1/3 border-2 border-transparent hover:border-gray-300">
+            <div>
+              <h3 className="text-3xl font-bold text-gray-800 mb-4">Plano Ilimitado</h3>
+              <p className="text-gray-600 mb-6">Para agências e corretores com alto volume.</p>
+              <div className="text-5xl font-extrabold text-blue-600 mb-6">R$49,90<span className="text-xl font-normal">/mês</span></div>
+              <p className="text-gray-700 mb-6">**Gerações ILIMITADAS!**</p>
+              <ul className="text-gray-700 text-left space-y-2 mb-8">
+                <li className="flex items-center"><FaCheckCircle className="text-green-500 mr-2" /> Tudo do Plano Essencial</li>
+                <li className="flex items-center"><FaCheckCircle className="text-green-500 mr-2" /> **Novos Recursos Exclusivos**</li>
+                <li className="flex items-center"><FaCheckCircle className="text-green-500 mr-2" /> Consultoria de Marketing IA</li>
+              </ul>
+            </div>
+            <Link href="/plans" className="bg-blue-600 text-white font-bold py-3 px-6 rounded-full hover:bg-blue-700 transition duration-300 active:scale-95">
+              Assinar Ilimitado
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Final Call to Action */}
-      <section className="text-center px-4">
-        <h2 className="text-4xl md:text-5xl font-bold mb-6">Pronto para Alavancar Suas Vendas?</h2>
-        <p className="text-xl md:text-2xl mb-8 opacity-90">
-          Junte-se a centenas de corretores que já estão transformando seu marketing!
+      <section className="text-center px-4 py-16 bg-blue-800 rounded-xl shadow-2xl max-w-4xl w-full animate-fade-in-up">
+        <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white leading-tight">
+          Chega de Bloqueio Criativo.<br/> Comece a Vender Mais Hoje!
+        </h2>
+        <p className="text-xl md:text-2xl mb-8 opacity-90 max-w-3xl mx-auto">
+          Milhares de corretores já estão otimizando seu tempo e suas vendas com a IA. Qual será seu próximo grande negócio?
         </p>
         <Link
           href="/register"
-          className="bg-yellow-400 text-blue-900 font-bold py-4 px-10 rounded-full text-xl shadow-xl hover:bg-yellow-300 transition duration-300 transform hover:scale-105"
+          className="bg-yellow-400 text-blue-900 font-bold py-4 px-12 rounded-full text-xl shadow-2xl hover:bg-yellow-300 transition duration-300 transform hover:scale-105 active:scale-95 glow-button"
         >
-          Cadastre-se Agora!
+          CADASTRE-SE GRÁTIS AGORA!
         </Link>
       </section>
 
       {/* Footer */}
-      <footer className="mt-16 text-center text-white text-opacity-80">
+      <footer className="mt-20 text-center text-white text-opacity-70 text-sm">
         <p>&copy; {new Date().getFullYear()} Corretor AI. Todos os direitos reservados.</p>
+        <p>Desenvolvido com IA para o mercado imobiliário.</p>
       </footer>
+
+      {/* Global styles for animations and glow effect - Add to globals.css if preferred */}
+      <style jsx global>{`
+        .animate-fade-in-down {
+          animation: fade-in-down 1s ease-out forwards;
+        }
+        .animate-fade-in-up {
+          animation: fade-in-up 1s ease-out forwards;
+          animation-delay: 0.2s;
+        }
+        .animate-scale-in {
+          animation: scale-in 0.8s ease-out forwards;
+          animation-delay: 0.4s;
+        }
+        .animate-fade-in {
+          animation: fade-in 1s ease-out forwards;
+          animation-delay: 0.6s;
+        }
+        .animate-bounce-slow {
+          animation: bounce-slow 4s infinite ease-in-out;
+        }
+        .animate-pulse-slow {
+          animation: pulse-slow 3s infinite ease-in-out;
+        }
+        .animate-fade-in-left-slow {
+          animation: fade-in-left-slow 1.5s ease-out forwards;
+          animation-delay: 0.8s;
+        }
+        .animate-fade-in-right-slow {
+          animation: fade-in-right-slow 1.5s ease-out forwards;
+          animation-delay: 1s;
+        }
+        .animate-fade-in-up-slow {
+          animation: fade-in-up-slow 1.5s ease-out forwards;
+          animation-delay: 1.2s;
+        }
+
+        @keyframes fade-in-down {
+          from { opacity: 0; transform: translateY(-20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fade-in-up {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scale-in {
+          from { opacity: 0; transform: scale(0.8); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes bounce-slow {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+        @keyframes pulse-slow {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        @keyframes fade-in-left-slow {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fade-in-right-slow {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fade-in-up-slow {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .glow-button {
+          position: relative;
+          z-index: 1;
+        }
+        .glow-button::before {
+          content: '';
+          position: absolute;
+          top: -2px;
+          left: -2px;
+          right: -2px;
+          bottom: -2px;
+          background: linear-gradient(45deg, #FFD700, #FFA500, #FFD700); /* Dourado */
+          filter: blur(8px);
+          z-index: -1;
+          opacity: 0;
+          transition: opacity 0.3s ease-in-out;
+          border-radius: 9999px; /* Para coincidir com rounded-full */
+        }
+        .glow-button:hover::before {
+          opacity: 1;
+        }
+        .circle-step {
+            position: relative;
+        }
+        .step-number {
+            border: 4px solid white; /* Borda branca para destacar o número */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        /* Responsividade da linha conectora */
+        @media (min-width: 768px) { /* md */
+            .circle-step:nth-child(1)::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                right: -50px; /* Metade da distância entre os círculos */
+                width: 100px; /* Distância entre os círculos */
+                height: 2px;
+                background-color: #60A5FA; /* Cor azul 400 */
+                z-index: -1;
+            }
+            .circle-step:nth-child(2)::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                right: -50px;
+                width: 100px;
+                height: 2px;
+                background-color: #60A5FA;
+                z-index: -1;
+            }
+        }
+      `}</style>
     </div>
   );
 }

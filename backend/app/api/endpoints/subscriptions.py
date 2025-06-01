@@ -13,18 +13,28 @@ import stripe
 
 router = APIRouter() # <--- ESSA LINHA PRECISA ESTAR AQUI NO INÍCIO
 
-# --- Endpoint para obter os planos disponíveis ---
-@router.get("/plans", response_model=list[SubscriptionPlanSchema]) # <--- E ESTA DECORAÇÃO PRECISA ESTAR AQUI E CORRETA
+@router.get("/plans", response_model=list[SubscriptionPlanSchema])
 async def get_subscription_plans(db: Session = Depends(get_db)):
-    """
-    Retorna a lista de planos de assinatura disponíveis.
-    """
-    plans = db.query(SubscriptionPlan).filter(SubscriptionPlan.is_active == True).all()
-    if not plans:
-        # Se não há planos no DB, podemos tentar criar alguns padrão ou avisar
-        # Para simplificar agora, apenas retorna vazio
+    print("\n--- INICIANDO get_subscription_plans ---") # Print para indicar o início da função
+
+    # 1. Verifique a URL do banco de dados que a aplicação está usando
+    # Isso imprimirá o caminho completo para o DB que o FastAPI está vendo
+    print(f"DATABASE_URL configurada: {db.get_bind().url}") 
+
+    # 2. Execute a query e imprima o resultado bruto
+    plans_raw = db.query(SubscriptionPlan).filter(SubscriptionPlan.is_active == True).all()
+    print(f"PLANOS ATIVOS ENCONTRADOS (RAW): {plans_raw}")
+    print(f"Número de planos encontrados: {len(plans_raw)}")
+
+    if not plans_raw: # A variável agora é plans_raw
+        print("--- NENHUM PLANO ATIVO ENCONTRADO NO DB DA APLICACAO, LEVANTANDO 404 ---")
         raise HTTPException(status_code=404, detail="Nenhum plano de assinatura encontrado.")
-    return plans
+
+    print(f"Retornando {len(plans_raw)} planos para o frontend.")
+    return plans_raw # Retorne a variável plans_raw
+
+
+
 
 # --- Endpoint para criar uma sessão de checkout do Stripe ---
 @router.post("/create-checkout-session/{price_id}")

@@ -30,8 +30,8 @@ export default function AnalyticsPage() {
 
   if (isAuthLoading) {
     return (
-      <div className="min-h-screen bg-slate-100 flex items-center justify-center">
-        <p className="text-slate-700">Carregando autenticação...</p>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-text">Carregando autenticação...</p>
       </div>
     );
   }
@@ -40,19 +40,19 @@ export default function AnalyticsPage() {
     // Redirecionamento já deve ter ocorrido pelo AuthContext,
     // mas é bom ter uma mensagem fallback
     return (
-      <div className="min-h-screen bg-slate-100 flex items-center justify-center">
-        <p className="text-slate-700">Você precisa estar logado para ver esta página.</p>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-text">Você precisa estar logado para ver esta página.</p>
       </div>
     );
   }
 
   return (
-    <main className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl mx-auto mt-8">
-      <h1 className="text-2xl font-medium text-slate-700 text-center mb-6">
+    <main className="bg-card p-8 rounded-lg shadow-md w-full max-w-2xl mx-auto mt-8">
+      <h1 className="text-2xl font-medium text-text text-center mb-6">
         Seus Dados de Analytics
       </h1>
 
-      <div className="mb-6 p-4 bg-slate-200 rounded-md text-slate-800 font-semibold text-center">
+      <div className="mb-6 p-4 bg-button rounded-md text-card font-semibold text-center">
         {isLoadingAnalytics ? (
           <span>Carregando estatísticas...</span>
         ) : (
@@ -61,7 +61,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Você pode adicionar mais gráficos ou informações de analytics aqui */}
-      <div className="mt-8 text-center text-slate-600">
+      <div className="mt-8 text-center text-text">
         <p>Mais métricas e funcionalidades de analytics serão adicionadas em breve!</p>
       </div>
     </main>

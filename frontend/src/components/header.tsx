@@ -42,12 +42,12 @@ export default function Header() {
   }, [dropdownRef]); // Depende do dropdownRef
 
   return (
-    <header className="bg-white py-4 px-10 shadow-md w-full flex ">
+    <header className="bg-card-light py-4 px-10 shadow-md w-full flex ">
       <div className="container mx-auto flex justify-between items-center">
         {/* Título/Logo */}
         <Link
           href="/"
-          className="text-2xl font-bold text-gray-800 hover:text-slate-600 transition-colors"
+          className="text-2xl font-bold text-text hover:text-slate-300 transition-colors"
         >
           Corretor AI
         </Link>
@@ -59,7 +59,7 @@ export default function Header() {
             <li>
               <Link
                 href="/history"
-                className="border border-slate-500 hover:bg-slate-300 text-gray-800 font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all">
+                className="border border-text hover:bg-card text-text font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all">
               
                 <IoIosArchive />
                 <span>Histórico</span>
@@ -68,7 +68,7 @@ export default function Header() {
             <li>
               <Link
                 href="/analytics"
-                className="border border-slate-500 hover:bg-slate-300 text-gray-800 font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
+                className="border border-text hover:bg-card text-text  font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
               >
                 Analytics
               </Link>
@@ -77,7 +77,7 @@ export default function Header() {
             <li>
               <Link
                 href="/plans"
-                className="border border-orange-500 bg-orange-400 hover:bg-orange-500 text-slate-50 font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
+                className=" bg-button hover:bg-hover text-white font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
               >
                 <FaCrown /> {/* Ícone da coroa */}
                 <span>Upgrade</span>
@@ -91,21 +91,21 @@ export default function Header() {
           {/* <-- Adiciona ref aqui */}
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center justify-center w-9 h-9 rounded-md bg-slate-700 text-white font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="flex items-center justify-center w-9 h-9 rounded-md bg-button text-white font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             title={userEmail || "Perfil do Usuário"} // Mostra o e-mail no tooltip
           >
             {/* Exibe as iniciais do e-mail ou um ícone de usuário */}
             {userEmail ? getUserInitials(userEmail) : <FiUser size={20} />}
           </button>
           {isDropdownOpen && ( // <-- Renderiza o dropdown condicionalmente
-            <div className="absolute right-0 mt-2 w-auto flex-1 justify-end items-center bg-white rounded-md shadow-lg py-1 z-20">
+            <div className="absolute right-0 mt-2 w-auto flex-1 justify-end items-center bg-card-light rounded-md shadow-lg py-1 z-20">
               {/* Exibe o e-mail do usuário no topo do dropdown */}
-              <div className="block px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
+              <div className="block px-4 py-2 text-sm text-text border-b border-border">
                 {userEmail || "Usuário"}
               </div>
               <Link
                 href="/settings"
-                className="flex justify-end items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                className="flex justify-end items-center gap-2 px-4 py-2 text-sm text-text hover:bg-card"
                 onClick={() => setIsDropdownOpen(false)} // Fecha o dropdown ao clicar
               >
                 <IoMdPerson />
@@ -116,7 +116,7 @@ export default function Header() {
                   logout();
                   setIsDropdownOpen(false); // Fecha o dropdown ao fazer logout
                 }}
-                className="flex justify-end items-center w-full gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                className="flex justify-end items-center w-full gap-2 px-4 py-2 text-sm text-red-400 hover:bg-card">
                 <IoIosExit />
                 Sair
               </button>

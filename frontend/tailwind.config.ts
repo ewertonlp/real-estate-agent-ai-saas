@@ -8,9 +8,16 @@ export default {
   ],
   theme: {
     extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+       colors: {
+        'black': '#000000',
+        'text': '#e5e5e5',
+        'background': '#141414',
+        'button': '#2196f3',
+        'border': '#2196f3',
+        'card': '#282828',
+        'card-light': '#34343c',
+        'hover': '#007fff',
+        
       },
       fontFamily: {
         poppins: ['var(--font-poppins)', 'sans-serif'], // Define 'poppins' como sua classe de fonte

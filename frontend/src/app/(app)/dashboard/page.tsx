@@ -5,6 +5,7 @@ import { generateContent } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 export default function DashboardPage() {
   // Estados para os novos campos
@@ -41,14 +42,21 @@ export default function DashboardPage() {
   const [isLoadingContent, setIsLoadingContent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const {
+    isAuthenticated,
+    isLoading: isAuthLoading,
+    userPlanName,
+    userGenerationsCount,
+    userMaxGenerations,
+    fetchUserData,
+  } = useAuth(); // Obtenha dados do AuthContext
   const router = useRouter();
-   const searchParams = useSearchParams(); 
+  const searchParams = useSearchParams();
 
   // Efeito para preencher o formulário com dados do histórico, se presentes na URL
   useEffect(() => {
-    const promptFromHistory = searchParams.get('prompt');
-    const generatedTextFromHistory = searchParams.get('generatedText');
+    const promptFromHistory = searchParams.get("prompt");
+    const generatedTextFromHistory = searchParams.get("generatedText");
 
     if (promptFromHistory) {
       // Aqui você precisaria de uma lógica mais sofisticada para 'desconstruir' o prompt
@@ -59,9 +67,25 @@ export default function DashboardPage() {
       if (generatedTextFromHistory) {
         setGeneratedContent(decodeURIComponent(generatedTextFromHistory));
       }
-      toast.success('Conteúdo do histórico carregado. Edite e gere novamente!');
+      toast.success("Conteúdo do histórico carregado. Edite e gere novamente!");
     }
-  }, [searchParams]); // Re-executa se os parâmetros de busca mudarem
+
+    // Lógica para verificar o status do pagamento (após redirecionamento do Stripe)
+    const paymentStatus = searchParams.get("payment_status");
+    if (paymentStatus === "success") {
+      toast.success(
+        "Pagamento realizado com sucesso! Seu plano foi atualizado."
+      );
+      fetchUserData(); // Busca os dados atualizados do usuário para refletir o novo plano
+      // Limpa os parâmetros da URL para evitar o toast em recarregamentos futuros
+      router.replace("/dashboard", undefined); // Remove o payment_status da URL
+    } else if (paymentStatus === "cancelled") {
+      toast.error(
+        "Pagamento cancelado. Tente novamente ou entre em contato com o suporte."
+      );
+      router.replace("/dashboard", undefined);
+    }
+  }, [searchParams, router, fetchUserData]); // Re-executa se os parâmetros de busca mudarem
 
   // Função para construir o prompt completo para a IA
   const buildPrompt = () => {
@@ -163,6 +187,7 @@ export default function DashboardPage() {
       const contentText = await generateContent(finalPrompt);
       setGeneratedContent(contentText);
       toast.success("Conteúdo de texto gerado e salvo com sucesso!");
+      fetchUserData(); // Atualiza o contador de gerações no AuthContext após uma geração bem-sucedida
 
       // // 2. Gerar a Imagem, SE um arquivo de imagem foi selecionado E TEMOS TEXTO para overlay
       // if (selectedImageFile && contentText) { // Só gera imagem se tiver arquivo E texto
@@ -181,6 +206,10 @@ export default function DashboardPage() {
       if (err.message === "Sessão expirada. Por favor, faça login novamente.") {
         router.push("/login");
         toast.error("Sessão expirada. Por favor, faça login novamente.");
+      } else if (err.message.includes("atingiu o limite")) {
+        // Mensagem de limite de gerações
+        toast.error(err.message);
+        setError(err.message);
       } else {
         toast.error(err.message || "Ocorreu um erro ao gerar o conteúdo.");
       }
@@ -193,23 +222,48 @@ export default function DashboardPage() {
   };
 
   return (
-    <main className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
-      <h1 className="text-2xl font-medium text-slate-700 text-center mb-10">
+    <main className="bg-card p-8 rounded-lg shadow-md w-full max-w-2xl">
+      <h1 className="text-2xl font-medium text-text text-center mb-10">
         Vamos criar o seu conteúdo
       </h1>
+
+      {/* Informações do Plano e Gerações */}
+      <div className="mb-8 p-4 bg-card-light border border-border rounded-lg text-center">
+        <h2 className="text-xl font-semibold text-text mb-2">
+          Seu Plano Atual:{" "}
+          <span className="font-bold">{userPlanName || "Carregando..."}</span>
+        </h2>
+        {userPlanName && userMaxGenerations !== null && (
+          <p className="text-text">
+            Gerações utilizadas:{" "}
+            <span className="font-semibold">{userGenerationsCount}</span> de{" "}
+            <span className="font-semibold">
+              {userMaxGenerations === 0 ? "Ilimitadas" : userMaxGenerations}
+            </span>
+          </p>
+        )}
+        {userPlanName === "Free" && (
+          <Link
+            href="/plans"
+            className="mt-4 inline-block bg-button text-white font-medium py-2 px-4 rounded-md hover:bg-hover transition duration-300"
+          >
+            Fazer Upgrade de Plano
+          </Link>
+        )}
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Tipo de Imóvel */}
         <div>
           <label
             htmlFor="propertyType"
-            className="block text-gray-700 text-sm font-medium mb-2"
+            className="block text-text text-sm font-medium mb-2"
           >
             Tipo de Imóvel:
           </label>
           <select
             id="propertyType"
-            className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
             value={propertyType}
             onChange={(e) => setPropertyType(e.target.value)}
           >
@@ -228,7 +282,7 @@ export default function DashboardPage() {
           <div className="flex-1">
             <label
               htmlFor="bedrooms"
-              className="block text-gray-700 text-sm font-medium mb-2"
+              className="block text-text text-sm font-medium mb-2"
             >
               Quartos:
             </label>
@@ -236,7 +290,7 @@ export default function DashboardPage() {
               id="bedrooms"
               type="number"
               min="0"
-              className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
               placeholder="Ex: 3"
               value={bedrooms}
               onChange={(e) => setBedrooms(e.target.value)}
@@ -245,7 +299,7 @@ export default function DashboardPage() {
           <div className="flex-1">
             <label
               htmlFor="bathrooms"
-              className="block text-gray-700 text-sm font-medium mb-2"
+              className="block text-text text-sm font-medium mb-2"
             >
               Banheiros:
             </label>
@@ -253,7 +307,7 @@ export default function DashboardPage() {
               id="bathrooms"
               type="number"
               min="0"
-              className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
               placeholder="Ex: 2"
               value={bathrooms}
               onChange={(e) => setBathrooms(e.target.value)}
@@ -265,14 +319,14 @@ export default function DashboardPage() {
         <div>
           <label
             htmlFor="location"
-            className="block text-gray-700 text-sm font-medium mb-2"
+            className="block text-text text-sm font-medium mb-2"
           >
             Localização (Bairro/Cidade):
           </label>
           <input
             id="location"
             type="text"
-            className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
             placeholder="Ex: Moema, São Paulo"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
@@ -283,14 +337,14 @@ export default function DashboardPage() {
         <div>
           <label
             htmlFor="specialFeatures"
-            className="block text-gray-700 text-sm font-medium mb-2"
+            className="block text-text text-sm font-medium mb-2"
           >
             Características Específicas (separar por vírgulas):
           </label>
           <input
             id="specialFeatures"
             type="text"
-            className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-borderfocus:border-transparent"
             placeholder="Ex: Piscina, Varanda Gourmet, Pet-friendly, Mobiliado"
             value={specialFeatures}
             onChange={(e) => setSpecialFeatures(e.target.value)}
@@ -301,13 +355,13 @@ export default function DashboardPage() {
         <div>
           <label
             htmlFor="tone"
-            className="block text-gray-700 text-sm font-medium mb-2"
+            className="block text-text text-sm font-medium mb-2"
           >
             Tom de Voz:
           </label>
           <select
             id="tone"
-            className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
             value={tone}
             onChange={(e) => setTone(e.target.value)}
           >
@@ -328,13 +382,13 @@ export default function DashboardPage() {
         <div>
           <label
             htmlFor="platform"
-            className="block text-gray-700 text-sm font-medium mb-2"
+            className="block text-text text-sm font-medium mb-2"
           >
             Otimizar para Plataforma:
           </label>
           <select
             id="platform"
-            className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
             value={platform}
             onChange={(e) => setPlatform(e.target.value)}
           >
@@ -356,13 +410,13 @@ export default function DashboardPage() {
         <div>
           <label
             htmlFor="targetAudience"
-            className="block text-gray-700 text-sm font-medium mb-2"
+            className="block text-text text-sm font-medium mb-2"
           >
             Público-Alvo:
           </label>
           <select
             id="targetAudience"
-            className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
             value={targetAudience}
             onChange={(e) => setTargetAudience(e.target.value)}
           >
@@ -380,20 +434,20 @@ export default function DashboardPage() {
         <div className="border-t pt-10 mt-10">
           {" "}
           {/* Separador visual */}
-          <h2 className="text-xl font-semibold text-gray-800 mb-8">
+          <h2 className="text-xl font-semibold text-text mb-8">
             Opções Avançadas de Conteúdo
           </h2>
           {/* Formato de Conteúdo */}
           <div>
             <label
               htmlFor="contentType"
-              className="block text-gray-700 text-sm font-medium mb-2"
+              className="block text-text text-sm font-medium mb-2"
             >
               Formato do Conteúdo:
             </label>
             <select
               id="contentType"
-              className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
               value={contentType}
               onChange={(e) => setContentType(e.target.value)}
             >
@@ -417,13 +471,13 @@ export default function DashboardPage() {
             <input
               id="includeEmojis"
               type="checkbox"
-              className="form-checkbox h-5 w-5 text-blue-600"
+              className="form-checkbox h-5 w-5 text-black"
               checked={includeEmojis}
               onChange={(e) => setIncludeEmojis(e.target.checked)}
             />
             <label
               htmlFor="includeEmojis"
-              className="ml-2 block text-gray-700 text-sm font-medium"
+              className="ml-2 block text-text text-sm font-medium"
             >
               Incluir Emojis ✨
             </label>
@@ -433,13 +487,13 @@ export default function DashboardPage() {
             <input
               id="includeCta"
               type="checkbox"
-              className="form-checkbox h-5 w-5 text-blue-600"
+              className="form-checkbox h-5 w-5 text-black"
               checked={includeCta}
               onChange={(e) => setIncludeCta(e.target.checked)}
             />
             <label
               htmlFor="includeCta"
-              className="ml-2 block text-gray-700 text-sm font-medium"
+              className="ml-2 block text-text text-sm font-medium"
             >
               Incluir Chamada para Ação (CTA) 📞
             </label>
@@ -449,13 +503,13 @@ export default function DashboardPage() {
             <input
               id="includeHashtags"
               type="checkbox"
-              className="form-checkbox h-5 w-5 text-blue-600"
+              className="form-checkbox h-5 w-5 text-black"
               checked={includeHashtags}
               onChange={(e) => setIncludeHashtags(e.target.checked)}
             />
             <label
               htmlFor="includeHashtags"
-              className="ml-2 block text-gray-700 text-sm font-medium"
+              className="ml-2 block text-text text-sm font-medium"
             >
               Incluir Hashtags (#)
             </label>
@@ -468,13 +522,13 @@ export default function DashboardPage() {
             <input
               id="toggleAdvancedSeoGmb"
               type="checkbox"
-              className="form-checkbox h-5 w-5 text-slate-600"
+              className="form-checkbox h-5 w-5 text-black"
               checked={showAdvancedOptions}
               onChange={(e) => setShowAdvancedOptions(e.target.checked)}
             />
             <label
               htmlFor="toggleAdvancedSeoGmb"
-              className="ml-2 block text-slate-700 text-md font-medium"
+              className="ml-2 block text-text text-md font-medium"
             >
               Mostrar Opções de SEO / Google Meu Negócio
             </label>
@@ -482,8 +536,8 @@ export default function DashboardPage() {
 
           {/* CAMPOS DE SEO/GMB (VISÍVEIS CONDICIONALMENTE) */}
           {showAdvancedOptions && (
-            <div className="space-y-4 mt-4 p-4 border border-gray-200 rounded-md bg-gray-50">
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            <div className="space-y-4 mt-4 p-4 border border-border rounded-md bg-card">
+              <h2 className="text-xl font-semibold text-text mb-2">
                 Configurações Específicas de SEO / GMB
               </h2>
               {/* Otimizar para SEO/GMB (checkbox agora é de exibição) */}
@@ -491,13 +545,13 @@ export default function DashboardPage() {
                 <input
                   id="optimizeForSeoGmb"
                   type="checkbox"
-                  className="form-checkbox h-5 w-5 text-blue-600"
+                  className="form-checkbox h-5 w-5 text-black"
                   checked={optimizeForSeoGmb}
                   onChange={(e) => setOptimizeForSeoGmb(e.target.checked)}
                 />
                 <label
                   htmlFor="optimizeForSeoGmb"
-                  className="ml-2 block text-gray-700 text-sm font-medium"
+                  className="ml-2 block text-text text-sm font-medium"
                 >
                   Ativar Otimização SEO / Google Meu Negócio
                 </label>
@@ -509,14 +563,14 @@ export default function DashboardPage() {
                   <div>
                     <label
                       htmlFor="seoKeywords"
-                      className="block text-gray-700 text-sm font-medium mb-2"
+                      className="block text-text text-sm font-medium mb-2"
                     >
                       Palavras-chave SEO (separar por vírgulas):
                     </label>
                     <input
                       id="seoKeywords"
                       type="text"
-                      className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
                       placeholder="Ex: apartamento à venda mogilar, imobiliária mogi das cruzes"
                       value={seoKeywords}
                       onChange={(e) => setSeoKeywords(e.target.value)}
@@ -525,34 +579,34 @@ export default function DashboardPage() {
                   <div>
                     <label
                       htmlFor="propertyAddress"
-                      className="block text-gray-700 text-sm font-medium mb-2"
+                      className="block text-text text-sm font-medium mb-2"
                     >
                       Endereço Completo do Imóvel:
                     </label>
                     <input
                       id="propertyAddress"
                       type="text"
-                      className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
                       placeholder="Ex: Rua das Flores, 123, Mogilar, Mogi das Cruzes - SP"
                       value={propertyAddress}
                       onChange={(e) => setPropertyAddress(e.target.value)}
                     />
                   </div>
 
-                  <h3 className="text-md font-semibold text-gray-700 mb-2">
+                  <h3 className="text-md font-semibold text-text mb-2">
                     Informações de Contato para GMB:
                   </h3>
                   <div>
                     <label
                       htmlFor="contactPhone"
-                      className="block text-gray-700 text-sm font-medium mb-2"
+                      className="block text-text text-sm font-medium mb-2"
                     >
                       Telefone:
                     </label>
                     <input
                       id="contactPhone"
                       type="tel"
-                      className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
                       placeholder="Ex: (11) 99999-9999"
                       value={contactPhone}
                       onChange={(e) => setContactPhone(e.target.value)}
@@ -561,14 +615,14 @@ export default function DashboardPage() {
                   <div>
                     <label
                       htmlFor="contactEmail"
-                      className="block text-gray-700 text-sm font-medium mb-2"
+                      className="block text-text text-sm font-medium mb-2"
                     >
                       Email:
                     </label>
                     <input
                       id="contactEmail"
                       type="email"
-                      className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
                       placeholder="Ex: contato@imobiliaria.com"
                       value={contactEmail}
                       onChange={(e) => setContactEmail(e.target.value)}
@@ -577,14 +631,14 @@ export default function DashboardPage() {
                   <div>
                     <label
                       htmlFor="contactWebsite"
-                      className="block text-gray-700 text-sm font-medium mb-2"
+                      className="block text-text text-sm font-medium mb-2"
                     >
                       Website:
                     </label>
                     <input
                       id="contactWebsite"
                       type="url"
-                      className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
                       placeholder="Ex: www.suaimobiliaria.com.br"
                       value={contactWebsite}
                       onChange={(e) => setContactWebsite(e.target.value)}
@@ -600,13 +654,13 @@ export default function DashboardPage() {
         <div>
           <label
             htmlFor="additionalDetails"
-            className="block text-gray-700 text-sm font-medium mb-2"
+            className="block text-text text-sm font-medium mb-2"
           >
             Outros Detalhes Importantes (opcional):
           </label>
           <textarea
             id="additionalDetails"
-            className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent h-24 resize-none"
+            className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent h-24 resize-none "
             placeholder="Ex: Próximo a escolas e metrô, vista para o parque."
             value={additionalDetails}
             onChange={(e) => setAdditionalDetails(e.target.value)}
@@ -649,7 +703,7 @@ export default function DashboardPage() {
 
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          className="bg-button hover:bg-hover text-white font-semibold py-3 px-4 rounded focus:outline-none focus:shadow-outline w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center ease-out transition-all"
           disabled={
             isLoadingContent ||
             (!propertyType &&
@@ -705,8 +759,8 @@ export default function DashboardPage() {
       )}
 
       {generatedContent && (
-        <div className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg shadow-inner relative">
-          <h2 className="text-xl font-semibold text-blue-800 mb-4">
+        <div className="mt-8 p-6 bg-card-light border border-border rounded-lg shadow-inner relative">
+          <h2 className="text-xl font-semibold text-text mb-4">
             Conteúdo Gerado:
           </h2>
           {/* BOTÕES DE COMPARTILHAMENTO AQUI */}
@@ -788,7 +842,7 @@ export default function DashboardPage() {
             </button>
           </div>
           <div
-            className="whitespace-pre-wrap text-gray-800"
+            className="whitespace-pre-wrap text-text"
             style={{ lineHeight: "1.6" }}
           >
             {generatedContent}

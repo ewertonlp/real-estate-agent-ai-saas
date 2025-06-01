@@ -40,3 +40,28 @@ app.include_router(subscriptions.router, prefix="/api/v1/subscriptions", tags=["
 @app.get("/")
 async def read_root():
     return {"message": "Bem-vindo ao Gerador de Conteúdo para Corretores de Imóveis!"}
+
+
+# --- NOVO: Endpoint de depuração para listar rotas ---
+@app.get("/debug-routes")
+async def debug_routes():
+    routes_list = []
+    for route in app.routes:
+        if hasattr(route, 'path') and hasattr(route, 'methods'):
+            routes_list.append({
+                "path": route.path,
+                "methods": list(route.methods) if hasattr(route, 'methods') and route.methods else [],
+                "name": route.name if hasattr(route, 'name') else None,
+                "summary": route.summary if hasattr(route, 'summary') else None
+            })
+        elif hasattr(route, 'routes'): # Para routers aninhados
+            for sub_route in route.routes:
+                if hasattr(sub_route, 'path') and hasattr(sub_route, 'methods'):
+                    routes_list.append({
+                        "path": route.prefix + sub_route.path if hasattr(route, 'prefix') else sub_route.path,
+                        "methods": list(sub_route.methods) if hasattr(sub_route, 'methods') and sub_route.methods else [],
+                        "name": sub_route.name if hasattr(sub_route, 'name') else None,
+                        "summary": sub_route.summary if hasattr(sub_route, 'summary') else None
+                    })
+    return routes_list
+# --- FIM do endpoint de depuração ---

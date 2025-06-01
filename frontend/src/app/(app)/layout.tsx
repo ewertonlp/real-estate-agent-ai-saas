@@ -24,8 +24,8 @@ export default function AppLayout({
 
   if (isAuthLoading) {
     return (
-      <div className="min-h-screen bg-slate-100 flex items-center justify-center">
-        <p className="text-gray-700">Carregando...</p>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-text">Carregando...</p>
       </div>
     );
   }
@@ -41,7 +41,7 @@ export default function AppLayout({
      
       <Header/>
       {/* O main-content-wrapper dará o espaçamento horizontal e centralizará o conteúdo */}
-      <div className="flex-grow flex flex-col items-center py-10 px-4 sm:px-6 lg:px-8 bg-slate-100 ">
+      <div className="flex-grow flex flex-col items-center py-10 px-4 sm:px-6 lg:px-8 bg-background ">
         {children} {/* Aqui as páginas filhas serão renderizadas */}
       </div>
   
