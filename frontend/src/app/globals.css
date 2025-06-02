@@ -14,8 +14,13 @@
   }
 }
 
+html{
+  scroll-behavior: smooth;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-poppins);
+  
 }

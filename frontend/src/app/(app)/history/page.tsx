@@ -399,7 +399,7 @@ export default function HistoryPage() {
             return (
               <div
                 key={item.id}
-                className="bg-card-light border border-border rounded-lg shadow-inner p-6 relative"
+                className="bg-card-light rounded-lg shadow-lg p-6 relative"
               >
                 <div className="flex justify-between items-start mb-2">
                   <p className="text-xs text-text">
