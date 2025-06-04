@@ -18,7 +18,7 @@ import PublicHeader from "@/components/publicHeader";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-card text-white flex flex-col items-center justify-center overflow-hidden">
+    <div className="min-h-screen bg-background text-white flex flex-col items-center justify-center overflow-hidden">
       <PublicHeader />
       {/* Hero Section */}
       <section className="grid grid-cols-1 md:grid-cols-2 relative text-start my-20 px-4 pt-20 max-w-7xl w-full">
@@ -198,7 +198,7 @@ export default function Home() {
       {/* Pricing Section - Highly Persuasive */}
       <section
         id="plans"
-        className="bg-card-light text-gray-800 mt-[450px] my-8 py-12 px-8 rounded-xl shadow-2xl max-w-7xl w-full animate-fadeIn"
+        className="bg-card mt-[450px] my-8 py-12 px-8 rounded-xl shadow-2xl max-w-7xl w-full animate-fadeIn"
       >
         <h2 className="text-4xl font-semibold text-center mb-20 text-text">
           Planos Que Impulsionam Seu Sucesso
@@ -363,7 +363,7 @@ export default function Home() {
           o seu custo com a ferramenta se torna **insignificante**.
         </p>
         <p className="text-2xl md:text-3xl font-medium text-text mb-12 opacity-90 max-w-3xl mx-auto">
-        Não é um custo, é um investimento que impulsiona suas vendas.
+        Não é um custo, é um investimento para <strong>impulsionar</strong> suas vendas.
         </p>
         <Link
           href="/register"
@@ -375,7 +375,7 @@ export default function Home() {
       {/* END NEW ROI SECTION */}
 
       {/* Final Call to Action */}
-      <section className="text-center px-4 py-16 bg-gradient-to-br from-button/25 to-card text-gray-800 rounded-xl shadow-2xl max-w-4xl w-full animate-fade-in-up">
+      <section className="text-center px-4 py-16 mb-16 bg-gradient-to-br from-button/25 to-card text-gray-800 rounded-xl shadow-2xl max-w-4xl w-full animate-fade-in-up">
         <h2 className="text-4xl md:text-4xl font-bold mb-6 text-white leading-5">
           Chega de Bloqueio Criativo.
           <br />
@@ -395,14 +395,7 @@ export default function Home() {
         </Link>
       </section>
 
-      {/* Footer */}
-      <footer className="mt-20 text-center text-white text-opacity-70 text-sm">
-        <p>
-          &copy; {new Date().getFullYear()} Corretor AI. Todos os direitos
-          reservados.
-        </p>
-        <p>Desenvolvido com IA para o mercado imobiliário.</p>
-      </footer>
+     
 
       {/* Global styles for animations and glow effect - Add to globals.css if preferred */}
       <style jsx global>{`

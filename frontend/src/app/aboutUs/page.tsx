@@ -1,15 +1,16 @@
 "use client";
 import PublicHeader from "@/components/publicHeader";
+import Image from "next/image";
 
 export default function aboutUs() {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center overflow-hidden">
       <PublicHeader />
-      <div className="max-w-7xl w-full my-16 py-16 px-10 text-start bg-card rounded-lg">
+      <div className="max-w-7xl w-full my-20 py-16 px-10 text-start bg-card rounded-lg flex-1 md:flex justify-between gap-8">
+        <div className="w-1/2">
         <h1 className="text-4xl font-semibold text-text mb-6">
           Sobre a AuraSync
         </h1>
-        <div>
           <p className="mt4">
             No dinâmico mercado imobiliário de hoje, sabemos que tempo é
             dinheiro e conteúdo de qualidade é a chave para se destacar.
@@ -91,6 +92,9 @@ export default function aboutUs() {
             trabalhar e impulsionar suas vendas.</p>
 
             <h3 className="mt-4 font-medium text-lg">Equipe AuraSync</h3>
+        </div>
+        <div className="relative -mt-12 -mr-16 ">
+          <Image src="/aurasync.jpg" alt="About Us Image" width={600} height={100} className=" relative rounded-lg -mt-12 -mr-16 shadow-lg" />
         </div>
       </div>
     </div>

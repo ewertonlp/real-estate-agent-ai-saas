@@ -19,7 +19,7 @@ export default function PublicHeader() {
             <li>
               <Link
                 href="/services"
-                className="  text-text hover:text-hover font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
+                className="  text-text hover:text-hover font-medium py-1 px-3 text-md flex items-center space-x-1 transition-all"
               >
                 <span>Serviços</span>
               </Link>
@@ -27,7 +27,7 @@ export default function PublicHeader() {
             <li>
               <Link
                 href="/aboutUs"
-                className=" text-text hover:text-hover font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
+                className=" text-text hover:text-hover font-medium py-1 px-3 text-md flex items-center space-x-1 transition-all"
               >
                 Sobre nós
               </Link>
@@ -35,7 +35,7 @@ export default function PublicHeader() {
             <li>
               <Link
                 href="/#plans"
-                className=" text-text hover:text-hover  font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
+                className=" text-text hover:text-hover  font-medium py-1 px-3 text-md flex items-center space-x-1 transition-all"
               >
                 Preços
               </Link>
@@ -43,19 +43,12 @@ export default function PublicHeader() {
             <li>
               <Link
                 href="/contact"
-                className="  text-text hover:text-hover font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
+                className="  text-text hover:text-hover font-medium py-1 px-3  text-md flex items-center space-x-1 transition-all"
               >
                 <span>Contato</span>
               </Link>
             </li>
-            <li>
-              <Link
-                href="/faq"
-                className="  text-text hover:text-hover font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
-              >
-                <span>FAQ</span>
-              </Link>
-            </li>
+            
           </ul>
         </nav>
         <div className="flex">
