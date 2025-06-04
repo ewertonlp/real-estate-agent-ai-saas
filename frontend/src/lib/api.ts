@@ -470,3 +470,45 @@ export async function createStripeCheckoutSession(priceId: string): Promise<{ ch
 // Mas o AuthContext precisará buscar as informações do usuário atualizadas, incluindo o plano.
 // Isso será abordado na seção do AuthContext e/ou na página de dashboard.
 // Por enquanto, a interface UserWithPlan é o mais importante para o frontend.
+
+
+export interface PromptTemplate {
+  id: number;
+  name: string;
+  template_text: string;
+  description: string | null;
+  is_premium: boolean;
+  created_at: string;
+  updated_at: string | null;
+}
+
+export async function getPromptTemplates(): Promise<PromptTemplate[]> {
+  const token = getAuthToken();
+  if (!token) {
+    throw new Error('Usuário não autenticado. Faça login para ver os templates.');
+  }
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/v1/prompt_templates/templates/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Erro ao obter templates do backend:', errorData);
+      if (response.status === 401) {
+          throw new Error('Sessão expirada. Por favor, faça login novamente.');
+      }
+      throw new Error(errorData.detail || 'Erro ao carregar templates.');
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Erro de rede ao tentar obter templates:', error);
+    throw error;
+  }
+}

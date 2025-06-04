@@ -14,80 +14,12 @@ import {
   FaTelegramPlane,
 } from "react-icons/fa"; // Novos ícones para persuasão
 import { MdOutlineEmail } from "react-icons/md";
+import PublicHeader from "@/components/publicHeader";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-card text-white flex flex-col items-center justify-center overflow-hidden">
-      <header className="bg-card-light py-6 shadow-sm w-full">
-        <div className=" max-w-7xl w-full flex justify-between items-center mx-auto">
-          {/* Título/Logo */}
-          <Link
-            href="/"
-            className="text-2xl font-bold text-text hover:text-slate-300 transition-colors"
-          >
-            Corretor AI
-          </Link>
-          <nav className="">
-            <ul className="flex items-center justify-center gap-4">
-              <li>
-                <Link
-                  href="/services"
-                  className="  text-text hover:text-hover font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
-                >
-                  <span>Serviços</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/aboutus"
-                  className=" text-text hover:text-hover font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
-                >
-                  Sobre nós
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#plans"
-                  className=" text-text hover:text-hover  font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
-                >
-                  Preços
-                </Link>
-              </li>
-              {/* Novo link para a página de planos */}
-              <li>
-                <Link
-                  href="/contact"
-                  className="  text-text hover:text-hover font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
-                >
-                  <span>Contato</span>
-                </Link>
-              </li>
-            </ul>
-          </nav>
-          <div className="flex">
-            <nav className="">
-              <ul className="flex items-center justify-center gap-4">
-                <li>
-                  <Link
-                    href="/login"
-                    className="  text-text hover:text-hover font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
-                  >
-                    <span>Login</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/register"
-                    className=" text-white bg-button hover:bg-hover font-medium py-2 px-3 rounded-lg text-md flex items-center space-x-1 transition-all"
-                  >
-                    Cadastre-se
-                  </Link>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <PublicHeader />
       {/* Hero Section */}
       <section className="grid grid-cols-1 md:grid-cols-2 relative text-start my-20 px-4 pt-20 max-w-7xl w-full">
         <div className="">
@@ -266,7 +198,7 @@ export default function Home() {
       {/* Pricing Section - Highly Persuasive */}
       <section
         id="plans"
-        className="bg-card-light text-gray-800 mt-[450px] mb-16 py-12 px-8 rounded-xl shadow-2xl max-w-7xl w-full animate-fadeIn"
+        className="bg-card-light text-gray-800 mt-[450px] my-8 py-12 px-8 rounded-xl shadow-2xl max-w-7xl w-full animate-fadeIn"
       >
         <h2 className="text-4xl font-semibold text-center mb-20 text-text">
           Planos Que Impulsionam Seu Sucesso
@@ -418,6 +350,29 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+       {/* NEW ROI SECTION */}
+      <section className="text-center px-4 py-16 bg-gradient-to-br from-button/25 to-card text-gray-800 rounded-xl shadow-2xl max-w-4xl w-full animate-fade-in-up my-16">
+        <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white leading-tight">
+          Pense no Retorno do Seu Investimento.
+        </h2>
+        <p className="text-xl md:text-2xl text-text mb-8 opacity-90 max-w-3xl mx-auto">
+          Um investimento de apenas R$40/mês pode parecer pouco,
+          mas se o Corretor AI te ajudar a gerar apenas <strong>uma venda a mais </strong>
+          de um imóvel de R$300.000, com uma comissão média de R$6.000,
+          o seu custo com a ferramenta se torna **insignificante**.
+        </p>
+        <p className="text-2xl md:text-3xl font-medium text-text mb-12 opacity-90 max-w-3xl mx-auto">
+        Não é um custo, é um investimento que impulsiona suas vendas.
+        </p>
+        <Link
+          href="/register"
+          className="bg-yellow-400 text-blue-900 font-bold py-4 px-12 rounded-lg text-xl shadow-2xl hover:bg-yellow-300 transition duration-300 transform hover:scale-105 active:scale-95 glow-button"
+        >
+          COMECE A VENDER MAIS AGORA!
+        </Link>
+      </section>
+      {/* END NEW ROI SECTION */}
 
       {/* Final Call to Action */}
       <section className="text-center px-4 py-16 bg-gradient-to-br from-button/25 to-card text-gray-800 rounded-xl shadow-2xl max-w-4xl w-full animate-fade-in-up">

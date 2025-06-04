@@ -386,7 +386,7 @@ export default function HistoryPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-10">
           {history.map((item) => {
             const { propertyType, location } = extractPromptDetails(
               item.prompt_used
@@ -469,7 +469,7 @@ export default function HistoryPage() {
                     )}
                   </div>
                   {/* Botões de Ação para cada item */}
-                  <div className="flex flex-wrap gap-4 mt-10 justify-center items-end">
+                  <div className="flex flex-wrap gap-4 mt-10 justify-center items-end ">
                     <button
                       onClick={() => handleEdit(item)}
                       className="bg-zinc-500 hover:bg-zinc-600 text-white font-medium py-1 px-3 rounded text-sm flex items-center space-x-1 transition-all"
@@ -488,7 +488,7 @@ export default function HistoryPage() {
                         <FaShareAlt />
                         <span>Compartilhar</span>
                       </button>
-                      <div className="absolute right-0 top-full mt-1 w-auto bg-card-light border-border rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
+                      <div className="absolute right-0 top-full mt-1 w-auto bg-card-light border border-border rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
                         <button
                           onClick={() => shareOnWhatsapp(item.generated_text)}
                           className=" w-full text-left px-4 py-2 text-sm text-text hover:bg-card flex items-center space-x-2"

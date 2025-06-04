@@ -16,6 +16,7 @@ export default function DashboardPage() {
   const [specialFeatures, setSpecialFeatures] = useState("");
   const [tone, setTone] = useState(""); // Novo: Tom de voz
   const [additionalDetails, setAdditionalDetails] = useState(""); // Renomeado de 'prompt' para clareza
+  
 
   const [platform, setPlatform] = useState(""); // Instagram, Facebook, WhatsApp
   const [targetAudience, setTargetAudience] = useState(""); // Famílias, Jovens casais, Investidores, etc.
@@ -57,12 +58,14 @@ export default function DashboardPage() {
   useEffect(() => {
     const promptFromHistory = searchParams.get("prompt");
     const generatedTextFromHistory = searchParams.get("generatedText");
+    const templateTextFromUrl = searchParams.get("templateText"); 
 
-    if (promptFromHistory) {
-      // Aqui você precisaria de uma lógica mais sofisticada para 'desconstruir' o prompt
-      // e preencher todos os campos do formulário (propertyType, bedrooms, etc.).
-      // Por enquanto, preencheremos apenas o campo 'additionalDetails' com o prompt completo,
-      // e o 'generatedContent' com o texto gerado.
+   if (templateTextFromUrl) {
+      setAdditionalDetails(decodeURIComponent(templateTextFromUrl));
+      // Opcional: Remover o parâmetro da URL para que não reapareça ao recarregar
+      router.replace("/dashboard", undefined); // Limpa o templateText da URL
+      toast.success("Template aplicado ao campo 'Outros Detalhes Importantes'!");
+    } else if (promptFromHistory) {
       setAdditionalDetails(decodeURIComponent(promptFromHistory));
       if (generatedTextFromHistory) {
         setGeneratedContent(decodeURIComponent(generatedTextFromHistory));

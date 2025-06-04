@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 # Importe o novo módulo de endpoints
-from app.api.endpoints import content_generator, auth, history, users, image_generator, subscriptions # <-- Certifique-se que 'subscriptions' está aqui
+from app.api.endpoints import content_generator, auth, history, users, image_generator, subscriptions, prompt_templates # <-- Certifique-se que 'subscriptions' está aqui
 from app.core.database import Base, engine
 
 # Cria as tabelas no banco de dados (para desenvolvimento)
@@ -31,6 +31,7 @@ app.include_router(content_generator.router, prefix="/api/v1")
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
 app.include_router(history.router, prefix="/api/v1/history", tags=["History"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
+app.include_router(prompt_templates.router, prefix="/api/v1/prompt_templates", tags=["Prompt Templates"]) 
 # app.include_router(image_generator.router, prefix="/api/v1/images", tags=["Images"])
 
 # --- ESTA LINHA É A MAIS CRÍTICA PARA O SEU 404 ---

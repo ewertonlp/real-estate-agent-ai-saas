@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext"; // Importa o hook de autentica�
 import { IoIosArchive, IoIosExit, IoMdPerson} from "react-icons/io";
 import { FiUser } from "react-icons/fi"; 
 import { useRef, useState, useEffect } from "react";
-import { FaCrown } from "react-icons/fa";
+import { FaCrown, FaStar } from "react-icons/fa";
 
 export default function Header() {
   const { logout, userEmail } = useAuth(); // Obtém a função de logout do contexto de autenticação
@@ -49,7 +49,7 @@ export default function Header() {
           href="/"
           className="text-2xl font-bold text-text hover:text-slate-300 transition-colors"
         >
-          Corretor AI
+          AuraSync
         </Link>
       </div>
       {/* Links de Navegação e Botões de Ação */}
@@ -71,6 +71,14 @@ export default function Header() {
                 className="border border-text hover:bg-card text-text  font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
               >
                 Analytics
+              </Link>
+            </li>
+             <li>
+              <Link
+                href="/templates" 
+                className="border border-text hover:bg-card text-text font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all">
+                <FaStar /> {/* Or any other relevant icon */}
+                <span>Templates</span>
               </Link>
             </li>
              {/* Novo link para a página de planos */}

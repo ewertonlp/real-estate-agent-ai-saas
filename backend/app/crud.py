@@ -114,3 +114,23 @@ def update_generated_content_favorite_status(db: Session, content_id: int, user_
         db.commit()
         db.refresh(db_content)
     return db_content
+
+
+def create_prompt_template(db: Session, template: schemas.PromptTemplateBase):
+    db_template = models.PromptTemplate(**template.model_dump())
+    db.add(db_template)
+    db.commit()
+    db.refresh(db_template)
+    return db_template
+
+def get_prompt_template(db: Session, template_id: int):
+    return db.query(models.PromptTemplate).filter(models.PromptTemplate.id == template_id).first()
+
+def get_all_prompt_templates(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.PromptTemplate).offset(skip).limit(limit).all()
+
+def get_active_prompt_templates(db: Session, user_plan_name: str, skip: int = 0, limit: int = 100):
+    query = db.query(models.PromptTemplate)
+    if user_plan_name not in ["Premium", "Unlimited"]: # Adjust plan names as per your models
+        query = query.filter(models.PromptTemplate.is_premium == False)
+    return query.offset(skip).limit(limit).all()

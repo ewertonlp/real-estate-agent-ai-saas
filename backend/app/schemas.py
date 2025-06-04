@@ -97,3 +97,18 @@ class UserInDB(BaseModel):
 
     class Config:
         from_attributes = True    
+
+# --- TEMPLATES 
+class PromptTemplateBase(BaseModel):
+    name: str
+    template_text: str
+    description: Optional[str] = None
+    is_premium: bool = False
+
+class PromptTemplate(PromptTemplateBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
