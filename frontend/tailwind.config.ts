@@ -10,12 +10,12 @@ export default {
     extend: {
        colors: {
         'black': '#000000',
-        'text': '#e5e5e5',
-        'background': '#141414',
+        'text': '#343435',
+        'background': '##e5e5e5',
         'button': '#2196f3',
         'border': '#2196f3',
-        'card': '#282828',
-        'card-light': '#34343c',
+        'card': 'oklch(87.1% 0.006 286.286)',
+        'card-light': 'oklch(92.9% 0.013 255.508)',
         'hover': '#007fff',
         
       },

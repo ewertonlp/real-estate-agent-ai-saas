@@ -18,12 +18,12 @@ import PublicHeader from "@/components/publicHeader";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background text-white flex flex-col items-center justify-center overflow-hidden">
+    <div className="min-h-screen bg-background text-text flex flex-col items-center justify-center overflow-hidden">
       <PublicHeader />
       {/* Hero Section */}
       <section className="grid grid-cols-1 md:grid-cols-2 relative text-start my-20 px-4 pt-20 max-w-7xl w-full">
         <div className="">
-          <h1 className="text-4xl md:text-6xl font-medium mb-6 leading-5 md:leading-[1.5] tracking-tight animate-fade-in-down drop-shadow-lg">
+          <h1 className="text-4xl md:text-6xl font-medium mb-6 leading-5 md:leading-[1.5] tracking-tight animate-fade-in-down drop-shadow-md">
             Domine o Mercado Imobiliário com Conteúdo Imbatível.
           </h1>
           <p className="text-xl md:text-2xl mb-16  animate-fade-in-up max-w-3xl mx-auto">
@@ -39,7 +39,7 @@ export default function Home() {
           </Link>
           <Link
             href="/login"
-            className="border border-white text-white font-semibold py-4 px-10 rounded-lg text-lg shadow-xl hover:bg-white hover:text-blue-800 transition-all duration-300 transform hover:scale-105 active:scale-95"
+            className="border border-button text-button font-semibold py-4 px-10 rounded-lg text-lg shadow-xl hover:bg-white hover:text-blue-800 transition-all duration-300 transform hover:scale-105 active:scale-95"
           >
             Já sou Corretor AI
           </Link>
@@ -55,12 +55,12 @@ export default function Home() {
       </section>
 
       {/* Benefits/Why Choose Us Section */}
-      <section className="bg-gradient-to-br from-button/25 to-card text-gray-800 my-10 p-12 rounded-xl shadow-2xl max-w-7xl w-full transition-transform duration-500">
+      <section className=" bg-card-light text-text border border-button my-10 p-12 rounded-xl shadow-2xl max-w-7xl w-full transition-transform duration-500">
         <h2 className="text-[2.5rem] font-medium text-center mb-12 text-text">
           Por Que Corretor AI?
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div className="flex flex-col items-center p-6 rounded-lg bg-card-light border border-border shadow-md text-center transform hover:scale-105 transition duration-300">
+          <div className="flex flex-col items-center p-6 rounded-lg bg-background border border-border shadow-md text-center transform hover:scale-105 transition duration-300">
             <FaRocket className="text-button text-5xl mb-4 animate-bounce-slow" />
             <h3 className="text-2xl font-semibold mb-2 text-button">
               Acelere Suas Vendas
@@ -71,8 +71,8 @@ export default function Home() {
             </p>
           </div>
           <div className="flex flex-col items-center p-6 rounded-lg bg-card-light border border-green-400 shadow-md text-center transform hover:scale-105 transition duration-300">
-            <FaLightbulb className="text-green-400 text-5xl mb-4 animate-pulse-slow" />
-            <h3 className="text-2xl font-semibold mb-2 text-green-400">
+            <FaLightbulb className="text-green-500 text-5xl mb-4 animate-pulse-slow" />
+            <h3 className="text-2xl font-semibold mb-2 text-green-500">
               Inovação ao Seu Alcance
             </h3>
             <p className="text-text text-sm">
@@ -81,8 +81,8 @@ export default function Home() {
             </p>
           </div>
           <div className="flex flex-col items-center p-6 rounded-lg bg-card-light border border-purple-400 shadow-md text-center transform hover:scale-105 transition duration-300">
-            <FaChartLine className="text-purple-400 text-5xl mb-4 animate-fade-in-left-slow" />
-            <h3 className="text-2xl font-semibold mb-2 text-purple-400">
+            <FaChartLine className="text-purple-500 text-5xl mb-4 animate-fade-in-left-slow" />
+            <h3 className="text-2xl font-semibold mb-2 text-purple-500">
               Maximize Sua Visibilidade
             </h3>
             <p className="text-text text-sm">
@@ -91,8 +91,8 @@ export default function Home() {
             </p>
           </div>
           <div className="flex flex-col items-center p-6 rounded-lg bg-card-light border border-red-400 shadow-md text-center transform hover:scale-105 transition duration-300">
-            <FaShieldAlt className="text-red-400 text-5xl mb-4 animate-fade-in-right-slow" />
-            <h3 className="text-2xl font-semibold mb-2 text-red-400">
+            <FaShieldAlt className="text-red-500 text-5xl mb-4 animate-fade-in-right-slow" />
+            <h3 className="text-2xl font-semibold mb-2 text-red-500">
               Foque no Que Importa
             </h3>
             <p className="text-text text-sm">
@@ -105,14 +105,14 @@ export default function Home() {
 
       {/* How It Works Section (Optional, but adds clarity) */}
       <section className="text-center my-16 max-w-4xl w-full animate-fade-in-up-slow">
-        <h2 className="text-[2.5rem] font-medium mb-10 text-white">
+        <h2 className="text-[2.5rem] font-medium mb-10 text-text">
           Como Funciona? Simples e Rápido!
         </h2>
         <div className="relative flex justify-center items-center">
           <div className="absolute top-1/2 left-0 right-0 h-1 bg-button -z-10 hidden md:block"></div>{" "}
           {/* Linha conectora */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            <div className="flex flex-col items-center bg-card-light text-gray-800 p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
+            <div className="flex flex-col items-center bg-card-light text-gray-800 border border-button p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
               <div className="w-16 h-16 rounded-full bg-button text-white flex items-center justify-center text-3xl font-bold mb-4 z-10 step-number">
                 1
               </div>
@@ -123,7 +123,7 @@ export default function Home() {
                 Insira detalhes como tipo, quartos, localização e diferenciais.
               </p>
             </div>
-            <div className="flex flex-col items-center bg-card-light text-gray-800 p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
+            <div className="flex flex-col items-center bg-card-light text-gray-800 border border-button p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
               <div className="w-16 h-16 rounded-full bg-button text-white flex items-center justify-center text-3xl font-bold mb-4 z-10 step-number">
                 2
               </div>
@@ -135,7 +135,7 @@ export default function Home() {
                 Emojis).
               </p>
             </div>
-            <div className="flex flex-col items-center bg-card-light text-gray-800 p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
+            <div className="flex flex-col items-center bg-card-light text-gray-800 border border-button p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
               <div className="w-16 h-16 rounded-full bg-button text-white flex items-center justify-center text-3xl font-bold mb-4 z-10 step-number">
                 3
               </div>
@@ -198,7 +198,7 @@ export default function Home() {
       {/* Pricing Section - Highly Persuasive */}
       <section
         id="plans"
-        className="bg-card mt-[450px] my-8 py-12 px-8 rounded-xl shadow-2xl max-w-7xl w-full animate-fadeIn"
+        className="bg-button/40 mt-[450px] my-8 py-12 px-8 rounded-xl border border-button shadow-2xl max-w-7xl w-full animate-fadeIn"
       >
         <h2 className="text-4xl font-semibold text-center mb-20 text-text">
           Planos Que Impulsionam Seu Sucesso
@@ -352,8 +352,8 @@ export default function Home() {
       </section>
 
        {/* NEW ROI SECTION */}
-      <section className="text-center px-4 py-16 bg-gradient-to-br from-button/25 to-card text-gray-800 rounded-xl shadow-2xl max-w-4xl w-full animate-fade-in-up my-16">
-        <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white leading-tight">
+      <section className="text-center px-4 py-16 bg-card-light border border-button text-text rounded-xl shadow-2xl max-w-4xl w-full animate-fade-in-up my-16">
+        <h2 className="text-4xl md:text-5xl font-bold mb-6 text-text leading-tight">
           Pense no Retorno do Seu Investimento.
         </h2>
         <p className="text-xl md:text-2xl text-text mb-8 opacity-90 max-w-3xl mx-auto">
@@ -375,12 +375,12 @@ export default function Home() {
       {/* END NEW ROI SECTION */}
 
       {/* Final Call to Action */}
-      <section className="text-center px-4 py-16 mb-16 bg-gradient-to-br from-button/25 to-card text-gray-800 rounded-xl shadow-2xl max-w-4xl w-full animate-fade-in-up">
-        <h2 className="text-4xl md:text-4xl font-bold mb-6 text-white leading-5">
+      <section className="text-center px-4 py-16 mb-16 bg-card-light border border-button text-gray-800 rounded-xl shadow-2xl max-w-4xl w-full animate-fade-in-up">
+        <h2 className="text-4xl md:text-4xl font-bold mb-6 text-text leading-5">
           Chega de Bloqueio Criativo.
           <br />
         </h2>
-        <h3 className="text-4xl md:text-5xl font-bold mb-6 text-white leading-5">
+        <h3 className="text-4xl md:text-5xl font-bold mb-6 text-text leading-5">
           Comece a Vender Mais Hoje!
         </h3>
         <p className="text-xl md:text-2xl text-text mb-12 opacity-90 max-w-3xl mx-auto">

@@ -42,12 +42,12 @@ export default function Header() {
   }, [dropdownRef]); // Depende do dropdownRef
 
   return (
-    <header className="bg-card-light py-4 px-10 shadow-md w-full flex ">
+    <header className="bg-white py-4 px-10 shadow-md w-full flex ">
       <div className="container mx-auto flex justify-between items-center">
         {/* Título/Logo */}
         <Link
           href="/"
-          className="text-2xl font-bold text-text hover:text-slate-300 transition-colors"
+          className="text-2xl font-bold text-text hover:text-button transition-colors"
         >
           AuraSync
         </Link>

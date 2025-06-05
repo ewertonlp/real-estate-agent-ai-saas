@@ -225,7 +225,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <main className="bg-card p-8 rounded-lg shadow-md w-full max-w-2xl">
+    <main className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
       <h1 className="text-2xl font-medium text-text text-center mb-10">
         Vamos criar o seu conteúdo
       </h1>
@@ -266,7 +266,7 @@ export default function DashboardPage() {
           </label>
           <select
             id="propertyType"
-            className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
+            className="appearance-none rounded w-full py-3 px-4 bg-white border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
             value={propertyType}
             onChange={(e) => setPropertyType(e.target.value)}
           >
@@ -293,7 +293,7 @@ export default function DashboardPage() {
               id="bedrooms"
               type="number"
               min="0"
-              className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
+              className="appearance-none rounded w-full py-3 px-4 bg-white border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
               placeholder="Ex: 3"
               value={bedrooms}
               onChange={(e) => setBedrooms(e.target.value)}
@@ -310,7 +310,8 @@ export default function DashboardPage() {
               id="bathrooms"
               type="number"
               min="0"
-              className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
+              className="appearance-none rounded w-full py-3 px-4 bg-white border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent
+              "
               placeholder="Ex: 2"
               value={bathrooms}
               onChange={(e) => setBathrooms(e.target.value)}
@@ -329,7 +330,7 @@ export default function DashboardPage() {
           <input
             id="location"
             type="text"
-            className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
+            className="appearance-none rounded w-full py-3 px-4 bg-white border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
             placeholder="Ex: Moema, São Paulo"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
@@ -347,7 +348,7 @@ export default function DashboardPage() {
           <input
             id="specialFeatures"
             type="text"
-            className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-borderfocus:border-transparent"
+            className="appearance-none rounded w-full py-3 px-4 bg-white border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
             placeholder="Ex: Piscina, Varanda Gourmet, Pet-friendly, Mobiliado"
             value={specialFeatures}
             onChange={(e) => setSpecialFeatures(e.target.value)}
@@ -364,7 +365,7 @@ export default function DashboardPage() {
           </label>
           <select
             id="tone"
-            className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
+            className="appearance-none rounded w-full py-3 px-4 bg-white border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
             value={tone}
             onChange={(e) => setTone(e.target.value)}
           >
@@ -391,7 +392,7 @@ export default function DashboardPage() {
           </label>
           <select
             id="platform"
-            className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
+            className="appearance-none rounded w-full py-3 px-4 bg-white border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
             value={platform}
             onChange={(e) => setPlatform(e.target.value)}
           >
@@ -419,7 +420,7 @@ export default function DashboardPage() {
           </label>
           <select
             id="targetAudience"
-            className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
+            className="appearance-none rounded w-full py-3 px-4 bg-white border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
             value={targetAudience}
             onChange={(e) => setTargetAudience(e.target.value)}
           >
@@ -450,7 +451,7 @@ export default function DashboardPage() {
             </label>
             <select
               id="contentType"
-              className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
+              className="appearance-none rounded w-full py-3 px-4 bg-white border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
               value={contentType}
               onChange={(e) => setContentType(e.target.value)}
             >
@@ -506,7 +507,7 @@ export default function DashboardPage() {
             <input
               id="includeHashtags"
               type="checkbox"
-              className="form-checkbox h-5 w-5 text-black"
+              className="form-checkbox h-5 w-5 text-text"
               checked={includeHashtags}
               onChange={(e) => setIncludeHashtags(e.target.checked)}
             />
@@ -525,7 +526,7 @@ export default function DashboardPage() {
             <input
               id="toggleAdvancedSeoGmb"
               type="checkbox"
-              className="form-checkbox h-5 w-5 text-black"
+              className="form-checkbox h-5 w-5 text-text"
               checked={showAdvancedOptions}
               onChange={(e) => setShowAdvancedOptions(e.target.checked)}
             />
@@ -539,7 +540,7 @@ export default function DashboardPage() {
 
           {/* CAMPOS DE SEO/GMB (VISÍVEIS CONDICIONALMENTE) */}
           {showAdvancedOptions && (
-            <div className="space-y-4 mt-4 p-4 border border-border rounded-md bg-card">
+            <div className="space-y-4 mt-4 p-4 border border-border rounded-md bg-card-light">
               <h2 className="text-xl font-semibold text-text mb-2">
                 Configurações Específicas de SEO / GMB
               </h2>
@@ -548,7 +549,7 @@ export default function DashboardPage() {
                 <input
                   id="optimizeForSeoGmb"
                   type="checkbox"
-                  className="form-checkbox h-5 w-5 text-black"
+                  className="form-checkbox h-5 w-5 text-text"
                   checked={optimizeForSeoGmb}
                   onChange={(e) => setOptimizeForSeoGmb(e.target.checked)}
                 />
@@ -573,7 +574,7 @@ export default function DashboardPage() {
                     <input
                       id="seoKeywords"
                       type="text"
-                      className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
+                      className="appearance-none rounded w-full py-3 px-4 bg-white border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
                       placeholder="Ex: apartamento à venda mogilar, imobiliária mogi das cruzes"
                       value={seoKeywords}
                       onChange={(e) => setSeoKeywords(e.target.value)}
@@ -589,7 +590,7 @@ export default function DashboardPage() {
                     <input
                       id="propertyAddress"
                       type="text"
-                      className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
+                      className="appearance-none rounded w-full py-3 px-4 bg-white border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
                       placeholder="Ex: Rua das Flores, 123, Mogilar, Mogi das Cruzes - SP"
                       value={propertyAddress}
                       onChange={(e) => setPropertyAddress(e.target.value)}
@@ -609,7 +610,7 @@ export default function DashboardPage() {
                     <input
                       id="contactPhone"
                       type="tel"
-                      className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
+                      className="appearance-none rounded w-full py-3 px-4 bg-white border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
                       placeholder="Ex: (11) 99999-9999"
                       value={contactPhone}
                       onChange={(e) => setContactPhone(e.target.value)}
@@ -625,7 +626,7 @@ export default function DashboardPage() {
                     <input
                       id="contactEmail"
                       type="email"
-                      className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
+                      className="appearance-none rounded w-full py-3 px-4 bg-white border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
                       placeholder="Ex: contato@imobiliaria.com"
                       value={contactEmail}
                       onChange={(e) => setContactEmail(e.target.value)}
@@ -641,7 +642,7 @@ export default function DashboardPage() {
                     <input
                       id="contactWebsite"
                       type="url"
-                      className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
+                      className="appearance-none rounded w-full py-3 px-4 bg-white border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
                       placeholder="Ex: www.suaimobiliaria.com.br"
                       value={contactWebsite}
                       onChange={(e) => setContactWebsite(e.target.value)}
@@ -663,7 +664,7 @@ export default function DashboardPage() {
           </label>
           <textarea
             id="additionalDetails"
-            className="shadow appearance-none border rounded w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent h-24 resize-none "
+            className="appearance-none rounded w-full py-3 px-4 bg-white border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
             placeholder="Ex: Próximo a escolas e metrô, vista para o parque."
             value={additionalDetails}
             onChange={(e) => setAdditionalDetails(e.target.value)}

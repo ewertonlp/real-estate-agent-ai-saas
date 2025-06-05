@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function PublicHeader() {
   return (
-    <header className="bg-card-light py-6 shadow-sm w-full">
+    <header className="bg-white py-6 shadow-sm w-full">
       <div className=" max-w-7xl w-full flex justify-between items-center mx-auto">
         {/* Título/Logo */}
         <Link
