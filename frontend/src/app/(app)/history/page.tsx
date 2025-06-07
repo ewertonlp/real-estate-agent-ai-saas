@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { getGeneratedContentHistory, toggleFavoriteStatus } from "@/lib/api"; // Import toggleFavoriteStatus
 import Link from "next/link";
-import toast from "react-hot-toast";
+import { toast } from 'react-toastify';
 
 // Importar ícones para os botões de ação
 import {
@@ -273,7 +273,7 @@ export default function HistoryPage() {
               htmlFor="searchTerm"
               className="block text-sm font-medium text-text"
             >
-              Buscar no conteúdo:
+              Buscar conteúdo:
             </label>
             <div className="mt-1 flex rounded-md shadow-sm">
               <input
@@ -376,11 +376,11 @@ export default function HistoryPage() {
           <p className="ml-3 text-text">Carregando histórico...</p>
         </div>
       ) : history.length === 0 ? (
-        <div className="text-center text-gray-600 py-10">
+        <div className="text-center text-text py-10">
           <p>Nenhum conteúdo encontrado com os filtros aplicados.</p>
           <Link
             href="/dashboard"
-            className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-text bg-card-light hover:bg-card focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-border"
+            className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-button hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-border transition-all"
           >
             Gerar meu primeiro conteúdo
           </Link>

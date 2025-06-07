@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { generateContent } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
-import toast from "react-hot-toast";
+import { toast } from 'react-toastify';
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 

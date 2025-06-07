@@ -88,7 +88,7 @@ export default function Sidebar() {
           <li>
             <Link
               href="/plans"
-              className={`flex items-center space-x-3 p-2 rounded-md transition-colors font-semibold
+              className={`flex items-center space-x-3 p-2 rounded-md transition-colors font-medium
       ${
         pathname === "/plans"
           ? "text-blue-700 bg-button/25"
@@ -109,11 +109,11 @@ export default function Sidebar() {
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className="flex items-center justify-between w-full p-2 rounded-md hover:bg-card transition-colors"
         >
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2">
             <div className="flex items-center justify-center w-8 h-8 rounded-full bg-button text-white text-sm font-medium">
               {userEmail ? getUserInitials(userEmail) : <FiUser size={18} />}
             </div>
-            <span className="text-sm font-medium truncate">
+            <span className="text-xs font-medium truncate">
               {userEmail || "Usuário"}
             </span>
           </div>
@@ -144,16 +144,6 @@ export default function Sidebar() {
               </div>
               <span className="text-xs text-gray-500 capitalize">{theme}</span>
             </div>
-            <button
-              onClick={() => {
-                logout();
-                setIsDropdownOpen(false);
-              }}
-              className="flex items-center space-x-3 w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-card"
-            >
-              <IoIosExit className="text-lg" />
-              <span>Sair</span>
-            </button>
           </div>
         )}
       </div>

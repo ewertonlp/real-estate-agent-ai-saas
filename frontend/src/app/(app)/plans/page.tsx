@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { getSubscriptionPlans, createStripeCheckoutSession, SubscriptionPlan } from '@/lib/api'; // Import SubscriptionPlan
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify'; 
 import { FaCheckCircle } from 'react-icons/fa'; // Ícone de "check"
 
 export default function PlansPage() {
@@ -82,7 +82,7 @@ export default function PlansPage() {
 
   const handleSubscribe = async (priceId: string) => {
     if (priceId === "price_free_plan") { // Lidar com o botão do plano manual grátis
-        toast('Você já está no plano Grátis ou pode se registrar para começar gratuitamente.', { icon: '👋' });
+        toast.warning('Você já está no plano Grátis ou pode se registrar para começar gratuitamente.', { icon: '👋' });
         return;
     }
 

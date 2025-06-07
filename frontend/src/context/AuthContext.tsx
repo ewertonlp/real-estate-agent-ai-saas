@@ -7,6 +7,7 @@ import { loginUser, registerUser } from '../lib/api';
 import { AxiosError } from 'axios'; 
 import Cookies from 'js-cookie';
 import { jwtDecode } from 'jwt-decode';
+import { toast } from 'react-toastify';
 
 // Definir as interfaces de tipos para o contexto
 interface AuthContextType {
@@ -66,6 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Se a sessão expirar, faça logout
         if ((error as any).message === 'Sessão expirada. Por favor, faça login novamente.') {
             logout(); // Isso vai remover o token e redirecionar
+            toast.error('Sessão expirada. Por favor, faça login novamente.');
         }
         setUserEmail(null);
         setUserPlanName(null);

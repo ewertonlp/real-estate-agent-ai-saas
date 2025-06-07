@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { getPromptTemplates, PromptTemplate } from '@/lib/api';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { FaStar, FaLock } from 'react-icons/fa'; // Import icons
 import Link from 'next/link'; // Certifique-se de importar Link
 

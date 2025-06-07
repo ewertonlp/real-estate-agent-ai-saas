@@ -1,12 +1,20 @@
 // frontend/src/components/Header.tsx
 "use client"; // Necessário para usar hooks como useAuth e useRouter
 
+import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext"; // Importa o hook de autenticação
 import { GiExitDoor } from "react-icons/gi";
+import PopupModal from "./popupModal";
 
 export default function Header() {
   const { logout } = useAuth();
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
+   const handleLogoutConfirm = () => {
+    logout(); // Chama a função de logout do AuthContext
+    setIsLogoutModalOpen(false); // Fecha o modal após a confirmação
+  };
 
   return (
     <header className="bg-card py-4 px-10 shadow-md w-full flex z-10 sticky top-0 left-0">
@@ -31,7 +39,7 @@ export default function Header() {
         <div>
           <button
             onClick={() => {
-              logout();
+              setIsLogoutModalOpen(true); 
             }}
             className="flex items-center space-x-1 w-full text-left px-2 py-1 text-sm text-red-500 rounded-md hover:text-white hover:bg-red-500 transition-colors ease-out"
           >
@@ -40,6 +48,14 @@ export default function Header() {
           </button>
         </div>
       </div>
+
+       <PopupModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)} // Função para fechar o modal ao cancelar
+        onConfirm={handleLogoutConfirm} // Função para executar ao confirmar
+        title="Confirmar Saída"
+        message="Tem certeza que deseja sair do sistema AuraSync AI?"
+      />
     </header>
   );
 }

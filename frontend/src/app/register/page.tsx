@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext'; // Note o '@/' para o caminho absoluto
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -19,16 +20,17 @@ export default function RegisterPage() {
 
     if (!email || !password) {
       setError('Por favor, preencha todos os campos.');
+      toast.error('Por favor, preencha todos os campos.');
       return;
     }
 
     try {
       await register(email, password);
-      // Se o registro for bem-sucedido e o login automático ocorrer no contexto,
-      // o redirecionamento para o dashboard já é tratado lá.
+      toast.success('Cadastro realizado com sucesso! Redirecionando...'); 
     } catch (err: any) {
       // Captura o erro vindo do AuthContext
       setError(err.message || 'Falha no registro. Tente novamente.');
+       toast.error(err.message || 'Falha no registro. Tente novamente.');
     }
   };
 

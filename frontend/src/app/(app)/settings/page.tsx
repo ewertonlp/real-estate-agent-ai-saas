@@ -1,12 +1,12 @@
-// frontend/src/app/settings/page.tsx
+// frontend/src/app/(app)/settings/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import toast from "react-hot-toast";
-import { changeUserPassword } from "@/lib/api";
+import { toast } from 'react-toastify';
+import { changeUserPassword, getUserAnalytics } from "@/lib/api"; // Importe getUserAnalytics
 import { useTheme } from "@/context/ThemeContext"// Import useTheme
 import { FaMoon, FaSun } from "react-icons/fa";
 
@@ -16,6 +16,7 @@ export default function SettingsPage() {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoadingPasswordChange, setIsLoadingPasswordChange] = useState(false);
+  const [totalGeneratedContent, setTotalGeneratedContent] = useState<number | null>(null); // NOVO ESTADO
 
   const {
     isAuthenticated,
@@ -26,14 +27,30 @@ export default function SettingsPage() {
     userMaxGenerations,
   } = useAuth();
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme(); // Use the theme context
+  const { theme, toggleTheme } = useTheme();
 
-  // Efeito para verificar autenticação
+  // Efeito para verificar autenticação e carregar analytics
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
-      router.push("/login"); // Redireciona se não estiver autenticado
+      router.push("/login");
+      return;
     }
-  }, [isAuthenticated, isAuthLoading, router]);
+
+    if (isAuthenticated) {
+      // Fetch analytics data when authenticated
+      const fetchAnalytics = async () => {
+        try {
+          const data = await getUserAnalytics(); // Chama a API de analytics
+          setTotalGeneratedContent(data.total_generated_content);
+        } catch (err) {
+          console.error("Erro ao carregar analytics em settings:", err);
+          toast.error("Não foi possível carregar os dados.");
+          setTotalGeneratedContent(null); // Define como nulo em caso de erro
+        }
+      };
+      fetchAnalytics();
+    }
+  }, [isAuthenticated, isAuthLoading, router]); // Adicionado fetchAnalytics como dependência para garantir que rode
 
   const handleSubmitPasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +70,6 @@ export default function SettingsPage() {
     }
 
     if (newPassword.length < 8) {
-      // Exemplo de validação de senha
       setError("A nova senha deve ter pelo menos 8 caracteres.");
       setIsLoadingPasswordChange(false);
       return;
@@ -62,7 +78,6 @@ export default function SettingsPage() {
     try {
       await changeUserPassword(currentPassword, newPassword);
       toast.success("Senha alterada com sucesso!");
-      // Limpa os campos após o sucesso
       setCurrentPassword("");
       setNewPassword("");
       setConfirmNewPassword("");
@@ -80,7 +95,6 @@ export default function SettingsPage() {
     }
   };
 
-  // Exibe tela de carregamento da autenticação
   if (isAuthLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -107,9 +121,45 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <div className="flex justify-between items-start flex-wrap">
-        {/* Alterar Senha Section */}
-        <section className="my-12 w-full md:w-1/2 lg:w-1/3 border bg-card-light border-border p-4 rounded-md">
+      <div className="grid grid-cols-1 md-grid-cols-2 lg:grid-cols-3 items-start gap-6 ">
+     
+
+        {/* Informações do Plano Section - ATUALIZADO */}
+        <section className="p-4 w-full bg-card-light border border-border rounded-md">
+          <h2 className="text-xl font-semibold text-text mb-4 border-b pb-2">
+            Informações do Plano
+          </h2>
+          <div className="space-y-2 text-text">
+            <p>
+              <strong>Email:</strong> {userEmail || "N/A"}
+            </p>
+            <p>
+              <strong>Plano Atual:</strong> {userPlanName || "Carregando..."}
+            </p>
+            {userPlanName && userMaxGenerations !== null && (
+              <p>
+                <strong>Gerações Utilizadas este período:</strong> {userGenerationsCount} de{" "}
+                {userMaxGenerations === 0 ? "Ilimitadas" : userMaxGenerations}
+              </p>
+            )}
+            {/* NOVA LINHA PARA O TOTAL DE GERAÇÕES */}
+            <p>
+                <strong>Total de Conteúdos Gerados:</strong>{" "}
+                {totalGeneratedContent !== null ? totalGeneratedContent : "Carregando..."}
+            </p>
+          </div>
+           {userPlanName && userPlanName !== 'Unlimited' && (
+          <Link
+            href="/plans"
+            className="mt-4 inline-block bg-button hover:bg-hover text-white font-medium py-2 px-4 rounded-md transition duration-300"
+          >
+            Fazer Upgrade de Plano
+          </Link>
+        )}
+        </section>
+
+           {/* Alterar Senha Section (mantido) */}
+        <section className="w-full border bg-card-light border-border p-4 rounded-md ">
           <h2 className="text-xl font-semibold text-text mb-4 border-b pb-2">
             Alterar Senha
           </h2>
@@ -127,7 +177,7 @@ export default function SettingsPage() {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="shadow appearance-none border rounded-md w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
+                className="appearance-none border rounded-md w-full py-3 px-4 bg-card border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
               />
@@ -145,7 +195,7 @@ export default function SettingsPage() {
                 type="password"
                 autoComplete="new-password"
                 required
-                className="shadow appearance-none border rounded-md w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="appearance-none border rounded-md w-full py-3 px-4 bg-card border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
               />
@@ -163,7 +213,7 @@ export default function SettingsPage() {
                 type="password"
                 autoComplete="new-password"
                 required
-                className="shadow appearance-none border rounded-md w-full py-3 px-4 bg-card text-text leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="appearance-none border rounded-md w-full py-3 px-4 bg-card border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 value={confirmNewPassword}
                 onChange={(e) => setConfirmNewPassword(e.target.value)}
               />
@@ -207,37 +257,8 @@ export default function SettingsPage() {
           </form>
         </section>
 
-        {/* Informações do Plano Section */}
-        <section className="p-4 my-12 w-full md:w-1/2 lg:w-1/3 bg-card-light border border-border rounded-md">
-          <h2 className="text-xl font-semibold text-text mb-4 border-b pb-2">
-            Informações do Plano
-          </h2>
-          <div className="space-y-2 text-text">
-            <p>
-              <strong>Email:</strong> {userEmail || "N/A"}
-            </p>
-            <p>
-              <strong>Plano Atual:</strong> {userPlanName || "Carregando..."}
-            </p>
-            {userPlanName && userMaxGenerations !== null && (
-              <p>
-                <strong>Gerações Utilizadas:</strong> {userGenerationsCount} de{" "}
-                {userMaxGenerations === 0 ? "Ilimitadas" : userMaxGenerations}
-              </p>
-            )}
-          </div>
-           {userPlanName && userPlanName !== 'Unlimited' && (
-          <Link
-            href="/plans"
-            className="mt-4 inline-block bg-button hover:bg-hover text-white font-medium py-2 px-4 rounded-md transition duration-300"
-          >
-            Fazer Upgrade de Plano
-          </Link>
-        )}
-        </section>
-
-        {/* Theme Toggle Section */}
-        <section className="p-4 my-12 w-full md:w-1/2 lg:w-1/3 bg-card-light border border-border rounded-md">
+        {/* Theme Toggle Section (mantido) */}
+        <section className="p-4 w-full bg-card-light border border-border rounded-md">
           <h2 className="text-xl font-semibold text-text mb-4 border-b pb-2">
             Configurações de Tema
           </h2>
@@ -249,11 +270,11 @@ export default function SettingsPage() {
             >
               {theme === 'light' ? (
                 <>
-                  <FaMoon /> <span>Ativar Escuro</span>
+                  <FaMoon /> <span>Modo Escuro</span>
                 </>
               ) : (
                 <>
-                  <FaSun className="text-yellow-300" /> <span>Ativar Claro</span>
+                  <FaSun className="text-yellow-300" /> <span>Modo Claro</span>
                 </>
               )}
             </button>
