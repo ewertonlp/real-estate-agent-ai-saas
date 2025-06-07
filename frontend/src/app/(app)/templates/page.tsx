@@ -58,7 +58,7 @@ export default function TemplatesPage() {
   const isPremiumUser = userPlanName === 'Premium' || userPlanName === 'Unlimited';
 
   return (
-    <main className="bg-card p-8 rounded-lg shadow-md w-full max-w-4xl">
+     <main className="bg-card p-8 rounded-lg shadow-md w-full max-w-4xl mx-auto">
       <h1 className="text-2xl font-medium text-text text-center mb-10">
         Nossos Templates de Conteúdo
       </h1>

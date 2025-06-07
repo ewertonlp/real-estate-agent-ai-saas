@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Literal
 
 # Esquema para criar um novo usuário (registro)
 class UserCreate(BaseModel):
@@ -80,6 +80,9 @@ class SubscriptionPlanBase(BaseModel):
 # --- Novo Esquema: SubscriptionPlan (para retorno) ---
 class SubscriptionPlan(SubscriptionPlanBase):
     id: int
+    unit_amount: Optional[int] = None # Preço em centavos/menor unidade (ex: 2000 para R$20.00)
+    currency: Optional[str] = None # Moeda (ex: "brl")
+    interval: Optional[Literal["month", "year"]] = None # "month", "year"
 
     class Config:
         from_attributes = True

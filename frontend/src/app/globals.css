@@ -2,26 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Light Theme Variables */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background-color: #f0f2f5; /* Slightly darker light background */
+  --text-color: #343435;
+  --card-color: #ffffff;
+  --card-light-color: #f8f8f8; /* A lighter shade for elements within cards */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #ededed;
-    --foreground: #171717;
-  }
+/* Dark Theme Variables */
+html.dark {
+  --background-color: #1a202c; /* Dark background */
+  --text-color: #e2e8f0; /* Light text */
+  --card-color: #2d3748; /* Darker card background */
+  --card-light-color: #4a5568; /* A lighter shade for elements within dark cards */
+  --button-color: #63b3ed; /* Adjusted button color for dark mode if needed, or keep original */
+  --border-color: #4299e1; /* Adjusted border color */
+  --hover-color: #4299e1; /* Adjusted hover color */
 }
 
-html{
+/* Global styles */
+html {
   scroll-behavior: smooth;
   list-style: none;
+  /* Apply default transition for smooth theme change */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: var(--text-color);
+  background: var(--background-color);
   font-family: var(--font-poppins);
-  
 }

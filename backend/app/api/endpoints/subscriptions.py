@@ -5,8 +5,8 @@ from fastapi.responses import RedirectResponse, JSONResponse
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.api.endpoints.history import get_current_user
-from app.models import User, SubscriptionPlan
-from app.schemas import SubscriptionPlan as SubscriptionPlanSchema
+from app.models import User, SubscriptionPlan # Importe os modelos User e SubscriptionPlan
+from app.schemas import SubscriptionPlan as SubscriptionPlanSchema # Use SubscriptionPlanSchema for response
 from app.services import stripe_service
 from app.core.config import settings
 import stripe
@@ -17,21 +17,54 @@ router = APIRouter() # <--- ESSA LINHA PRECISA ESTAR AQUI NO INÍCIO
 async def get_subscription_plans(db: Session = Depends(get_db)):
     print("\n--- INICIANDO get_subscription_plans ---") # Print para indicar o início da função
 
-    # 1. Verifique a URL do banco de dados que a aplicação está usando
-    # Isso imprimirá o caminho completo para o DB que o FastAPI está vendo
-    print(f"DATABASE_URL configurada: {db.get_bind().url}") 
-
-    # 2. Execute a query e imprima o resultado bruto
-    plans_raw = db.query(SubscriptionPlan).filter(SubscriptionPlan.is_active == True).all()
-    print(f"PLANOS ATIVOS ENCONTRADOS (RAW): {plans_raw}")
-    print(f"Número de planos encontrados: {len(plans_raw)}")
-
-    if not plans_raw: # A variável agora é plans_raw
+    # 1. Obtenha os planos do seu banco de dados
+    db_plans = db.query(SubscriptionPlan).filter(SubscriptionPlan.is_active == True).all()
+    if not db_plans:
         print("--- NENHUM PLANO ATIVO ENCONTRADO NO DB DA APLICACAO, LEVANTANDO 404 ---")
         raise HTTPException(status_code=404, detail="Nenhum plano de assinatura encontrado.")
 
-    print(f"Retornando {len(plans_raw)} planos para o frontend.")
-    return plans_raw # Retorne a variável plans_raw
+    # 2. Obtenha todos os produtos e preços do Stripe
+    try:
+        stripe_products_prices = await stripe_service.get_all_stripe_products_and_prices()
+        print(f"Dados Stripe: {stripe_products_prices}")
+    except Exception as e:
+        print(f"Erro ao buscar produtos/preços do Stripe: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao carregar dados do Stripe.")
+
+    # 3. Combine os dados do DB com os dados do Stripe
+    plans_for_frontend = []
+    for db_plan in db_plans:
+        # Encontrar o preço correspondente no Stripe
+        stripe_price_info = next(
+            (sp for sp in stripe_products_prices if sp["price_id_stripe"] == db_plan.price_id_stripe),
+            None
+        )
+        
+        if stripe_price_info:
+            plans_for_frontend.append(
+                SubscriptionPlanSchema(
+                    id=db_plan.id,
+                    name=db_plan.name,
+                    description=db_plan.description,
+                    max_generations=db_plan.max_generations,
+                    price_id_stripe=db_plan.price_id_stripe,
+                    is_active=db_plan.is_active,
+                    unit_amount=stripe_price_info["unit_amount"], #
+                    currency=stripe_price_info["currency"], #
+                    interval=stripe_price_info["interval"] #
+                )
+            )
+        else:
+            print(f"AVISO: Preço Stripe ID {db_plan.price_id_stripe} para o plano '{db_plan.name}' não encontrado no Stripe.")
+            # Opcional: Você pode optar por não incluir planos sem preço Stripe válido
+            # ou incluir com valores nulos para `unit_amount`, `currency`, `interval`.
+            # Por enquanto, ele será incluído se encontrado, caso contrário não será adicionado ao `plans_for_frontend`.
+
+    if not plans_for_frontend:
+        raise HTTPException(status_code=404, detail="Nenhum plano com preços Stripe válidos encontrado.")
+
+    print(f"Retornando {len(plans_for_frontend)} planos enriquecidos para o frontend.")
+    return plans_for_frontend
 
 
 

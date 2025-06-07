@@ -5,9 +5,10 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
 import toast from "react-hot-toast";
 import { changeUserPassword } from "@/lib/api";
+import { useTheme } from "@/context/ThemeContext"// Import useTheme
+import { FaMoon, FaSun } from "react-icons/fa";
 
 export default function SettingsPage() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -25,6 +26,7 @@ export default function SettingsPage() {
     userMaxGenerations,
   } = useAuth();
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme(); // Use the theme context
 
   // Efeito para verificar autenticação
   useEffect(() => {
@@ -87,8 +89,6 @@ export default function SettingsPage() {
     );
   }
 
-  // Se não autenticado e carregamento terminou, redirecionamento já ocorreu
-  // Então, se chegar aqui, o usuário está autenticado
   return (
     <main className="bg-card p-8 rounded-lg shadow-md w-full max-w-full">
       <div className="flex justify-between items-center mb-6">
@@ -108,7 +108,8 @@ export default function SettingsPage() {
       )}
 
       <div className="flex justify-between items-start flex-wrap">
-        <section className="my-12 w-1/3 border bg-card-light border-border p-4 rounded-md">
+        {/* Alterar Senha Section */}
+        <section className="my-12 w-full md:w-1/2 lg:w-1/3 border bg-card-light border-border p-4 rounded-md">
           <h2 className="text-xl font-semibold text-text mb-4 border-b pb-2">
             Alterar Senha
           </h2>
@@ -206,15 +207,15 @@ export default function SettingsPage() {
           </form>
         </section>
 
-        <section className="p-4 my-12 w-1/3 bg-card-light border border-border rounded-md">
+        {/* Informações do Plano Section */}
+        <section className="p-4 my-12 w-full md:w-1/2 lg:w-1/3 bg-card-light border border-border rounded-md">
           <h2 className="text-xl font-semibold text-text mb-4 border-b pb-2">
             Informações do Plano
           </h2>
           <div className="space-y-2 text-text">
             <p>
               <strong>Email:</strong> {userEmail || "N/A"}
-            </p>{" "}
-            {/* Adicione esta linha */}
+            </p>
             <p>
               <strong>Plano Atual:</strong> {userPlanName || "Carregando..."}
             </p>
@@ -225,7 +226,7 @@ export default function SettingsPage() {
               </p>
             )}
           </div>
-           {userPlanName && userPlanName !== 'Unlimited' && ( /* Assumindo que 'Unlimited' é o nome do seu plano mais alto */
+           {userPlanName && userPlanName !== 'Unlimited' && (
           <Link
             href="/plans"
             className="mt-4 inline-block bg-button hover:bg-hover text-white font-medium py-2 px-4 rounded-md transition duration-300"
@@ -234,18 +235,31 @@ export default function SettingsPage() {
           </Link>
         )}
         </section>
-      </div>
 
-      {/* Futuras seções de configuração de perfil, preferências, etc. */}
-      {/*
-        <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4 border-b pb-2">Informações do Perfil</h2>
-          <p className="text-text">Seu email: {emailDoUsuario}</p>
-          <button className="mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-            Atualizar Perfil
-          </button>
+        {/* Theme Toggle Section */}
+        <section className="p-4 my-12 w-full md:w-1/2 lg:w-1/3 bg-card-light border border-border rounded-md">
+          <h2 className="text-xl font-semibold text-text mb-4 border-b pb-2">
+            Configurações de Tema
+          </h2>
+          <div className="flex items-center justify-between space-x-4">
+            <span className="text-text">Modo Escuro / Claro</span>
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-md bg-button text-white hover:bg-hover transition-colors flex items-center space-x-2"
+            >
+              {theme === 'light' ? (
+                <>
+                  <FaMoon /> <span>Ativar Escuro</span>
+                </>
+              ) : (
+                <>
+                  <FaSun className="text-yellow-300" /> <span>Ativar Claro</span>
+                </>
+              )}
+            </button>
+          </div>
         </section>
-        */}
+      </div>
     </main>
   );
 }

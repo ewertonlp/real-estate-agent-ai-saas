@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider } from "@/context/ThemeContext";
+
 
 const poppins = Poppins({
-  subsets: ['latin'],
-  display: 'swap', // Garante que o texto seja visível durante o carregamento da fonte
-  variable: '--font-poppins', // Define uma variável CSS para a fonte
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] // Opcional: Especifique os pesos que você usará
-})
+  subsets: ["latin"],
+  display: "swap", // Garante que o texto seja visível durante o carregamento da fonte
+  variable: "--font-poppins", // Define uma variável CSS para a fonte
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"], // Opcional: Especifique os pesos que você usará
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -23,8 +25,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={`${poppins.variable} antialiased`}>
-        <AuthProvider>{children}</AuthProvider>
-        
+        <ThemeProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

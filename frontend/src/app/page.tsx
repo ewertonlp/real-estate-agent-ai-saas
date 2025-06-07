@@ -15,6 +15,7 @@ import {
 } from "react-icons/fa"; // Novos ícones para persuasão
 import { MdOutlineEmail } from "react-icons/md";
 import PublicHeader from "@/components/publicHeader";
+import Footer from "@/components/footer";
 
 export default function Home() {
   return (
@@ -23,7 +24,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="grid grid-cols-1 md:grid-cols-2 relative text-start my-20 px-4 pt-20 max-w-7xl w-full">
         <div className="">
-          <h1 className="text-4xl md:text-6xl font-medium mb-6 leading-5 md:leading-[1.5] tracking-tight animate-fade-in-down drop-shadow-md">
+          <h1 className="text-4xl md:text-6xl font-medium mb-6 leading-5 md:leading-[1.5] tracking-tight animate-fade-in-down">
             Domine o Mercado Imobiliário com Conteúdo Imbatível.
           </h1>
           <p className="text-xl md:text-2xl mb-16  animate-fade-in-up max-w-3xl mx-auto">
@@ -394,6 +395,7 @@ export default function Home() {
           CADASTRE-SE GRÁTIS AGORA!
         </Link>
       </section>
+      <Footer/>
 
      
 
