@@ -1,133 +1,198 @@
 # backend/app/api/endpoints/subscriptions.py
-
+from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Request
-from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.responses import JSONResponse # Importar JSONResponse se usado no webhook
 from sqlalchemy.orm import Session
-from app.core.database import get_db
-from app.api.endpoints.history import get_current_user
-from app.models import User, SubscriptionPlan # Importe os modelos User e SubscriptionPlan
-from app.schemas import SubscriptionPlan as SubscriptionPlanSchema # Use SubscriptionPlanSchema for response
-from app.services import stripe_service
+from app import crud, schemas, models # Certifique-se que crud, schemas, models estão importados
 from app.core.config import settings
+from app.services import stripe_service
+import logging
+
+from app.core.database import get_db # <--- MANTENHA ESTA IMPORTAÇÃO
+from app.api.endpoints.history import get_current_user # <--- MANTENHA ESTA IMPORTAÇÃO (se não estiver lá)
+
 import stripe
 
-router = APIRouter() # <--- ESSA LINHA PRECISA ESTAR AQUI NO INÍCIO
+router = APIRouter() # <--- ESTA LINHA DEVE ESTAR AQUI NO INÍCIO E APENAS UMA VEZ
+logger = logging.getLogger(__name__) # Inicialize o logger para este módulo
 
-@router.get("/plans", response_model=list[SubscriptionPlanSchema])
+# Você pode manter o logger.setLevel(logging.DEBUG) se quiser ver os logs detalhados
+# logger.setLevel(logging.DEBUG)
+# if not logger.handlers:
+#     handler = logging.StreamHandler()
+#     formatter = logging.Formatter('%(levelname)s: %(message)s')
+#     handler.setFormatter(formatter)
+#     logger.addHandler(handler)
+
+
+# --- Temporary mapping for max_generations for paid plans (adjust as needed) ---
+MAX_GENERATIONS_MAP = {
+    "Basic": 20,
+    "Premium": 50,
+    "Unlimited": 0,
+}
+# -----------------------------------------------------------------------------
+
+@router.get("/plans", response_model=List[schemas.SubscriptionPlanPublic])
 async def get_subscription_plans(db: Session = Depends(get_db)):
-    print("\n--- INICIANDO get_subscription_plans ---") # Print para indicar o início da função
-
-    # 1. Obtenha os planos do seu banco de dados
-    db_plans = db.query(SubscriptionPlan).filter(SubscriptionPlan.is_active == True).all()
-    if not db_plans:
-        print("--- NENHUM PLANO ATIVO ENCONTRADO NO DB DA APLICACAO, LEVANTANDO 404 ---")
-        raise HTTPException(status_code=404, detail="Nenhum plano de assinatura encontrado.")
-
-    # 2. Obtenha todos os produtos e preços do Stripe
+    logger.info("--- INICIANDO get_subscription_plans ---")
     try:
-        stripe_products_prices = await stripe_service.get_all_stripe_products_and_prices()
-        print(f"Dados Stripe: {stripe_products_prices}")
-    except Exception as e:
-        print(f"Erro ao buscar produtos/preços do Stripe: {e}")
-        raise HTTPException(status_code=500, detail="Erro ao carregar dados do Stripe.")
+        stripe_products_and_prices = await stripe_service.get_all_stripe_products_and_prices()
+        logger.info(f"Dados Stripe: {stripe_products_and_prices}")
 
-    # 3. Combine os dados do DB com os dados do Stripe
-    plans_for_frontend = []
-    for db_plan in db_plans:
-        # Encontrar o preço correspondente no Stripe
-        stripe_price_info = next(
-            (sp for sp in stripe_products_prices if sp["price_id_stripe"] == db_plan.price_id_stripe),
-            None
-        )
-        
-        if stripe_price_info:
-            plans_for_frontend.append(
-                SubscriptionPlanSchema(
-                    id=db_plan.id,
-                    name=db_plan.name,
-                    description=db_plan.description,
-                    max_generations=db_plan.max_generations,
-                    price_id_stripe=db_plan.price_id_stripe,
-                    is_active=db_plan.is_active,
-                    unit_amount=stripe_price_info["unit_amount"], #
-                    currency=stripe_price_info["currency"], #
-                    interval=stripe_price_info["interval"] #
+        for sp_data in stripe_products_and_prices:
+            plan_name = sp_data["name"]
+            stripe_price_id = sp_data["price_id_stripe"]
+
+            logger.debug(f"Processando plano Stripe: {plan_name} com price_id: {stripe_price_id}")
+
+            current_max_generations = MAX_GENERATIONS_MAP.get(plan_name, 0)
+            if plan_name == "Free":
+                current_max_generations = settings.FREE_PLAN_MAX_GENERATIONS
+
+            existing_plan = crud.get_subscription_plan_by_stripe_price_id(db, stripe_price_id)
+
+            if existing_plan:
+                crud.update_subscription_plan(
+                    db,
+                    db_obj=existing_plan,
+                    obj_in=schemas.SubscriptionPlanUpdate(
+                        name=plan_name,
+                        description=sp_data["description"],
+                        unit_amount=sp_data["unit_amount"],
+                        currency=sp_data["currency"],
+                        interval=sp_data["interval"],
+                        interval_count=sp_data["interval_count"],
+                        type=sp_data["type"],
+                        price_id_stripe=stripe_price_id,
+                        max_generations=current_max_generations
+                    )
+                )
+                logger.debug(f"Plano existente atualizado (por price_id): {existing_plan.name} - {existing_plan.interval}")
+            else:
+                crud.create_subscription_plan(
+                    db=db,
+                    plan=schemas.SubscriptionPlanCreate(
+                        name=plan_name,
+                        description=sp_data["description"],
+                        price_id_stripe=stripe_price_id,
+                        unit_amount=sp_data["unit_amount"],
+                        currency=sp_data["currency"],
+                        interval=sp_data["interval"],
+                        interval_count=sp_data["interval_count"],
+                        type=sp_data["type"],
+                        max_generations=current_max_generations
+                    )
+                )
+                logger.debug(f"Novo plano Stripe criado no DB: {plan_name} - {sp_data['interval']} (price_id: {stripe_price_id})")
+
+        free_plan_db = crud.get_subscription_plan_by_name(db, "Free")
+        if not free_plan_db:
+            free_plan_db = crud.create_subscription_plan(
+                db=db,
+                plan=schemas.SubscriptionPlanCreate(
+                    name="Free",
+                    description="Plano gratuito com funcionalidades básicas.",
+                    price_id_stripe=settings.STRIPE_FREE_PLAN_PRICE_ID,
+                    unit_amount=0,
+                    currency="BRL",
+                    interval="month",
+                    interval_count=1,
+                    type="recurring",
+                    max_generations=settings.FREE_PLAN_MAX_GENERATIONS
                 )
             )
+            if not free_plan_db:
+                raise HTTPException(status_code=500, detail="Could not create Free plan.")
+            logger.info("Plano 'Free' criado no banco de dados.")
         else:
-            print(f"AVISO: Preço Stripe ID {db_plan.price_id_stripe} para o plano '{db_plan.name}' não encontrado no Stripe.")
-            # Opcional: Você pode optar por não incluir planos sem preço Stripe válido
-            # ou incluir com valores nulos para `unit_amount`, `currency`, `interval`.
-            # Por enquanto, ele será incluído se encontrado, caso contrário não será adicionado ao `plans_for_frontend`.
+            if (free_plan_db.price_id_stripe != settings.STRIPE_FREE_PLAN_PRICE_ID or
+                free_plan_db.max_generations != settings.FREE_PLAN_MAX_GENERATIONS or
+                free_plan_db.unit_amount != 0):
+                
+                crud.update_subscription_plan(
+                    db,
+                    db_obj=free_plan_db,
+                    obj_in=schemas.SubscriptionPlanUpdate(
+                        name="Free",
+                        description="Plano gratuito com funcionalidades básicas.",
+                        price_id_stripe=settings.STRIPE_FREE_PLAN_PRICE_ID,
+                        unit_amount=0,
+                        currency="BRL",
+                        interval="month",
+                        interval_count=1,
+                        type="recurring",
+                        max_generations=settings.FREE_PLAN_MAX_GENERATIONS
+                    )
+                )
+                logger.info("Plano 'Free' atualizado no banco de dados.")
 
-    if not plans_for_frontend:
-        raise HTTPException(status_code=404, detail="Nenhum plano com preços Stripe válidos encontrado.")
+            if not any(p['price_id_stripe'] == settings.STRIPE_FREE_PLAN_PRICE_ID for p in stripe_products_and_prices):
+                logger.warning(f"Preço Stripe ID {settings.STRIPE_FREE_PLAN_PRICE_ID} para o plano 'Free' não encontrado no Stripe (esperado).")
 
-    print(f"Retornando {len(plans_for_frontend)} planos enriquecidos para o frontend.")
-    return plans_for_frontend
+        db_plans = crud.get_all_subscription_plans(db)
 
+        logger.info(f"Planos recuperados do DB antes da serialização: {[p.name for p in db_plans]}")
+        for p in db_plans:
+            logger.debug(f"Detalhes do plano DB: ID={p.id}, Nome={p.name}, Preço={p.unit_amount}, MaxGenerations={p.max_generations}, PriceIDStripe={p.price_id_stripe}, Tipo={p.type}, Interval={p.interval}, IntervalCount={p.interval_count}, IsActive={getattr(p, 'is_active', None)}")
 
+        return db_plans
+
+    except Exception as e:
+        logger.exception("Erro inesperado em get_subscription_plans:")
+        raise HTTPException(status_code=500, detail=f"Erro interno do servidor ao buscar planos: {e}")
 
 
 # --- Endpoint para criar uma sessão de checkout do Stripe ---
-@router.post("/create-checkout-session/{price_id}")
+@router.post("/create-checkout-session/{price_id}", response_model=schemas.CheckoutSessionResponse) # Use CheckoutSessionResponse (schema a ser definido)
 async def create_checkout_session(
-    price_id: str, # ID do preço do Stripe para o plano
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    price_id: str,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
 ):
-    """
-    Cria uma sessão de checkout do Stripe para o usuário.
-    Redireciona o usuário para a página de pagamento do Stripe.
-    """
+    logger.info(f"###### DEBUG (Endpoint - create_checkout_session): Função iniciada para price_id: {price_id} e user_id: {current_user.id} ######")
+    
     if not current_user.stripe_customer_id:
-        # Se o usuário não tem um customer_id no Stripe, cria um
-        try:
-            customer_id = await stripe_service.create_stripe_customer(current_user.email, current_user.id)
-            current_user.stripe_customer_id = customer_id
-            db.add(current_user)
-            db.commit()
-            db.refresh(current_user)
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Erro ao criar cliente Stripe: {e}")
+        logger.info(f"###### DEBUG: Cliente Stripe não encontrado para {current_user.email}. Criando novo... ######")
+        customer_id = await stripe_service.create_stripe_customer(current_user.email, current_user.id)
+        crud.update_user_stripe_customer_id(db, current_user.id, customer_id)
+        db.refresh(current_user)
+        logger.info(f"###### DEBUG: Cliente Stripe criado com ID: {customer_id} ######")
     else:
         customer_id = current_user.stripe_customer_id
+        logger.info(f"###### DEBUG: Cliente Stripe existente para {current_user.email}: {customer_id} ######")
 
     try:
-        checkout_session_url = await stripe_service.create_checkout_session(
-            customer_id=customer_id,
-            price_id=price_id,
-            user_id=current_user.id
-        )
-        return {"checkout_url": checkout_session_url}
+        checkout_url = await stripe_service.create_checkout_session(customer_id, price_id, current_user.id)
+        logger.info(f"###### DEBUG: Sessão de checkout Stripe criada: {checkout_url} ######")
+        return {"checkout_url": checkout_url} # Retorna um dicionário que será validado pelo response_model
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao criar sessão de checkout: {e}")
+        logger.error(f"###### ERRO: Falha ao criar sessão de checkout para {current_user.email} (price_id: {price_id}): {e} ######")
+        raise HTTPException(status_code=500, detail="Falha ao criar sessão de checkout.")
 
 # --- Endpoint de Webhook do Stripe ---
 @router.post("/webhook")
 async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
-    """
-    Recebe eventos de webhook do Stripe e atualiza o status da assinatura do usuário.
-    """
     payload = await request.body()
     sig_header = request.headers.get('stripe-signature')
 
     if not sig_header:
+        logger.error("###### ERRO (Webhook): Cabeçalho 'stripe-signature' ausente. Retornando 400. ######")
         raise HTTPException(status_code=400, detail="Cabeçalho 'stripe-signature' ausente.")
 
     try:
         event = await stripe_service.retrieve_stripe_event(payload, sig_header)
+        logger.info(f"###### DEBUG (Webhook): Evento Stripe construído com sucesso: {event['type']} (ID: {event['id']}) ######")
     except ValueError as e:
-        # Invalid payload
+        logger.error(f"Erro de payload do webhook: {e}")
         raise HTTPException(status_code=400, detail=f"Payload inválido: {e}")
     except stripe.error.SignatureVerificationError as e:
-        # Invalid signature
+        logger.error(f"Erro de verificação de assinatura do webhook: {e}")
         raise HTTPException(status_code=400, detail=f"Assinatura do webhook inválida: {e}")
     except Exception as e:
-        # Other errors during event construction
+        logger.exception(f"Erro inesperado ao processar webhook: {e}") # Usar exception para ver traceback
         raise HTTPException(status_code=500, detail=f"Erro inesperado ao processar webhook: {e}")
 
-    # Lidar com os tipos de eventos importantes
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
         customer_id = session.get('customer')
@@ -135,57 +200,54 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         user_id_from_metadata = session['metadata'].get('user_id')
         price_id_from_metadata = session['metadata'].get('price_id')
 
-        print(f"Checkout Session Completed: Customer {customer_id}, Subscription {subscription_id}, User {user_id_from_metadata}")
+        logger.info(f"Checkout Session Completed: Customer {customer_id}, Subscription {subscription_id}, User {user_id_from_metadata}, Price {price_id_from_metadata}")
 
         if user_id_from_metadata and subscription_id:
-            user = db.query(User).filter(User.id == int(user_id_from_metadata)).first()
+            user = crud.get_user(db, int(user_id_from_metadata)) # Use crud.get_user
             if user:
                 user.stripe_subscription_id = subscription_id
                 
-                # Encontrar o plano de assinatura pelo price_id_stripe
-                target_plan = db.query(SubscriptionPlan).filter(SubscriptionPlan.price_id_stripe == price_id_from_metadata).first()
+                target_plan = crud.get_subscription_plan_by_stripe_price_id(db, price_id_from_metadata) # Use crud.get_subscription_plan_by_stripe_price_id
                 if target_plan:
                     user.subscription_plan_id = target_plan.id
                     user.content_generations_count = 0 # Resetar contador ao mudar de plano (opcional)
                     db.add(user)
                     db.commit()
                     db.refresh(user)
-                    print(f"Usuário {user.email} atualizado para o plano {target_plan.name}.")
+                    logger.info(f"Usuário {user.email} atualizado para o plano {target_plan.name}.")
                 else:
-                    print(f"AVISO: Plano Stripe ID {price_id_from_metadata} não encontrado no DB para o usuário {user.email}.")
+                    logger.warning(f"AVISO: Plano Stripe ID {price_id_from_metadata} não encontrado no DB para o usuário {user.email}.")
             else:
-                print(f"AVISO: Usuário com ID {user_id_from_metadata} não encontrado para o webhook.")
+                logger.warning(f"AVISO: Usuário com ID {user_id_from_metadata} não encontrado para o webhook.")
 
     elif event['type'] == 'customer.subscription.updated':
         subscription = event['data']['object']
         customer_id = subscription.get('customer')
-        new_status = subscription.get('status') # Ex: 'active', 'canceled', 'past_due'
+        new_status = subscription.get('status')
         
-        user = db.query(User).filter(User.stripe_customer_id == customer_id).first()
+        user = crud.get_user_by_stripe_customer_id(db, customer_id) # Use crud.get_user_by_stripe_customer_id
         if user:
-            print(f"Assinatura do cliente {customer_id} atualizada para status: {new_status}")
+            logger.info(f"Assinatura do cliente {customer_id} atualizada para status: {new_status}")
             # Você pode adicionar lógica para lidar com diferentes status aqui
             # Ex: se new_status == 'canceled', pode desativar funcionalidades premium
         else:
-            print(f"AVISO: Usuário com Stripe Customer ID {customer_id} não encontrado para o webhook updated.")
+            logger.warning(f"AVISO: Usuário com Stripe Customer ID {customer_id} não encontrado para o webhook updated.")
 
     elif event['type'] == 'customer.subscription.deleted':
         subscription = event['data']['object']
         customer_id = subscription.get('customer')
         
-        user = db.query(User).filter(User.stripe_customer_id == customer_id).first()
+        user = crud.get_user_by_stripe_customer_id(db, customer_id) # Use crud.get_user_by_stripe_customer_id
         if user:
-            print(f"Assinatura do cliente {customer_id} deletada.")
+            logger.info(f"Assinatura do cliente {customer_id} deletada.")
             user.stripe_subscription_id = None
             user.subscription_plan_id = None # Ou defina para o plano Free se desejar
             user.content_generations_count = 0 # Resetar gerações
             db.add(user)
             db.commit()
             db.refresh(user)
-            print(f"Assinatura do usuário {user.email} removida do DB.")
+            logger.info(f"Assinatura do usuário {user.email} removida do DB.")
         else:
-            print(f"AVISO: Usuário com Stripe Customer ID {customer_id} não encontrado para o webhook deleted.")
+            logger.warning(f"AVISO: Usuário com Stripe Customer ID {customer_id} não encontrado para o webhook deleted.")
     
-    # Adicione mais tipos de eventos conforme necessário (ex: invoice.payment_succeeded, invoice.payment_failed)
-
     return JSONResponse(content={"received": True}, status_code=200)

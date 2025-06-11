@@ -1,8 +1,8 @@
-"""Add PromptTemplate model
+"""Add is_active to SubscriptionPlan etc.
 
-Revision ID: fc4a2d2d3ca1
-Revises: e21bc0ee61fe
-Create Date: 2025-06-03 09:46:36.367255
+Revision ID: c0491dfdde3d
+Revises: 
+Create Date: 2025-06-09 14:46:10.695717
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'fc4a2d2d3ca1'
-down_revision: Union[str, None] = 'e21bc0ee61fe'
+revision: str = 'c0491dfdde3d'
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -39,9 +39,14 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
     sa.Column('description', sa.String(), nullable=True),
+    sa.Column('price_id_stripe', sa.String(), nullable=True),
+    sa.Column('unit_amount', sa.Integer(), nullable=False),
+    sa.Column('currency', sa.String(), nullable=False),
+    sa.Column('interval', sa.String(), nullable=False),
+    sa.Column('interval_count', sa.Integer(), nullable=False),
+    sa.Column('type', sa.String(), nullable=False),
     sa.Column('max_generations', sa.Integer(), nullable=False),
-    sa.Column('price_id_stripe', sa.String(), nullable=False),
-    sa.Column('is_active', sa.Boolean(), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('price_id_stripe')
     )

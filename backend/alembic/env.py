@@ -14,11 +14,11 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "app"))
 
 # Importe o Base.metadata do seu banco de dados
-from app.core.database import Base # <--- ADICIONE ESTA LINHA
+from app.core.database import Base # <--- MANTENHA ESTA LINHA
 
 # Importe o Base.metadata do seu banco de dados
-from app.core.database import Base
-import app.models # <--- ADICIONE ESTA LINHA para garantir que os modelos sejam carregados
+# from app.core.database import Base # Esta linha é redundante
+import app.models # <--- MANTENHA ESTA LINHA para garantir que os modelos sejam carregados
 
 
 # this is the Alembic Config object, which provides
@@ -34,7 +34,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata # <--- ALTERE ESTA LINHA
+target_metadata = Base.metadata # <--- MANTENHA ESTA LINHA
 
 
 # other values from the config, defined by the needs of env.py,
@@ -71,8 +71,12 @@ def run_migrations_online() -> None:
     In this scenario, we need to create an Engine
     and associate a Connection with the Context.
     """
+    # **MUDANÇA AQUI:** Passe a URL diretamente para engine_from_config
     connectable = engine_from_config(
-        config.get_section("alembic:environment"), # Obtém a seção 'alembic:environment' diretamente
+        {
+            "sqlalchemy.url": config.get_main_option("sqlalchemy.url"), # <--- OBTÉM A URL DO BANCO DE DADOS AQUI
+            **config.get_section("alembic:environment", {}), # Mescla outras opções da seção alembic:environment
+        },
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )

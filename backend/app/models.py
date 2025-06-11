@@ -8,15 +8,19 @@ from app.core.database import Base
 # --- Novo Modelo: SubscriptionPlan ---
 class SubscriptionPlan(Base):
     __tablename__ = "subscription_plans"
-
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True, nullable=False) # Ex: "Free", "Basic", "Premium"
-    description = Column(String, nullable=True)
-    max_generations = Column(Integer, nullable=False, default=0) # 0 para ilimitado, ou um número
-    price_id_stripe = Column(String, unique=True, nullable=False) # ID do preço no Stripe
-    is_active = Column(Boolean, default=True) # Para ativar/desativar planos
+    name = Column(String, index=True, nullable=False)
+    description = Column(String)
+    price_id_stripe = Column(String, unique=True, nullable=True) # Pode ser nulo para o plano 'Free'
+    unit_amount = Column(Integer, nullable=False)
+    currency = Column(String, nullable=False)
+    interval = Column(String, nullable=False)
+    interval_count = Column(Integer, nullable=False)
+    type = Column(String, nullable=False, default="recurring")
+    max_generations = Column(Integer, nullable=False, default=0)
+    is_active = Column(Boolean, default=True, nullable=False) # <--- ADICIONE ESTA LINHA SE AINDA NÃO ESTÁ LÁ
 
-    users = relationship("User", back_populates="subscription_plan") # Relacionamento com usuários
+    users = relationship("User", back_populates="subscription_plan")
 
 
 class User(Base):

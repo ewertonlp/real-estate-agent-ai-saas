@@ -3,9 +3,23 @@
 import stripe
 from app.core.config import settings
 from app.models import User, SubscriptionPlan # Importe os modelos User e SubscriptionPlan
+from typing import List, Dict, Any
+import logging # Adicione esta importação
+
+logger = logging.getLogger(__name__) # Inicialize o logger
 
 # Configure a chave secreta do Stripe
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+PLAN_PRICE_IDS = {
+    settings.STRIPE_FREE_PLAN_PRICE_ID: "Free",
+    settings.STRIPE_BASIC_MONTHLY_PLAN_PRICE_ID: "Basic",
+    settings.STRIPE_PREMIUM_MONTHLY_PLAN_PRICE_ID: "Premium",
+    settings.STRIPE_UNLIMITED_MONTHLY_PLAN_PRICE_ID: "Unlimited",
+    settings.STRIPE_BASIC_ANNUAL_PLAN_PRICE_ID: "Basic",
+    settings.STRIPE_PREMIUM_ANNUAL_PLAN_PRICE_ID: "Premium",
+    settings.STRIPE_UNLIMITED_ANNUAL_PLAN_PRICE_ID: "Unlimited", 
+}
 
 async def create_stripe_customer(user_email: str, user_id: int):
     """
@@ -101,28 +115,48 @@ async def cancel_stripe_subscription(subscription_id: str):
         print(f"Erro ao cancelar assinatura Stripe: {e}")
         raise
 
-async def get_all_stripe_products_and_prices():
-    """
-    Busca todos os produtos e seus preços no Stripe.
-    """
+async def get_all_stripe_products_and_prices() -> List[Dict[str, Any]]:
+    
+    all_prices_data = []
     try:
-        products = stripe.Product.list(active=True, limit=10) # Ajuste o limite conforme necessário
-        product_data = []
-        for product in products.data:
-            prices = stripe.Price.list(product=product.id, active=True)
-            for price in prices.data:
-                product_data.append({
-                    "id": product.id,
-                    "name": product.name,
-                    "description": product.description,
-                    "price_id_stripe": price.id,
-                    "unit_amount": price.unit_amount, # Preço em centavos/menor unidade
-                    "currency": price.currency,
-                    "interval": price.recurring.interval if price.recurring else None,
-                    "interval_count": price.recurring.interval_count if price.recurring else None,
-                    "type": price.type # "recurring" ou "one_time"
-                })
-        return product_data
+        # Fetch all active prices from Stripe, automatically handling pagination
+        # Use limit parameter if you have many prices (default is 10)
+        prices = stripe.Price.list(active=True, limit=100) # Aumentei o limite para ter certeza de pegar todos, se houver muitos
+        
+
+        # Fetch all active products
+        products = stripe.Product.list(active=True, limit=100) # Aumentei o limite aqui também
+
+
+        product_map = {p.id: p for p in products.data}
+
+        for price in prices.data:
+            product = product_map.get(price.product)
+            if product:
+                # Filtrar apenas os preços que correspondem aos IDs que você configurou
+                # Isso garante que apenas 'seus' planos sejam processados
+                if price.id in PLAN_PRICE_IDS:
+                    plan_data = {
+                        "id": product.id, # ID do Produto
+                        "name": product.name,
+                        "description": product.description,
+                        "price_id_stripe": price.id, # ID do Preço
+                        "unit_amount": price.unit_amount,
+                        "currency": price.currency,
+                        "interval": price.recurring.interval if price.recurring else None,
+                        "interval_count": price.recurring.interval_count if price.recurring else None,
+                        "type": price.type,
+                    }
+                    all_prices_data.append(plan_data)
+                else:
+                    logger.debug(f"Preço Stripe '{price.id}' ({product.name}) não está nos IDs de plano configurados no backend. Ignorando.")
+
     except stripe.error.StripeError as e:
-        print(f"Erro ao buscar produtos/preços do Stripe: {e}")
+        logger.error(f"Erro ao buscar produtos/preços do Stripe: {e}")
         raise
+    except Exception as e:
+        logger.error(f"Erro inesperado em get_all_stripe_products_and_prices: {e}")
+        raise
+
+    logger.info(f"Final list of products and prices fetched from Stripe: {all_prices_data}")
+    return all_prices_data
