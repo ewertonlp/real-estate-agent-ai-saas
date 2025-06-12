@@ -89,12 +89,12 @@ export default function Sidebar() {
             <Link
               href="/plans"
               className={`flex items-center space-x-3 p-2 rounded-md transition-colors font-medium
-      ${
-        pathname === "/plans"
-          ? "text-blue-700 bg-button/25"
+          ${
+              pathname === "/plans"
+          ? "text-text bg-button/25"
           : "bg-button/50 hover:bg-button/40 text-text"
-      }
-    `}
+           }
+            `}
             >
               <FaCrown className="text-xl" />
               <span>Upgrade Plano</span>

@@ -94,6 +94,20 @@ class UserPublic(BaseModel):
     class Config:
         from_attributes = True
 
+# Content Generator Schemas
+# >>> ADICIONE ESTA CLASSE GeneratedContentBase <<<
+class GeneratedContentBase(BaseModel):
+    user_id: int # Campo owner_id no modelo, mas user_id no esquema para criação
+    category: str
+    prompt_used: str
+    generated_text: str
+    generated_image_url: Optional[str] = None
+    is_favorite: bool = False
+    # >>> NOVOS CAMPOS ADICIONADOS <<<
+    property_value: Optional[float] = None  # Valor do imóvel
+    condo_fee: Optional[float] = None       # Valor do condomínio
+    iptu_value: Optional[float] = None      # Valor do IPTU
+    # >>> FIM DOS NOVOS CAMPOS <<<
 
 # --- Esquema para criar um novo registro de conteúdo (o que o frontend envia)
 class GeneratedContentCreate(BaseModel):

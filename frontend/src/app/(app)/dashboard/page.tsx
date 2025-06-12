@@ -6,6 +6,8 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from 'react-toastify';
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import PropertyDetailsForm from "@/components/propertyDetailsForm";
+
 
 export default function DashboardPage() {
   // Estados para os novos campos
@@ -16,7 +18,11 @@ export default function DashboardPage() {
   const [specialFeatures, setSpecialFeatures] = useState("");
   const [tone, setTone] = useState(""); // Novo: Tom de voz
   const [additionalDetails, setAdditionalDetails] = useState(""); // Renomeado de 'prompt' para clareza
-  
+  // >>> NOVOS ESTADOS PARA OS DETALHES DO IMÓVEL (JÁ DEVE ESTAR AQUI) <<<
+  const [propertyValue, setPropertyValue] = useState("");
+  const [condoFee, setCondoFee] = useState("");
+  const [iptuValue, setIptuValue] = useState("");
+  // >>> FIM DOS NOVOS ESTADOS <<<
 
   const [platform, setPlatform] = useState(""); // Instagram, Facebook, WhatsApp
   const [targetAudience, setTargetAudience] = useState(""); // Famílias, Jovens casais, Investidores, etc.
@@ -156,6 +162,9 @@ export default function DashboardPage() {
       !propertyType &&
       !bedrooms &&
       !bathrooms &&
+      !propertyValue && // Adicionado
+      !condoFee &&       // Adicionado
+      !iptuValue &&  
       !location &&
       !specialFeatures &&
       !tone &&
@@ -257,103 +266,17 @@ export default function DashboardPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Tipo de Imóvel */}
-        <div>
-          <label
-            htmlFor="propertyType"
-            className="block text-text text-sm font-medium mb-2"
-          >
-            Tipo de Imóvel:
-          </label>
-          <select
-            id="propertyType"
-            className="appearance-none rounded w-full py-3 px-4 bg-card-light border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
-            value={propertyType}
-            onChange={(e) => setPropertyType(e.target.value)}
-          >
-            <option value="">Selecione</option>
-            <option value="Apartamento">Apartamento</option>
-            <option value="Casa">Casa</option>
-            <option value="Terreno">Terreno</option>
-            <option value="Comercial">Imóvel Comercial</option>
-            <option value="Cobertura">Cobertura</option>
-            <option value="Sobrado">Sobrado</option>
-          </select>
-        </div>
+        <PropertyDetailsForm
+          propertyType={propertyType} setPropertyType={setPropertyType}
+          bedrooms={bedrooms} setBedrooms={setBedrooms}
+          bathrooms={bathrooms} setBathrooms={setBathrooms}
+          propertyValue={propertyValue} setPropertyValue={setPropertyValue}
+          condoFee={condoFee} setCondoFee={setCondoFee}
+          iptuValue={iptuValue} setIptuValue={setIptuValue}
+          location={location} setLocation={setLocation}
+          specialFeatures={specialFeatures} setSpecialFeatures={setSpecialFeatures}
+        />  
 
-        {/* Quartos e Banheiros (em uma linha) */}
-        <div className="flex space-x-4">
-          <div className="flex-1">
-            <label
-              htmlFor="bedrooms"
-              className="block text-text text-sm font-medium mb-2"
-            >
-              Quartos:
-            </label>
-            <input
-              id="bedrooms"
-              type="number"
-              min="0"
-              className="appearance-none rounded w-full py-3 px-4 bg-card-light border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
-              placeholder="Ex: 3"
-              value={bedrooms}
-              onChange={(e) => setBedrooms(e.target.value)}
-            />
-          </div>
-          <div className="flex-1">
-            <label
-              htmlFor="bathrooms"
-              className="block text-text text-sm font-medium mb-2"
-            >
-              Banheiros:
-            </label>
-            <input
-              id="bathrooms"
-              type="number"
-              min="0"
-              className="appearance-none rounded w-full py-3 px-4 bg-card-light border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent
-              "
-              placeholder="Ex: 2"
-              value={bathrooms}
-              onChange={(e) => setBathrooms(e.target.value)}
-            />
-          </div>
-        </div>
-
-        {/* Localização */}
-        <div>
-          <label
-            htmlFor="location"
-            className="block text-text text-sm font-medium mb-2"
-          >
-            Localização (Bairro/Cidade):
-          </label>
-          <input
-            id="location"
-            type="text"
-            className="appearance-none rounded w-full py-3 px-4 bg-card-light border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
-            placeholder="Ex: Moema, São Paulo"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
-        </div>
-
-        {/* Características Específicas */}
-        <div>
-          <label
-            htmlFor="specialFeatures"
-            className="block text-text text-sm font-medium mb-2"
-          >
-            Características Específicas (separar por vírgulas):
-          </label>
-          <input
-            id="specialFeatures"
-            type="text"
-            className="appearance-none rounded w-full py-3 px-4 bg-card-light border border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
-            placeholder="Ex: Piscina, Varanda Gourmet, Pet-friendly, Mobiliado"
-            value={specialFeatures}
-            onChange={(e) => setSpecialFeatures(e.target.value)}
-          />
-        </div>
 
         {/* Tom de Voz */}
         <div>
