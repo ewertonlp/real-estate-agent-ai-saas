@@ -1,34 +1,26 @@
 # backend/app/api/endpoints/users.py
 
+from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session, joinedload
-from app import (
-    schemas,
-    crud,
-    models,
-)
-from app.core.database import get_db
-from app.core.security import (
-    get_password_hash,
-    verify_password,
-)
-# CORREÇÃO AQUI: Mude a importação de get_current_user
-from app.api.endpoints.history import ( # <-- CORREÇÃO
-    get_current_user,
-)
+from sqlalchemy.orm import Session # Correctamente importado Session
+from app import crud, schemas, models # Certifique-se que 'models' está importado
+from app.core.security import get_current_user, get_password_hash, verify_password 
+from app.api.deps import get_db # Correctamente importado get_db
+# Remova esta importação se você a colocou temporariamente para debug:
+# from pydantic import ValidationError 
 
 router = APIRouter()
 
 
-@router.put("/me/password", response_model=schemas.UserInDB)
+@router.put("/me/password", status_code=status.HTTP_204_NO_CONTENT) # <<< MUDADO PARA 204 NO CONTENT
 def change_my_password(
     password_change: schemas.PasswordChange,
     current_user: models.User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db), # Necessita de DB para commit
 ):
     """
     Permite que o usuário logado altere sua própria senha.
-    Requer a senha atual para verificação.
+    Requer a senha atual para verificação. Retorna 204 No Content em sucesso.
     """
     if not verify_password(
         password_change.current_password, current_user.hashed_password
@@ -39,76 +31,47 @@ def change_my_password(
 
     hashed_new_password = get_password_hash(password_change.new_password)
 
+    # Atualiza a senha no objeto do usuário e persiste no DB
     current_user.hashed_password = hashed_new_password
     db.add(current_user)
     db.commit()
-    db.refresh(current_user)
+    # Não precisa de db.refresh(current_user) se o retorno for 204 No Content.
+    
+    return # Não retorna nenhum corpo
 
-    return current_user
 
-
-@router.get(
-    "/me", response_model=schemas.UserPublic
-)
+@router.get("/me", response_model=schemas.UserPublic)
 def read_users_me(
     current_user: models.User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    # REMOVIDO: db: Session = Depends(get_db), pois current_user já está populado
 ):
-    
-    subscription_plan_data = None
-    if current_user.subscription_plan:
-       
-        
-        try:
-            subscription_plan_data = schemas.SubscriptionPlanPublic.model_validate(current_user.subscription_plan)
-          
-        except Exception as e:
-           
-            subscription_plan_data = None
-    else:
-        print(f"###### DEBUG (Endpoint - /users/me): current_user.subscription_plan é None. ######")
+    """
+    Retorna os dados do usuário logado, incluindo informações do plano de assinatura.
+    O relacionamento subscription_plan é carregado via joinedload em get_current_user.
+    """
+    # A serialização para schemas.UserPublic acontecerá automaticamente pelo FastAPI.
+    # Se 'current_user.subscription_plan' está vindo como None, o problema está
+    # no models.py ou no crud.py/get_user_by_email que não está carregando o relacionamento.
+    # Os logs de debug anteriores indicaram que estava carregando, então deve funcionar.
 
-    try:
-        user_public_response = schemas.UserPublic(
-            id=current_user.id,
-            email=current_user.email,
-            is_active=current_user.is_active,
-            content_generations_count=current_user.content_generations_count,
-            stripe_customer_id=current_user.stripe_customer_id,
-            stripe_subscription_id=current_user.stripe_subscription_id,
-            subscription_plan_id=current_user.subscription_plan_id,
-            subscription_plan=subscription_plan_data
-        )
-       
-        return user_public_response
-    except Exception as e:
-      
-        raise HTTPException(status_code=500, detail=f"Erro interno do servidor ao serializar dados do usuário: {e}")
+    # REMOVIDO TODO O BLOCO TRY/EXCEPT MANUAL DE SERIALIZAÇÃO.
+    # O FastAPI com response_model e from_attributes=True faz isso automaticamente.
+    # A exceção de serialização será capturada pelo FastAPI e transformada em 500.
 
-    # Remova ou comente o bloco de código inacessível abaixo
-    # (Já foi instruído anteriormente, apenas para confirmar que não está ativo)
-    # """
-    # Retorna os dados do usuário logado, incluindo informações do plano de assinatura.
-    # """
-    # user_with_plan = (
-    #     db.query(models.User)
-    #     .options(joinedload(models.User.subscription_plan))
-    #     .filter(models.User.id == current_user.id)
-    #     .first()
-    # )
-    # if not user_with_plan:
-    #     raise HTTPException(...)
-    # return user_with_plan
+    return current_user # Retorna o objeto models.User diretamente para serialização Pydantic
 
 
 # === NOVO ENDPOINT DE ANALYTICS ===
 @router.get("/me/analytics", response_model=schemas.UserAnalytics)
 def get_user_analytics(
     current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db), # <<< ADICIONADO: db é necessário para crud.get_total_generated_content_count
 ):
     """
     Retorna estatísticas de uso para o usuário logado.
     """
+    # crud.get_total_generated_content_count deve ser síncrono
+    total_generated = crud.get_total_generated_content_count(db, user_id=current_user.id)
     return schemas.UserAnalytics(
-        total_generated_content=current_user.content_generations_count
+        total_generated_content=total_generated
     )

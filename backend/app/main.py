@@ -17,6 +17,7 @@ app = FastAPI(
 
 origins = [
     "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
 
 app.add_middleware(
@@ -27,7 +28,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(content_generator.router, prefix="/api/v1")
+app.include_router(content_generator.router, prefix="/api/v1", tags=["content_generator"])
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
 app.include_router(history.router, prefix="/api/v1/history", tags=["History"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])

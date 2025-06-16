@@ -13,7 +13,7 @@ export default function Footer() {
         {" "}
         <Link
           href="/"
-          className="text-2xl font-bold text-text hover:text-slate-300 transition-colors"
+          className="text-2xl font-bold text-text hover:text-button transition-colors"
         >
           AuraSync
         </Link>
@@ -24,7 +24,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/services"
-                  className="  text-text hover:text-hover  py-1 text-sm flex items-center space-x-1 transition-all"
+                  className="text-text hover:text-button py-1 text-sm flex items-center space-x-1 transition-all"
                 >
                   <span>Serviços</span>
                 </Link>
@@ -32,7 +32,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/tutorial"
-                  className=" text-text hover:text-hover py-1  text-sm flex items-center space-x-1 transition-all"
+                  className=" text-text hover:text-button py-1  text-sm flex items-center space-x-1 transition-all"
                 >
                   Tutorial
                 </Link>
@@ -40,7 +40,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/#plans"
-                  className=" text-text hover:text-hover  py-1 text-sm flex items-center space-x-1 transition-all"
+                  className=" text-text hover:text-button  py-1 text-sm flex items-center space-x-1 transition-all"
                 >
                   Preços
                 </Link>
@@ -48,7 +48,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/faq"
-                  className="  text-text hover:text-hover py-1  text-sm flex items-center space-x-1 transition-all"
+                  className="  text-text hover:text-button py-1  text-sm flex items-center space-x-1 transition-all"
                 >
                   <span>FAQ</span>
                 </Link>
@@ -63,7 +63,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/aboutUs"
-                  className=" text-text hover:text-hover py-1  text-sm flex items-center space-x-1 transition-all"
+                  className=" text-text hover:text-button py-1  text-sm flex items-center space-x-1 transition-all"
                 >
                   Sobre nós
                 </Link>
@@ -71,7 +71,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/politica-reembolso"
-                  className=" text-text hover:text-hover  py-1  text-sm flex items-center space-x-1 transition-all"
+                  className=" text-text hover:text-button  py-1  text-sm flex items-center space-x-1 transition-all"
                 >
                   Reembolso
                 </Link>
@@ -79,7 +79,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/contact"
-                  className="  text-text hover:text-hover py-1  text-sm flex items-center space-x-1 transition-all"
+                  className="  text-text hover:text-button py-1  text-sm flex items-center space-x-1 transition-all"
                 >
                   <span>Contato</span>
                 </Link>
@@ -87,7 +87,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/faq"
-                  className="  text-text hover:text-hover py-1 text-sm flex items-center space-x-1 transition-all"
+                  className="  text-text hover:text-button py-1 text-sm flex items-center space-x-1 transition-all"
                 >
                   <span>FAQ</span>
                 </Link>
@@ -102,7 +102,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="www.instagram.com/aurasync"
-                  className="text-text hover:text-hover py-1 text-sm flex items-center space-x-1 transition-all"
+                  className="text-text hover:text-button py-1 text-sm flex items-center space-x-1 transition-all"
                 >
                   Instagram
                 </Link>
@@ -110,7 +110,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="mailto:info@aurasyncai.com"
-                  className=" text-text hover:text-hover py-1  text-sm flex items-center space-x-1 transition-all"
+                  className=" text-text hover:text-button py-1  text-sm flex items-center space-x-1 transition-all"
                 >
                   Email
                 </Link>
@@ -124,14 +124,14 @@ export default function Footer() {
           <div className="flex-1 md:flex justify-start gap-4">
             <Link
               href="/politica-privacidade"
-              className="text-text hover:text-hover py-1  text-sm  transition-all"
+              className="text-text hover:text-button py-1  text-sm  transition-all"
             >
               Privacidade
             </Link>
 
             <Link
               href="/termos-uso"
-              className=" text-text hover:text-hover  py-1  text-sm transition-all"
+              className=" text-text hover:text-button py-1  text-sm transition-all"
             >
               Termos de Uso
             </Link>

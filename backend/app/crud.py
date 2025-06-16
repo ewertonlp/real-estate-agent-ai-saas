@@ -9,15 +9,27 @@ from datetime import datetime
 
 
 def get_user_by_email(db: Session, email: str):
-    return (
+    user = (
         db.query(models.User)
         .options(joinedload(models.User.subscription_plan))
         .filter(models.User.email == email)
         .first()
     )
 
-    return db_user
+    # --- ADICIONE ESTAS LINHAS DE DEBUG AQUI ---
+    print(f"DEBUG(CRUD): Usuário '{email}' recuperado: {user.id if user else 'NULO'}")
+    if user:
+        print(f"DEBUG(CRUD): user.subscription_plan_id (do DB): {user.subscription_plan_id}")
+        if hasattr(user, 'subscription_plan') and user.subscription_plan is not None:
+            print(f"DEBUG(CRUD): user.subscription_plan object LOADED: ID={user.subscription_plan.id}, Name={user.subscription_plan.name}")
+        else:
+            print("DEBUG(CRUD): user.subscription_plan object is NONE (relacionamento não carregado ou nulo).")
+    else:
+        print(f"DEBUG(CRUD): Usuário com email '{email}' NÃO ENCONTRADO.")
+    # --- FIM DO DEBUG ---
 
+    # Certifique-se que você não tem um 'return db_user' duplicado aqui.
+    return user
 
 def create_user(db: Session, user: schemas.UserCreate):
     db_user = get_user_by_email(

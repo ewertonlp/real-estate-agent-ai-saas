@@ -1,36 +1,92 @@
+/* frontend/src/app/globals.css */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Light Theme Variables */
-:root {
-  --background-color: #f0f2f5; /* Slightly darker light background */
-  --text-color: #343435;
-  --card-color: #ffffff;
-  --card-light-color: #ebebeb; /* A lighter shade for elements within cards */
-}
+@layer base {
+  :root { /* Tema Claro - Personalize com seus valores HSL */
+    --background: 0 0% 100%; /* Branco */
+    --foreground: 222.2 47.4% 11.2%; /* Quase preto */
 
-/* Dark Theme Variables */
-html.dark {
-  --background-color: #1a202c; /* Dark background */
-  --text-color: #e2e8f0; /* Light text */
-  --card-color: #2d3748; /* Darker card background */
-  --card-light-color: #4a5568; /* A lighter shade for elements within dark cards */
-  --button-color: #63b3ed; /* Adjusted button color for dark mode if needed, or keep original */
-  --border-color: #4299e1; /* Adjusted border color */
-  --hover-color: #4299e1; /* Adjusted hover color */
-}
+    --card: 0 0% 100%; 
+    --card-foreground: 222.2 47.4% 11.2%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
 
-/* Global styles */
-html {
-  scroll-behavior: smooth;
-  list-style: none;
-  /* Apply default transition for smooth theme change */
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
+    --primary: 217.2 91.2% 59.8%; /* Azul vibrante (ex: #3B82F6) */
+    --primary-foreground: 0 0% 98%; /* Texto claro sobre o primary */
 
-body {
-  color: var(--text-color);
-  background: var(--background-color);
-  font-family: var(--font-poppins);
+    --secondary: 210 40% 96.1%; /* Cinza claro */
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%; /* Vermelho */
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 47.4% 11.2%;
+
+    --radius: 0.5rem;
+
+    /* Suas variáveis personalizadas - certifique-se que são HSLs diretos, sem var() */
+    --my-card-light: 214 3.2% 92.5%; /* seu #ebebeb */
+    --my-button-primary: 207 90% 54%; /* seu #2196f3 */
+    --my-button-hover: 214 100% 45%; /* seu #007fff */
+  }
+
+  .dark { /* Tema Escuro - Personalize com seus valores HSL */
+    --background: 224 71.4% 4.1%; /* Azul muito escuro */
+    --foreground: 210 20% 98%; /* Quase branco */
+
+    --card: 224 71.4% 4.1%; 
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+
+    --primary: 217.2 91.2% 59.8%; /* O mesmo azul, ou um tom mais claro para contraste */
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 220 14.3% 10.9%;
+    --secondary-foreground: 210 20% 98%;
+
+    --muted: 220 14.3% 10.9%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 220 14.3% 10.9%;
+    --accent-foreground: 210 20% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 215 27.9% 16.3%;
+    --input: 215 27.9% 16.3%;
+    --ring: 210 20% 98%;
+
+    /* Suas variáveis personalizadas para o tema escuro */
+    --my-card-light: 218 29% 25%;
+    --my-button-primary: 214 100% 65%;
+    --my-button-hover: 214 100% 75%;
+  }
+
+  /* Aplique as variáveis do shadcn/ui aos elementos base */
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-poppins);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    list-style: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
 }

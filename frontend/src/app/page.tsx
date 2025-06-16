@@ -56,12 +56,12 @@ export default function Home() {
       </section>
 
       {/* Benefits/Why Choose Us Section */}
-      <section className=" bg-card-light text-text border border-button my-10 p-12 rounded-xl shadow-2xl max-w-7xl w-full transition-transform duration-500">
+      <section className=" bg-card text-text border border-button my-10 p-12 rounded-xl shadow-2xl max-w-7xl w-full transition-transform duration-500">
         <h2 className="text-[2.5rem] font-medium text-center mb-12 text-text">
           Por Que Corretor AI?
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div className="flex flex-col items-center p-6 rounded-lg bg-background border border-border shadow-md text-center transform hover:scale-105 transition duration-300">
+          <div className="flex flex-col items-center p-6 rounded-lg  border border-blue-500 shadow-md text-center transform hover:scale-105 transition duration-300">
             <FaRocket className="text-button text-5xl mb-4 animate-bounce-slow" />
             <h3 className="text-2xl font-semibold mb-2 text-button">
               Acelere Suas Vendas
@@ -113,7 +113,7 @@ export default function Home() {
           <div className="absolute top-1/2 left-0 right-0 h-1 bg-button -z-10 hidden md:block"></div>{" "}
           {/* Linha conectora */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            <div className="flex flex-col items-center bg-card-light text-gray-800 border border-button p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
+            <div className="flex flex-col items-center bg-card text-gray-800 border border-button p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
               <div className="w-16 h-16 rounded-full bg-button text-white flex items-center justify-center text-3xl font-bold mb-4 z-10 step-number">
                 1
               </div>
@@ -124,7 +124,7 @@ export default function Home() {
                 Insira detalhes como tipo, quartos, localização e diferenciais.
               </p>
             </div>
-            <div className="flex flex-col items-center bg-card-light text-gray-800 border border-button p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
+            <div className="flex flex-col items-center bg-card text-gray-800 border border-button p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
               <div className="w-16 h-16 rounded-full bg-button text-white flex items-center justify-center text-3xl font-bold mb-4 z-10 step-number">
                 2
               </div>
@@ -136,7 +136,7 @@ export default function Home() {
                 Emojis).
               </p>
             </div>
-            <div className="flex flex-col items-center bg-card-light text-gray-800 border border-button p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
+            <div className="flex flex-col items-center bg-card text-gray-800 border border-button p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
               <div className="w-16 h-16 rounded-full bg-button text-white flex items-center justify-center text-3xl font-bold mb-4 z-10 step-number">
                 3
               </div>
@@ -154,7 +154,7 @@ export default function Home() {
 
       <section className="relative text-center my-10 max-w-7xl w-full ">
         {/* Linha horizontal (do topo esquerdo até perto da direita) */}
-        <div className="relative flex justify-center w-1/3 p-4 rounded-lg bg-card-light shadow-lg z-10 border border-border animate-slideUp">
+        <div className="relative flex justify-center w-1/3 p-4 rounded-lg bg-card shadow-lg z-10 border border-border animate-slideUp">
           <Image
             src="/prompt-imoveis.png"
             alt="prompt para gerar conteudo por IA"
@@ -165,7 +165,7 @@ export default function Home() {
         <div className="absolute top-[280px] left-[400px] w-[250px] h-0.5 border-t-4 z-0 border-button"></div>
         <div className="absolute top-[280px] left-[650px] w-0.5 h-[250px] border-l-4 border-button"></div>
 
-        <div className="relative left-[350px] flex justify-center w-1/3 mt-10 p-4 rounded-lg bg-card-light border border-border shadow-lg z-50 animate-slideUp">
+        <div className="relative left-[350px] flex justify-center w-1/3 mt-10 p-4 rounded-lg bg-card border border-border shadow-lg z-50 animate-slideUp">
           <Image
             src="/conteudo-imoveis.png"
             alt="prompt para gerar conteudo por IA"
@@ -175,7 +175,7 @@ export default function Home() {
         </div>
         <div className="absolute top-[1400px] left-[650px] w-[150px] h-0.5 border-t-4 border-button"></div>
         <div className="absolute top-[1200px] left-[650px] w-0.5 h-[200px] border-l-4 border-button"></div>
-        <div className="absolute right-0 top-[1250px] flex-1 justify-center w-[500px] h-[auto] px-8 py-12 rounded-lg bg-card-light border border-border shadow-lg z-50 animate-slideUp">
+        <div className="absolute right-0 top-[1250px] flex-1 justify-center w-[500px] h-[auto] px-8 py-12 rounded-lg bg-card border border-border shadow-lg z-50 animate-slideUp">
           <div className="relative">
             <h3 className="text-3xl font-semibold mb-4 text-button">
               Divulgue
@@ -199,17 +199,17 @@ export default function Home() {
       {/* Pricing Section - Highly Persuasive */}
       <section
         id="plans"
-        className="bg-button/40 mt-[450px] my-8 py-12 px-8 rounded-xl border border-button shadow-2xl max-w-7xl w-full animate-fadeIn"
+        className="bg-button/40 mt-[450px] my-8 py-12 px-8 rounded-xl bg-card border border-button shadow-2xl max-w-7xl w-full animate-fadeIn"
       >
         <h2 className="text-4xl font-semibold text-center mb-20 text-text">
           Planos Que Impulsionam Seu Sucesso
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 justify-center gap-6">
           {/* Free Tier */}
-          <div className="bg-slate-100 p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-transparent hover:border-border">
+          <div className="bg-background p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-slate-300 hover:border-blue-500">
             <div>
               <h3 className="text-3xl font-bold text-gray-800 mb-4">
-                Plano Grátis
+                Grátis
               </h3>
               <p className="text-gray-600 mb-6">
                 Experimente o poder da IA sem custo.
@@ -244,7 +244,7 @@ export default function Home() {
           </div>
 
           {/* Basic Tier - Example */}
-          <div className="bg-slate-100 p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-transparent hover:border-border">
+          <div className="bg-background p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-slate-300 hover:border-blue-500">
             <div>
               <h3 className="text-3xl font-bold text-gray-800 mb-4">
                 Plano Basic
@@ -319,7 +319,7 @@ export default function Home() {
           </div>
 
           {/* Premium Tier - Example (or Unlimited) */}
-          <div className="bg-slate-100 p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-transparent hover:border-border ">
+          <div className="bg-background p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-slate-300 hover:border-blue-500">
             <div>
               <h3 className="text-3xl font-bold text-gray-800 mb-4">
                 Plano Ilimitado
@@ -353,7 +353,7 @@ export default function Home() {
       </section>
 
        {/* NEW ROI SECTION */}
-      <section className="text-center px-4 py-16 bg-card-light border border-button text-text rounded-xl shadow-2xl max-w-4xl w-full animate-fade-in-up my-16">
+      <section className="text-center px-4 py-16 bg-card border border-button text-text rounded-xl shadow-2xl max-w-4xl w-full animate-fade-in-up my-16">
         <h2 className="text-4xl md:text-5xl font-bold mb-6 text-text leading-tight">
           Pense no Retorno do Seu Investimento.
         </h2>
@@ -376,7 +376,7 @@ export default function Home() {
       {/* END NEW ROI SECTION */}
 
       {/* Final Call to Action */}
-      <section className="text-center px-4 py-16 mb-16 bg-card-light border border-button text-gray-800 rounded-xl shadow-2xl max-w-4xl w-full animate-fade-in-up">
+      <section className="text-center px-4 py-16 mb-16 bg-card border border-button text-gray-800 rounded-xl shadow-2xl max-w-4xl w-full animate-fade-in-up">
         <h2 className="text-4xl md:text-4xl font-bold mb-6 text-text leading-5">
           Chega de Bloqueio Criativo.
           <br />

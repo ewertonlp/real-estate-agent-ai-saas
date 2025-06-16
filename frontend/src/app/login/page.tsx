@@ -35,9 +35,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-card-light border border-button p-10 rounded-lg shadow-md">
+      <div className="max-w-md w-full space-y-8 bg-card border  p-10 rounded-lg shadow-md">
         <div>
-          <h2 className="mt-4 text-center text-3xl font-semibold text-text pb-2">
+          <h2 className="mt-4 text-center text-3xl font-semibold text-foreground pb-2">
             Faça login na sua conta
           </h2>
           <p className="mt-2 text-center text-sm text-text">

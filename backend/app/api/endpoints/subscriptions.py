@@ -33,7 +33,7 @@ MAX_GENERATIONS_MAP = {
 }
 # -----------------------------------------------------------------------------
 
-@router.get("/plans", response_model=List[schemas.SubscriptionPlanPublic])
+@router.get("/plans", response_model=List[schemas.SubscriptionPlan])
 async def get_subscription_plans(db: Session = Depends(get_db)):
     logger.info("--- INICIANDO get_subscription_plans ---")
     try:

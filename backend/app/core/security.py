@@ -1,12 +1,18 @@
 # backend/app/core/security.py
 
 from datetime import datetime, timedelta, timezone
-
 from typing import Optional
+from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from app.core.config import settings
+from fastapi import Depends, HTTPException, status # Certifique-se de importar Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from app.api.deps import get_db # <<< ADICIONE ESTA LINHA
+from sqlalchemy.orm import Session 
 
+# O OAuth2PasswordBearer é usado para obter o token do cabeçalho Authorization
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 
 # Para hash de senhas
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -52,3 +58,34 @@ def decode_access_token(token: str):
         return payload
     except JWTError:
         return None  # Token inválido ou expirado
+
+# A função get_current_user precisa usar a sessão síncrona
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db) # <<< TIPO CORRIGIDO PARA Session (síncrona)
+):
+    from app import crud, models # Importe crud e models aqui para evitar circular import
+
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    payload = decode_access_token(token)
+    if payload is None:
+        raise credentials_exception
+    email: str = payload.get("sub")
+    if email is None:
+        raise credentials_exception
+    
+    # crud.get_user_by_email pode precisar ser síncrono também
+    # Se crud.get_user_by_email() for um await, ele precisa ser síncrono.
+    # Se crud.get_user_by_email é uma função assíncrona, você precisa executá-la
+    # dentro de um run_in_threadpool para ambientes síncronos.
+    # Vamos assumir que suas funções crud.py serão síncronas agora.
+    user = crud.get_user_by_email(db, email=email) # Removido 'await' se crud for síncrono
+
+    if user is None:
+        raise credentials_exception
+    
+    return user

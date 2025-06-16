@@ -91,8 +91,8 @@ export default function Sidebar() {
               className={`flex items-center space-x-3 p-2 rounded-md transition-colors font-medium
           ${
               pathname === "/plans"
-          ? "text-text bg-button/25"
-          : "bg-button/50 hover:bg-button/40 text-text"
+          ? "text-text bg-button"
+          : "bg-button hover:bg-button text-text"
            }
             `}
             >

@@ -102,38 +102,75 @@ const getAuthToken = (): string | null => {
   return Cookies.get("access_token") || null;
 };
 
-export async function generateContent(prompt: string): Promise<string> {
-  const token = getAuthToken();
+// --- NOVAS INTERFACES PARA ALINHAR COM O BACKEND ---
+export interface PropertyDetailsInput {
+  property_type: string;
+  bedrooms?: number;
+  bathrooms?: number;
+  location: string;
+  special_features?: string;
+  purpose: string;
+  target_audience?: string;
+  tone?: string;
+  length?: string;
+  language?: string;
+  property_value?: number;
+  condo_fee?: number;
+  iptu_value?: number;
+}
+
+export interface TextGenerationOutput {
+  id: number;
+  user_id: number;
+  prompt_used: string;
+  generated_text: string;
+  timestamp: string; // Ou Date, dependendo de como você lida com datas
+}
+
+export const generateContent = async (
+  propertyDetails: PropertyDetailsInput,
+  token: string
+): Promise<TextGenerationOutput> => {
   if (!token) {
     throw new Error("Usuário não autenticado. Faça login para gerar conteúdo.");
   }
 
   try {
-    const response = await fetch(`${BACKEND_URL}/api/v1/generate-text`, {
+    console.log("Dados da requisição enviados:", JSON.stringify(propertyDetails, null, 2)); 
+    const response = await fetch(`${BACKEND_URL}/api/v1/generate-content`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify(propertyDetails),
     });
 
-    if (!response.ok) {
+   if (!response.ok) {
       const errorData = await response.json();
       console.error("Erro na resposta do backend:", errorData);
       if (response.status === 401) {
         throw new Error("Sessão expirada. Por favor, faça login novamente.");
       }
-      throw new Error(errorData.detail || "Erro ao gerar conteúdo no backend.");
+      // Melhoria no tratamento do erro para exibir detalhes específicos do backend
+      let errorMessage = "Erro desconhecido ao gerar conteúdo.";
+      if (errorData && typeof errorData === 'object' && errorData.detail) {
+          if (Array.isArray(errorData.detail)) {
+              errorMessage = errorData.detail.map((err: any) => `${err.loc.join('.')} - ${err.msg}`).join('; ');
+          } else {
+              errorMessage = errorData.detail;
+          }
+      }
+      throw new Error(errorMessage);
     }
 
-    const data = await response.json();
-    const generatedText = data.generated_content;
+    const data: TextGenerationOutput = await response.json();
+    const generatedText = data.generated_text;
 
     // --- ADICIONE ESTA LINHA: CHAMADA PARA SALVAR O CONTEÚDO ---
-    await saveGeneratedContent(prompt, generatedText);
+    await saveGeneratedContent(data.prompt_used, generatedText);
     // --- FIM DA ADIÇÃO ---
-    return data.generated_content;
+    return data;
   } catch (error) {
     console.error("Erro ao chamar a API do backend:", error);
     throw error;

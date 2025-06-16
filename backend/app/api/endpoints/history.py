@@ -33,7 +33,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado")
     return user
 
-@router.post("/contents/", response_model=schemas.GeneratedContentResponse)
+@router.post("/contents/", response_model=schemas.GeneratedContentBase)
 def create_content_history(
     content: schemas.GeneratedContentCreate,
     current_user: models.User = Depends(get_current_user),
@@ -41,7 +41,7 @@ def create_content_history(
 ):
     return crud.create_user_generated_content(db=db, content=content, user_id=current_user.id)
 
-@router.get("/contents/", response_model=List[schemas.GeneratedContentResponse])
+@router.get("/contents/", response_model=List[schemas.GeneratedContentBase])
 def get_user_contents_history(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -67,7 +67,7 @@ def get_user_contents_history(
         end_date=end_date
     )
 
-@router.patch("/contents/{content_id}/favorite", response_model=schemas.GeneratedContentResponse)
+@router.patch("/contents/{content_id}/favorite", response_model=schemas.GeneratedContentCreate)
 def toggle_favorite_status(
     content_id: int,
     favorite_update: schemas.GeneratedContentUpdateFavorite, # Expects a body like {"is_favorite": true/false}

@@ -1,77 +1,96 @@
 # backend/app/api/endpoints/content_generator.py
 
-from typing import Any
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from app import crud, schemas, models # Importe crud, schemas e models
-from app.api.endpoints.history import get_current_user # Para obter o usuário logado
-from app.core.database import get_db # Para obter a sessão do banco de dados
-from app.services.gemini_service import generate_text_content # Importe generate_text_content do gemini_service
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    status,
+)  # Não precisa de Body se não for usar para debug
+from sqlalchemy.orm import Session  # Tipo de sessão síncrona
+from app import crud, schemas, models
+from app.core.security import get_current_user
+from app.services.gemini_service import generate_content_for_real_estate
+from app.api.deps import get_db  # get_db síncrono
 
-router = APIRouter() # O objeto 'router' precisa ser definido aqui!
+router = APIRouter()
 
-@router.post("/generate", response_model=schemas.GeneratedContentResponse) # Endpoint para gerar conteúdo
+
+@router.post("/generate-content", response_model=schemas.GeneratedContent)
 async def create_content(
-    content_in: schemas.GeneratedContentCreate, # Usar o esquema GeneratedContentCreate para input
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
-) -> Any:
-    """
-    Endpoint para gerar conteúdo de texto otimizado para redes sociais de imóveis.
-    Controla o número de gerações com base no plano do usuário e salva detalhes do imóvel.
-    """
-    if not content_in.prompt_used:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="O prompt não pode estar vazio.")
-
-    # --- Lógica de controle de gerações ---
-    # Recarrega o usuário para garantir que o plano e o contador estejam atualizados
-    db.refresh(current_user)
-
-    user_plan = current_user.subscription_plan
-    if not user_plan:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Seu plano de assinatura não pôde ser determinado. Por favor, contate o suporte."
+    property_details: schemas.PropertyDetailsBase, 
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),  # Tipo de sessão síncrona
+):
+   
+    # Construa a string do prompt para o Gemini usando 'property_details' diretamente
+    # REMOVIDO: prompt_to_gemini = schemas.PropertyDetailsInput(...) - Não é necessário
+    prompt_string = f"Gere conteúdo para redes sociais sobre um imóvel. Tipo de imóvel: {property_details.property_type}."
+    if (
+        property_details.bedrooms is not None
+    ):  # Use 'is not None' para Optional[int/float]
+        prompt_string += f" Quartos: {property_details.bedrooms}."
+    if property_details.bathrooms is not None:
+        prompt_string += f" Banheiros: {property_details.bathrooms}."
+    if property_details.location:  # Strings vazias são Falsy
+        prompt_string += f" Localização: {property_details.location}."
+    if property_details.special_features:
+        prompt_string += (
+            f" Características especiais: {property_details.special_features}."
         )
+    if property_details.purpose:
+        prompt_string += f" Finalidade: {property_details.purpose}."
+    if property_details.target_audience:
+        prompt_string += f" Público-alvo: {property_details.target_audience}."
+    if property_details.tone:
+        prompt_string += f" Tom: {property_details.tone}."
+    if property_details.length:
+        prompt_string += f" Comprimento: {property_details.length}."
+    if property_details.language:
+        prompt_string += f" Idioma: {property_details.language}."
+    if property_details.property_value is not None:
+        prompt_string += f" Valor do imóvel: R$ {property_details.property_value}."
+    if property_details.condo_fee is not None:
+        prompt_string += f" Condomínio: R$ {property_details.condo_fee}."
+    if property_details.iptu_value is not None:
+        prompt_string += f" IPTU: R$ {property_details.iptu_value}."
+    if property_details.additional_details:  # Novo campo
+        prompt_string += f" Outros detalhes: {property_details.additional_details}."
 
-    # Verifica o limite de gerações
-    if user_plan.max_generations > 0 and current_user.content_generations_count >= user_plan.max_generations:
-        raise HTTPException(
-            status_code=status.HTTP_402_PAYMENT_REQUIRED,
-            detail=f"Você atingiu o limite de {user_plan.max_generations} gerações para o seu plano '{user_plan.name}'. Faça upgrade para continuar gerando conteúdo."
-        )
+    # Adicionar detalhes de SEO/GMB se otimizados
+    if property_details.optimize_for_seo_gmb:
+        seo_gmb_details = []
+        if property_details.seo_keywords:
+            seo_gmb_details.append(
+                f"Palavras-chave SEO: {property_details.seo_keywords}"
+            )
+        if property_details.contact_phone:
+            seo_gmb_details.append(f"Telefone: {property_details.contact_phone}")
+        if property_details.contact_email:
+            seo_gmb_details.append(f"Email: {property_details.contact_email}")
+        if property_details.contact_website:
+            seo_gmb_details.append(f"Website: {property_details.contact_website}")
+        if property_details.property_address:
+            seo_gmb_details.append(f"Endereço: {property_details.property_address}")
 
-    # Obtenha os novos campos do content_in
-    prompt_to_gemini = content_in.prompt_used
-    property_value = content_in.property_value
-    condo_fee = content_in.condo_fee
-    iptu_value = content_in.iptu_value
+        if seo_gmb_details:
+            prompt_string += f" Detalhes de SEO/GMB: {'; '.join(seo_gmb_details)}."
 
-    # Gerar o texto com o serviço Gemini, passando todos os detalhes
-    generated_text = await generate_text_content(
-        prompt=prompt_to_gemini,
-        property_value=property_value,
-        condo_fee=condo_fee,
-        iptu_value=iptu_value,
+    prompt_string += " Use emojis relevantes. Inclua uma chamada para ação (CTA). Inclua hashtags relevantes. O objetivo é atrair compradores e despertar interesse."
+
+    # Chame o serviço Gemini
+    generated_text = await generate_content_for_real_estate(
+        prompt=prompt_string,
     )
 
-    # Preparar dados para salvar no DB usando o esquema GeneratedContentCreate
-    # Note: O esquema GeneratedContentCreate agora inclui todos os campos.
-    # O user_id é obtido do current_user. A categoria e is_favorite são definidas aqui como padrão.
-    content_data_for_db = schemas.GeneratedContentCreate(
+    # Salve o conteúdo gerado no histórico
+    # ou modificá-las para serem síncronas. Assumindo síncronas aqui.
+    db_generated_content = crud.create_user_generated_content(
+        db=db,
         user_id=current_user.id,
-        category="Descrição de Imóvel", # Categoria padrão para este gerador
-        prompt_used=content_in.prompt_used, # Salva o prompt original ou construído do frontend
-        generated_text=generated_text,
-        generated_image_url=None, # Por enquanto, nulo
-        is_favorite=False, # Padrão para novo conteúdo
-        property_value=property_value,
-        condo_fee=condo_fee,
-        iptu_value=iptu_value,
+        content=schemas.GeneratedContentCreate(  
+            prompt_used=prompt_string, generated_text=generated_text
+        ),
     )
 
-    # Criar o registro no banco de dados e incrementar o contador de gerações via CRUD
-    db_content = crud.create_user_generated_content(db=db, content=content_data_for_db, user_id=current_user.id)
-    
-    # Retorna o objeto completo do conteúdo gerado, que será validado pelo response_model
-    return db_content
+    # CORREÇÃO 4: Retorno com o modelo correto
+    return schemas.GeneratedContent.model_validate(db_generated_content)

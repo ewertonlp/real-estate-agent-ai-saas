@@ -1,7 +1,8 @@
 # backend/app/models.py
 
+from typing import Optional
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Text # Importe 'Text' e 'ForeignKey'
-from sqlalchemy.orm import relationship 
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy.sql import func
 from app.core.database import Base
 
@@ -35,9 +36,14 @@ class User(Base):
 
     stripe_customer_id = Column(String, unique=True, nullable=True) # ID do cliente no Stripe
     stripe_subscription_id = Column(String, unique=True, nullable=True) # ID da assinatura no Stripe
-    subscription_plan_id = Column(Integer, ForeignKey("subscription_plans.id"), nullable=True) # Plano atual do usuário
-
-    subscription_plan = relationship("SubscriptionPlan", back_populates="users")
+    # Foreign Key para SubscriptionPlan
+    subscription_plan_id: Mapped[Optional[int]] = mapped_column(
+        Integer, ForeignKey("subscription_plans.id"), nullable=True
+    )
+    # Relacionamento para SubscriptionPlan
+    subscription_plan: Mapped[Optional["SubscriptionPlan"]] = relationship(
+        "SubscriptionPlan", back_populates="users" # <<< REMOVIDO lazy="joined"
+    )
     
     content_generations_count = Column(Integer, default=0, nullable=False)
     generated_contents = relationship("GeneratedContent", back_populates="owner")
