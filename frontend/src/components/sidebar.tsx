@@ -15,14 +15,14 @@ import {
 } from "react-icons/fa";
 import { IoIosExit } from "react-icons/io";
 import { FiUser } from "react-icons/fi";
-import { useTheme } from "@/context/ThemeContext";
+import { useTheme } from "next-themes"; 
 import { usePathname } from "next/navigation"; // Importa o hook
 
 export default function Sidebar() {
   const { logout, userEmail } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const pathname = usePathname(); // Hook que pega o caminho atual
 
   const getUserInitials = (email: string | null) => {
@@ -32,11 +32,15 @@ export default function Sidebar() {
     return parts.substring(0, 2).toUpperCase();
   };
 
+   const handleToggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
+
   const linkClass = (path: string) =>
     `flex items-center space-x-3 p-2 rounded-md transition-colors ${
       pathname === path
-        ? "text-blue-500 font-medium"
-        : "hover:bg-card text-text"
+        ? "bg-background text-primary font-medium"
+        : "hover:bg-background text-text"
     }`;
 
   useEffect(() => {
@@ -60,32 +64,32 @@ export default function Sidebar() {
       <div className="flex-shrink-0 mt-10 mb-10"></div>
 
       <nav className="flex-grow">
-        <ul className="space-y-4">
-          <li>
+        <ul className="space-y-4 ">
+          <li className="">
             <Link href="/dashboard" className={linkClass("/dashboard")}>
-              <FaWpforms className="text-xl" />
+              <FaWpforms className="text-lg" />
               <span>Gerar Conteúdo</span>
             </Link>
           </li>
-          <li>
+          <li className="">
             <Link href="/history" className={linkClass("/history")}>
-              <FaHistory className="text-xl" />
+              <FaHistory className="text-lg" />
               <span>Histórico</span>
             </Link>
           </li>
-          <li>
+          <li className="">
             <Link href="/analytics" className={linkClass("/analytics")}>
-              <FaChartBar className="text-xl" />
+              <FaChartBar className="text-lg" />
               <span>Analytics</span>
             </Link>
           </li>
-          <li>
+          <li className="">
             <Link href="/templates" className={linkClass("/templates")}>
-              <FaStar className="text-xl" />
+              <FaStar className="text-lg" />
               <span>Templates</span>
             </Link>
           </li>
-          <li>
+          <li className="">
             <Link
               href="/plans"
               className={`flex items-center space-x-3 p-2 rounded-md transition-colors font-medium
@@ -96,7 +100,7 @@ export default function Sidebar() {
            }
             `}
             >
-              <FaCrown className="text-xl" />
+              <FaCrown className="text-lg" />
               <span>Upgrade Plano</span>
             </Link>
           </li>
@@ -107,7 +111,7 @@ export default function Sidebar() {
       <div className="mt-auto relative" ref={dropdownRef}>
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="flex items-center justify-between w-full p-2 rounded-md hover:bg-card transition-colors"
+          className="flex items-center justify-between w-full p-2 rounded-md hover:bg-background transition-colors"
         >
           <div className="flex items-center space-x-2">
             <div className="flex items-center justify-center w-8 h-8 rounded-full bg-button text-white text-sm font-medium">
@@ -121,7 +125,7 @@ export default function Sidebar() {
         </button>
 
         {isDropdownOpen && (
-          <div className="absolute bottom-full mb-2 left-0 w-full bg-card-light rounded-md shadow-lg py-1 z-20 border border-border">
+          <div className="absolute bottom-full mb-2 left-0 w-full bg-background rounded-md shadow-lg py-1 z-20 border border-border">
             <Link
               href="/settings"
               className="flex items-center space-x-3 px-4 py-2 text-sm text-text hover:bg-card"
@@ -132,7 +136,7 @@ export default function Sidebar() {
             </Link>
             <div
               className="flex items-center justify-between px-4 py-2 text-sm text-text hover:bg-card cursor-pointer"
-              onClick={toggleTheme}
+              onClick={handleToggleTheme}
             >
               <div className="flex items-center space-x-3">
                 {theme === "light" ? (

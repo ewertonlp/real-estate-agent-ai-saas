@@ -39,7 +39,7 @@ export default function AppLayout({
   return (
     // ESTE É O CONTAINER GLOBAL PARA TODAS AS PÁGINAS AUTENTICADAS
     // Ele terá o fundo cinza, altura mínima, e flexbox para o cabeçalho e conteúdo.
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen">
     
       <Header/>
       <Sidebar />

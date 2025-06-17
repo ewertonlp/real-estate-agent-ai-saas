@@ -6,7 +6,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { getGeneratedContentHistory, toggleFavoriteStatus } from "@/lib/api"; // Import toggleFavoriteStatus
 import Link from "next/link";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
+import Modal from "@/components/modal"; 
 
 // Importar ícones para os botões de ação
 import {
@@ -26,6 +27,7 @@ import {
   FaWindowClose,
 } from "react-icons/fa";
 import { IoIosAlbums } from "react-icons/io";
+import Loader from "@/components/loader";
 
 interface GeneratedContentItem {
   id: number;
@@ -56,34 +58,35 @@ const truncateTextByLines = (text: string, maxLines: number): string => {
   return text;
 };
 
-// --- Componente Modal (simples, pode ser mais complexo) ---
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  content: string;
-}
+// // --- Componente Modal (simples, pode ser mais complexo) ---
+// interface ModalProps {
+//   isOpen: boolean;
+//   onClose: () => void;
+//   title: string;
+//   content: string;
+//   className?: string;
+// }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, content }) => {
-  if (!isOpen) return null;
+// const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, content }) => {
+//   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-      <div className="bg-card-light p-6 rounded-lg shadow-xl max-w-[50vw] w-full max-h-[90vh] overflow-y-auto relative">
-        <h2 className="text-2xl font-bold mb-4 text-text">{title}</h2>
-        <pre className="whitespace-pre-wrap text-text mb-6 font-poppins">
-          {content}
-        </pre>
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 hover:bg-black rounded-full p-2 text-text"
-        >
-          <FaWindowClose />
-        </button>
-      </div>
-    </div>
-  );
-};
+//   return (
+//     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+//       <div className="bg-card px-12 py-16 rounded-lg shadow-xl max-w-[40vw] w-full max-h-[90vh] overflow-y-auto relative">
+//         <h2 className="text-2xl font-semibold text-text text-center mb-8">{title}</h2>
+//         <pre className="whitespace-pre-wrap text-text mb-6 font-poppins">
+//           {content}
+//         </pre>
+//         <button
+//           onClick={onClose}
+//           className="absolute top-4 right-4  p-2 text-slate-600"
+//         >
+//           <FaWindowClose size={20} />
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
 
 export default function HistoryPage() {
   const [history, setHistory] = useState<GeneratedContentItem[]>([]);
@@ -245,10 +248,8 @@ export default function HistoryPage() {
   return (
     <main className="bg-card p-8 rounded-lg shadow-md w-full max-w-full">
       <div className="flex items-center justify-start gap-4 text-text mb-10">
-      <IoIosAlbums size={25} />
-      <h1 className="text-2xl font-medium ">
-        Meu Histórico de Conteúdo
-      </h1>
+        <IoIosAlbums size={25} />
+        <h1 className="text-2xl font-medium ">Meu Histórico de Conteúdo</h1>
       </div>
 
       {error && (
@@ -280,7 +281,7 @@ export default function HistoryPage() {
                 type="text"
                 name="searchTerm"
                 id="searchTerm"
-                className="bg-card focus:ring-border focus:border-border block w-full rounded-md sm:text-sm border-border px-3 py-2"
+                className="bg-background focus:ring-border focus:border-border block w-full rounded-md sm:text-sm border-border px-3 py-2"
                 placeholder="Buscar por prompt ou texto gerado..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -325,7 +326,7 @@ export default function HistoryPage() {
               type="date"
               id="startDate"
               name="startDate"
-              className="mt-1 bg-card focus:ring-border focus:border-border block w-full rounded-md sm:text-sm border-border placeholder:text-black px-3 py-2"
+              className="mt-1 bg-background focus:ring-border focus:border-border block w-full rounded-md sm:text-sm border-border placeholder:text-black px-3 py-2"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
@@ -343,7 +344,7 @@ export default function HistoryPage() {
               type="date"
               id="endDate"
               name="endDate"
-              className="mt-1 bg-card focus:ring-border focus:border-border block w-full rounded-md sm:text-sm border-border placeholder:text-black px-3 py-2"
+              className="mt-1 bg-background focus:ring-border focus:border-border block w-full rounded-md sm:text-sm border-border placeholder:text-black px-3 py-2"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
             />
@@ -352,29 +353,7 @@ export default function HistoryPage() {
       </div>
 
       {isLoadingHistory ? (
-        <div className="flex justify-center items-center h-48 bg-card">
-          <svg
-            className="animate-spin h-8 w-8 text-text"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
-          <p className="ml-3 text-text">Carregando histórico...</p>
-        </div>
+        <Loader message="Carregando histórico..." containerClassName="flex justify-center items-center h-48 bg-card" />
       ) : history.length === 0 ? (
         <div className="text-center text-text py-10">
           <p>Nenhum conteúdo encontrado com os filtros aplicados.</p>
@@ -386,7 +365,7 @@ export default function HistoryPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
           {history.map((item) => {
             const { propertyType, location } = extractPromptDetails(
               item.prompt_used
@@ -399,77 +378,88 @@ export default function HistoryPage() {
             return (
               <div
                 key={item.id}
-                className="bg-card-light rounded-lg shadow-lg p-6 relative"
+                // Adicione 'flex flex-col h-full' para que o conteúdo possa crescer e o rodapé fique no final
+                className="bg-background border border-border rounded-lg shadow-lg relative flex flex-col h-full"
               >
-                <div className="flex justify-between items-start mb-2">
-                  <p className="text-xs text-text">
-                    Gerado em:{" "}
-                    {new Date(item.created_at).toLocaleString("pt-BR")}
-                  </p>
-                  {/* Botão de Favoritar */}
-                  <button onClick={() => handleToggleFavorite(item)}>
-                    {item.is_favorite ? (
-                      <FaStar className="text-yellow-400" />
-                    ) : (
-                      <FaRegStar className="text-text" />
-                    )}
-                  </button>
-                </div>
-
-                <div className="mb-4 text-sm text-gray-700">
-                  <p className="flex items-center mb-1 text-text">
-                    <FaHome className="mr-2 text-text" /> **Tipo:**{" "}
-                    {propertyType}
-                  </p>
-                  <p className="flex items-center text-text">
-                    <FaMapMarkerAlt className="mr-2 text-text" />{" "}
-                    **Localização:** {location}
-                  </p>
-                </div>
-                <div className="flex-grow">
-                  <h3 className="text-lg font-semibold text-text mb-2">
-                    Prompt Utilizado:
-                  </h3>
-                  <div className="whitespace-pre-wrap text-text text-sm mb-2 border-l-4 border-border pl-3 py-1 bg-card max-h-24 overflow-hidden">
-                    {truncatedPrompt}
-                  </div>
-                  {item.prompt_used.split("\n").length > 6 && ( // Adiciona botão "Ver Mais" para prompt
-                    <button
-                      onClick={() =>
-                        openModal("Prompt Completo", item.prompt_used)
-                      }
-                      className="text-text hover:underline text-sm mb-4 flex items-center justify-end"
-                    >
-                      Ver Mais <FaExpandAlt className="ml-2 text-xs" />
+                {/* Container para o padding principal do card e o conteúdo rolante */}
+                <div className="p-6 flex-grow">
+                  {" "}
+                  {/* 'p-6' como padding geral do card, 'flex-grow' para o conteúdo */}
+                  <div className="flex justify-between items-start mb-2">
+                    <p className="text-xs text-text">
+                      Gerado em:{" "}
+                      {new Date(item.created_at).toLocaleString("pt-BR")}
+                    </p>
+                    {/* Botão de Favoritar */}
+                    <button onClick={() => handleToggleFavorite(item)}>
+                      {item.is_favorite ? (
+                        <FaStar className="text-yellow-400" />
+                      ) : (
+                        <FaRegStar className="text-text" />
+                      )}
                     </button>
-                  )}
-
-                  <h3 className="text-lg font-semibold text-text mb-2">
-                    Conteúdo Gerado:
-                  </h3>
-                  <div
-                    className="whitespace-pre-wrap text-text text-base flex-grow overflow-hidden"
-                    style={{ lineHeight: "1.6" }}
-                  >
-                    {truncatedGeneratedText}
                   </div>
-                  <div className="flex justify-center">
-                    {item.generated_text.split("\n").length > 6 && ( // Adiciona botão "Ver Mais" para conteúdo
+                  <div className="mb-4 text-sm text-gray-700">
+                    <p className="flex items-center mb-1 text-text">
+                      <FaHome className="mr-2 text-text" /> Tipo: {propertyType}
+                    </p>
+                    <p className="flex items-center text-text">
+                      <FaMapMarkerAlt className="mr-2 text-text" /> Localização:{" "}
+                      {location}
+                    </p>
+                  </div>
+                  {/* Conteúdo principal (prompt e conteúdo gerado) */}
+                  {/* Adicione 'pb-24' para garantir espaço para o rodapé fixo. Ajuste o valor conforme a altura real do rodapé */}
+                  <div className="pb-24">
+                    <h3 className="text-lg font-semibold text-text mb-2">
+                      Prompt Utilizado:
+                    </h3>
+                    <div className="whitespace-pre-wrap text-text text-sm mb-2 border-l-4 border-border pl-3 py-1 bg-card max-h-24 overflow-hidden">
+                      {truncatedPrompt}
+                    </div>
+                    {item.prompt_used.split("\n").length > 6 && (
                       <button
                         onClick={() =>
-                          openModal(
-                            "Conteúdo Gerado Completo",
-                            item.generated_text
-                          )
+                          openModal("Prompt Completo", item.prompt_used)
                         }
-                        className="mt-8 py-1 px-2 rounded-md text-text hover:bg-card hover:text-slate-50 text-md font-medium flex items-center justify-center border border-border transition-colors"
+                        className="text-text hover:underline text-sm mb-4 flex items-center justify-end"
                       >
-                        Ver Mais <FaExpandAlt className="ml-2 text-sm" />
+                        Ver Mais <FaExpandAlt className="ml-2 text-xs" />
                       </button>
                     )}
+
+                    <h3 className="text-lg font-semibold text-text mb-2">
+                      Conteúdo Gerado:
+                    </h3>
+                    <div
+                      className="whitespace-pre-wrap text-text text-base overflow-hidden" // Remova flex-grow aqui, ele está no pai
+                      style={{ lineHeight: "1.6" }}
+                    >
+                      {truncatedGeneratedText}
+                    </div>
+                    <div className="flex justify-center">
+                      {item.generated_text.split("\n").length > 6 && (
+                        <button
+                          onClick={() =>
+                            openModal(
+                              "Conteúdo Gerado Completo",
+                              item.generated_text
+                            )
+                          }
+                          className="mt-8 py-1 px-2 rounded-md text-text hover:bg-card hover:text-slate-50 text-md font-medium flex items-center justify-center border border-border transition-colors"
+                        >
+                          Ver Mais <FaExpandAlt className="ml-2 text-sm" />
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  {/* Botões de Ação para cada item */}
-                  <div className="flex flex-wrap gap-4 mt-10 justify-center items-end ">
+                </div>{" "}
+                {/* Fim do container para o padding principal */}
+                {/* Rodapé Fixo para os Botões */}
+                {/* Posicionamento absoluto, fundo, borda superior e padding */}
+                <div className="absolute bottom-0 left-0 right-0 p-6 bg-background border-t border-border ">
+                  <div className="flex flex-wrap gap-4 justify-center items-center">
+                    {/* Botão Editar/Reutilizar */}
                     <button
                       onClick={() => handleEdit(item)}
                       className="bg-zinc-500 hover:bg-zinc-600 text-white font-medium py-1 px-3 rounded text-sm flex items-center space-x-1 transition-all"
@@ -488,33 +478,33 @@ export default function HistoryPage() {
                         <FaShareAlt />
                         <span>Compartilhar</span>
                       </button>
-                      <div className="absolute right-0 top-full mt-1 w-auto bg-card-light border border-border rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
+                      <div className="absolute right-0 top-full mt-1 w-auto bg-card border border-border rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
                         <button
                           onClick={() => shareOnWhatsapp(item.generated_text)}
-                          className=" w-full text-left px-4 py-2 text-sm text-text hover:bg-card flex items-center space-x-2"
+                          className="w-full text-left px-4 py-2 text-sm text-text hover:bg-background flex items-center space-x-2"
                         >
-                          <FaWhatsapp className="text-green-500" />{" "}
+                          <FaWhatsapp className="text-green-500" />
                           <span>WhatsApp</span>
                         </button>
                         <button
                           onClick={() => shareOnFacebook(item.generated_text)}
-                          className=" w-full text-left px-4 py-2 text-sm text-text hover:bg-card flex items-center space-x-2"
+                          className="w-full text-left px-4 py-2 text-sm text-text hover:bg-background flex items-center space-x-2"
                         >
-                          <FaFacebook className="text-blue-600" />{" "}
+                          <FaFacebook className="text-blue-600" />
                           <span>Facebook</span>
                         </button>
                         <button
                           onClick={() => shareOnInstagram(item.generated_text)}
-                          className=" w-full text-left px-4 py-2 text-sm text-text hover:bg-card flex items-center space-x-2"
+                          className="w-full text-left px-4 py-2 text-sm text-text hover:bg-background flex items-center space-x-2"
                         >
-                          <FaClipboard className="text-purple-500" />{" "}
+                          <FaClipboard className="text-purple-500" />
                           <span>Instagram (Copiar)</span>
                         </button>
                         <button
                           onClick={() => shareOnEmail(item.generated_text)}
-                          className="w-full text-left px-4 py-2 text-sm text-text hover:bg-card flex items-center space-x-2"
+                          className="w-full text-left px-4 py-2 text-sm text-text hover:bg-background flex items-center space-x-2"
                         >
-                          <FaEnvelope className="text-orange-500" />{" "}
+                          <FaEnvelope className="text-orange-500" />
                           <span>E-mail</span>
                         </button>
                       </div>
@@ -532,6 +522,7 @@ export default function HistoryPage() {
         onClose={closeModal}
         title={modalTitle}
         content={modalContent}
+        className="bg-card"
       />
     </main>
   );

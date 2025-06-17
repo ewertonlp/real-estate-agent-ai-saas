@@ -49,8 +49,8 @@ export default function TemplatesPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <p className="text-red-500">{error}</p>
+      <div className="min-h-screen bg-card flex items-center justify-center">
+        <p className="text-red-500 text-lg font-medium">{error}</p>
       </div>
     );
   }

@@ -6,12 +6,13 @@
 
 @layer base {
   :root { /* Tema Claro - Personalize com seus valores HSL */
-    --background: 0 0% 100%; /* Branco */
+    --background: 0 0% 95%; /* Cinza claro */
     --foreground: 222.2 47.4% 11.2%; /* Quase preto */
 
-    --card: 0 0% 100%; 
+    --card: 0, 5%, 99%; 
     --card-foreground: 222.2 47.4% 11.2%;
-    --popover: 0 0% 100%;
+    --text: 222.2 47.4% 11.2%;
+    --button: 214 100% 65%;
     --popover-foreground: 222.2 47.4% 11.2%;
 
     --primary: 217.2 91.2% 59.8%; /* Azul vibrante (ex: #3B82F6) */
@@ -29,8 +30,11 @@
     --destructive: 0 84.2% 60.2%; /* Vermelho */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --overlay-bg: 0 0% 0%; /* HSL para preto */
+    --overlay-opacity: 0.6; /* Transparência para o overlay */
+
+    --border: 207 90% 78%;
+    --input: 0 0% 95%;
     --ring: 222.2 47.4% 11.2%;
 
     --radius: 0.5rem;
@@ -42,11 +46,13 @@
   }
 
   .dark { /* Tema Escuro - Personalize com seus valores HSL */
-    --background: 224 71.4% 4.1%; /* Azul muito escuro */
-    --foreground: 210 20% 98%; /* Quase branco */
+    --background: 216, 37%, 13%; /* Azul muito escuro */
+    --foreground: 0, 8%, 98%; /* Quase branco */
 
-    --card: 224 71.4% 4.1%; 
+    --card: 237.6, 19%, 26%; 
     --card-foreground: 210 20% 98%;
+    --text: 210 20% 98%;
+    --button: 214 100% 65%;
     --popover: 224 71.4% 4.1%;
     --popover-foreground: 210 20% 98%;
 
@@ -65,12 +71,15 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 215 27.9% 16.3%;
-    --input: 215 27.9% 16.3%;
+    --overlay-bg: 0 0% 0%; /* HSL para preto, ou um tom mais escuro */
+    --overlay-opacity: 0.9;
+
+    --border: 214 100% 65%;
+    --input: 216, 37%, 13%;
     --ring: 210 20% 98%;
 
     /* Suas variáveis personalizadas para o tema escuro */
-    --my-card-light: 218 29% 25%;
+    --my-card-light: 0 0% 33%;
     --my-button-primary: 214 100% 65%;
     --my-button-hover: 214 100% 75%;
   }

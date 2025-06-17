@@ -10,6 +10,7 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
+import Modal from '@/components/modal';
 
 export default function DashboardPage() {
     const {
@@ -24,14 +25,50 @@ export default function DashboardPage() {
 
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { userEmail } = useAuth();
 
     const [generatedContent, setGeneratedContent] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
     const [showCopyMessage, setShowCopyMessage] = useState<boolean>(false); // <<< ESTADO showCopyMessage
+    // Estados para controlar o modal de onboarding
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState(0);
 
     // NOVO ESTADO: para passar valores iniciais ao PropertyDetailsForm
     const [initialFormValues, setInitialFormValues] = useState<Partial<PropertyDetailsFormSchema>>({});
+
+    // Efeito para verificar se é um novo usuário e iniciar o onboarding
+  useEffect(() => {
+    // Verifica se o usuário já completou o onboarding nesta versão
+    const onboardingCompleted = localStorage.getItem('onboarding_completed_v1');
+
+    // Verifica se o usuário não completou o onboarding E se o email do usuário já foi carregado
+    // userEmail é um bom proxy para saber se o AuthContext já carregou
+    if (!onboardingCompleted && userEmail) {
+      setShowOnboarding(true);
+      setOnboardingStep(0); // Começa do primeiro passo
+    }
+  }, [userEmail]); 
+
+   // Função para avançar para o próximo passo do onboarding ou finalizar
+  const handleNextOnboardingStep = () => {
+    if (onboardingStep < onboardingStepsData.length - 1) {
+      // Se não for o último passo, avança
+      setOnboardingStep(prev => prev + 1);
+    } else {
+      // Se for o último passo, finaliza o onboarding
+      localStorage.setItem('onboarding_completed_v1', 'true'); // Marca como completo no localStorage
+      setShowOnboarding(false); // Fecha o modal
+    }
+  };
+
+    // Função para pular ou fechar o onboarding a qualquer momento
+  const handleSkipOnboarding = () => {
+    localStorage.setItem('onboarding_completed_v1', 'true'); // Marca como completo
+    setShowOnboarding(false); // Fecha o modal
+  };
+
 
     // Efeito para preencher o formulário com dados do histórico, se presentes na URL
     // OU para lidar com status de pagamento
@@ -171,16 +208,16 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-card dark:bg-card text-text dark:text-gray-100 p-4 sm:p-6 lg:p-8 rounded-lg">
+        <div className="min-h-screen bg-card text-text p-4 sm:p-6 lg:p-8 rounded-lg">
             <h1 className="text-3xl font-semibold mb-12 text-center">Gerar Conteúdo para Imóveis</h1>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-                <div className='bg-card p-6 rounded-lg border border-border'>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-7xl mx-auto">
+                <div className='bg-card dark:bg-card p-6 rounded-lg border border-border overflow-hidden'>
                     <PropertyDetailsForm onSubmit={handleSubmit} loading={loading} initialData={initialFormValues} />
                     {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
                 </div>
 
-                <div className="bg-background dark:bg-background p-6 rounded-lg border border-border flex flex-col">
+                <div className="bg-background p-6 rounded-lg border border-border flex flex-col">
                     <h2 className="text-2xl font-semibold mb-4 border-b pb-2">Conteúdo Gerado</h2>
                     {loading ? (
                         <div className="flex flex-col items-center justify-center flex-grow">
@@ -196,7 +233,7 @@ export default function DashboardPage() {
                                     </div>
                                     <button
                                         onClick={handleCopy} // <<< USANDO handleCopy AQUI
-                                        className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md shadow-md transition duration-300 ease-in-out"
+                                        className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-text font-semibold rounded-md shadow-md transition duration-300 ease-in-out"
                                     >
                                         {showCopyMessage ? "Copiado!" : "Copiar Conteúdo"}
                                     </button>
@@ -210,6 +247,73 @@ export default function DashboardPage() {
                     )}
                 </div>
             </div>
+            <Modal
+                isOpen={showOnboarding}
+                onClose={handleSkipOnboarding} // O botão de fechar do modal chama 'Pular Tour'
+                title={onboardingStepsData[onboardingStep].title} // Título do passo atual
+                content={
+                  <>
+                    <p className="mb-4">{onboardingStepsData[onboardingStep].message}</p>
+                    <div className="flex justify-between mt-6">
+                      {/* Botão Próximo (mostra em todos os passos, exceto o último) */}
+                      {onboardingStep < onboardingStepsData.length - 1 && (
+                        <button
+                          onClick={handleNextOnboardingStep}
+                          className="bg-button hover:bg-hover text-white font-medium py-2 px-4 rounded-md transition duration-300"
+                        >
+                          Próximo {onboardingStep + 1}/{onboardingStepsData.length}
+                        </button>
+                      )}
+                      {/* Botão Começar/Finalizar (aparece apenas no último passo) */}
+                      {onboardingStep === onboardingStepsData.length - 1 && (
+                        <button
+                          onClick={handleNextOnboardingStep} // No último passo, ele também finaliza o tour
+                          className="bg-button hover:bg-hover text-white font-medium py-2 px-4 rounded-md transition duration-300"
+                        >
+                          Começar!
+                        </button>
+                      )}
+                      {/* Botão Pular Tour / Fechar */}
+                      <button
+                        onClick={handleSkipOnboarding}
+                        className="text-text hover:underline py-2 px-4 rounded-md"
+                      >
+                        {onboardingStep < onboardingStepsData.length - 1 ? 'Pular Tour' : 'Fechar'}
+                      </button>
+                    </div>
+                  </>
+                }
+                className="max-w-xl" // Classe opcional para a caixa do modal (pode ajustar o tamanho)
+              />
         </div>
     );
+
 }
+
+// No topo do seu frontend/src/app/(app)/dashboard/page.tsx, ou em um arquivo de dados separado
+const onboardingStepsData = [
+  {
+    title: "Bem-vindo ao Gerador de Conteúdo!",
+    message: "Este pequeno tour irá te ajudar a dar os primeiros passos na criação de conteúdo para imóveis.",
+  },
+  {
+    title: "1. Escolha seu Template",
+    message: "Aqui você seleciona o tipo de conteúdo que deseja gerar. Temos modelos para diversos tipos de imóveis, como 'Descrição de Imóvel para Venda' ou 'Anúncio para Redes Sociais'.",
+  },
+  {
+    title: "2. Preencha os Detalhes do Imóvel",
+    message: "Use este formulário para inserir todas as informações importantes sobre o imóvel: tipo, localização, quartos, banheiros, vagas de garagem, e quaisquer detalhes adicionais. Quanto mais detalhes, melhor o conteúdo gerado!",
+  },
+  {
+    title: "3. Gere e Revise",
+    message: "Após preencher tudo, clique no botão 'Gerar Conteúdo'. A IA criará o texto para você, que aparecerá nesta área. Você poderá revisar e copiar o texto gerado aqui.",
+  },
+  {
+    title: "4. Salve e Compartilhe",
+    message: "Se gostou do conteúdo, não se esqueça de salvá-lo no seu histórico. De lá, você pode editá-lo para refinar ainda mais, ou compartilhá-lo facilmente em diversas plataformas!",
+  },
+  {
+    title: "Pronto para Criar?",
+    message: "Agora você está pronto para criar conteúdos incríveis em segundos! Explore os templates e deixe a IA trabalhar por você. Se precisar de ajuda, acesse a seção de Configurações no menu lateral.",
+  }
+];

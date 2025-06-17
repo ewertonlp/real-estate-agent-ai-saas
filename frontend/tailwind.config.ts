@@ -7,20 +7,18 @@ export default {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  darkMode: ["class"], // Removido o segundo "class" redundante
+  darkMode: ["class"],
   theme: {
     extend: {
       colors: {
-        // Todas as cores referenciando variáveis CSS devem usar hsl(var(--...))
-        // Removidas as entradas text, background, button, border, card, foreground, popover, primary, secondary, muted, accent, destructive, input, ring
-        // e substituídas por referências diretas às suas variáveis HSL no globals.css, conforme a convenção do shadcn/ui.
-        
-        // Cores padrão do shadcn/ui que mapeiam para variáveis no globals.css
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        text: "hsl(var(--text))",
+        button: "hsl(var(--button))",
+        'overlay-bg': 'hsl(var(--overlay-bg) / var(--overlay-opacity))',
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -50,10 +48,9 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
 
-        // Suas variáveis personalizadas, agora referenciadas corretamente com hsl()
         'my-card-light': 'hsl(var(--my-card-light))',
-        'my-button-primary': 'hsl(var(--my-button-primary))', // Agora pode usar classes como bg-my-button-primary
-        'my-button-hover': 'hsl(var(--my-button-hover))', // Agora pode usar classes como hover:bg-my-button-hover
+        'my-button-primary': 'hsl(var(--my-button-primary))',
+        'my-button-hover': 'hsl(var(--my-button-hover))',
 
         chart: {
           "1": "hsl(var(--chart-1))",

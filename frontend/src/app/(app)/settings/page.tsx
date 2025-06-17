@@ -1,14 +1,15 @@
 // frontend/src/app/(app)/settings/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { changeUserPassword, getUserAnalytics } from "@/lib/api"; // Importe getUserAnalytics
-import { useTheme } from "@/context/ThemeContext"// Import useTheme
+import { useTheme } from "next-themes";
 import { FaMoon, FaSun } from "react-icons/fa";
+import Loader from "@/components/loader";
 
 export default function SettingsPage() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -16,7 +17,9 @@ export default function SettingsPage() {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoadingPasswordChange, setIsLoadingPasswordChange] = useState(false);
-  const [totalGeneratedContent, setTotalGeneratedContent] = useState<number | null>(null); // NOVO ESTADO
+  const [totalGeneratedContent, setTotalGeneratedContent] = useState<
+    number | null
+  >(null); // NOVO ESTADO
 
   const {
     isAuthenticated,
@@ -27,7 +30,32 @@ export default function SettingsPage() {
     userMaxGenerations,
   } = useAuth();
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
+
+  const fetchAnalytics = useCallback(async () => {
+    if (!isAuthenticated) {
+      console.log("Não autenticado, pulando fetchAnalytics."); // Debug
+      return;
+    }
+
+    try {
+      const data = await getUserAnalytics(); // Chama a API de analytics
+      // Verifique se data e data.total_generated_content existem e são números
+      if (data && typeof data.total_generated_content === "number") {
+        setTotalGeneratedContent(data.total_generated_content);
+      } else {
+        console.warn(
+          "total_generated_content não é um número ou é nulo/indefinido:",
+          data.total_generated_content
+        ); // Debug: Aviso
+        setTotalGeneratedContent(0); // Defina um valor padrão, como 0, se o valor não for um número válido
+      }
+    } catch (err: any) {
+      console.error("Erro ao carregar analytics em settings:", err); // Debug: Erro completo
+      toast.error("Não foi possível carregar os dados.");
+      setTotalGeneratedContent(null); // Mantenha como null para indicar erro ou "carregando com erro"
+    }
+  }, [isAuthenticated]); // fetchAnalytics depende apenas de isAuthenticated
 
   // Efeito para verificar autenticação e carregar analytics
   useEffect(() => {
@@ -37,20 +65,24 @@ export default function SettingsPage() {
     }
 
     if (isAuthenticated) {
-      // Fetch analytics data when authenticated
-      const fetchAnalytics = async () => {
-        try {
-          const data = await getUserAnalytics(); // Chama a API de analytics
-          setTotalGeneratedContent(data.total_generated_content);
-        } catch (err) {
-          console.error("Erro ao carregar analytics em settings:", err);
-          toast.error("Não foi possível carregar os dados.");
-          setTotalGeneratedContent(null); // Define como nulo em caso de erro
-        }
-      };
-      fetchAnalytics();
+      fetchAnalytics(); // Chama a função memoizada
     }
-  }, [isAuthenticated, isAuthLoading, router]); // Adicionado fetchAnalytics como dependência para garantir que rode
+
+    // if (isAuthenticated) {
+    //   // Fetch analytics data when authenticated
+    //   const fetchAnalytics = async () => {
+    //     try {
+    //       const data = await getUserAnalytics(); // Chama a API de analytics
+    //       setTotalGeneratedContent(data.total_generated_content);
+    //     } catch (err) {
+    //       console.error("Erro ao carregar analytics em settings:", err);
+    //       toast.error("Não foi possível carregar os dados.");
+    //       setTotalGeneratedContent(null); // Define como nulo em caso de erro
+    //     }
+    //   };
+    //   fetchAnalytics();
+    // }
+  }, [isAuthenticated, isAuthLoading, router, fetchAnalytics]); // Adicionado fetchAnalytics como dependência para garantir que rode
 
   const handleSubmitPasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,22 +108,33 @@ export default function SettingsPage() {
     }
 
     try {
-      await changeUserPassword(currentPassword, newPassword);
-      toast.success("Senha alterada com sucesso!");
+      await toast.promise(
+        changeUserPassword(currentPassword, newPassword), // A promessa a ser resolvida
+        {
+          pending: 'Alterando senha...', // Mensagem exibida enquanto a promessa está pendente
+          success: 'Senha alterada com sucesso! 🎉', // Mensagem de sucesso quando a promessa é resolvida
+          error: {
+            render({ data }: any) {
+              // 'data' contém o erro lançado pela promessa (catch)
+              const errorMessage = data?.message || "Ocorreu um erro ao alterar a senha.";
+              console.error("Erro ao mudar senha (toast.promise):", data); // Log detalhado para depuração
+              setError(errorMessage); // Opcional: atualiza o estado de erro, se quiser exibir também abaixo do formulário
+              return errorMessage; // Mensagem de erro que será exibida no toast
+            }
+          }
+        }
+      );
+      // Limpa os campos após sucesso
       setCurrentPassword("");
       setNewPassword("");
       setConfirmNewPassword("");
+      // setError(null); // Opcional: Limpar erro se houve sucesso, o toast já indica
     } catch (err: any) {
-      console.error("Erro ao mudar senha:", err);
-      if (err.message === "Sessão expirada. Por favor, faça login novamente.") {
-        router.push("/login");
-        toast.error("Sessão expirada. Por favor, faça login novamente.");
-      } else {
-        toast.error(err.message || "Ocorreu um erro ao alterar a senha.");
-      }
-      setError(err.message || "Falha ao alterar a senha.");
+      // O toast.promise já lida com a exibição do erro, então o 'catch' aqui
+      // é mais para logs adicionais ou lógica que não seja feedback direto ao usuário.
+      // O estado 'error' já é atualizado dentro do render do toast.promise.
     } finally {
-      setIsLoadingPasswordChange(false);
+      setIsLoadingPasswordChange(false); // Garante que o estado de carregamento do botão seja resetado
     }
   };
 
@@ -100,6 +143,16 @@ export default function SettingsPage() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <p className="text-text">Carregando autenticação...</p>
       </div>
+    );
+  }
+
+  const handleToggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
+
+  if (isAuthLoading) {
+    return (
+      <Loader message="Carregando autenticação..." /> // Usa o componente Loader
     );
   }
 
@@ -122,10 +175,8 @@ export default function SettingsPage() {
       )}
 
       <div className="grid grid-cols-1 md-grid-cols-2 lg:grid-cols-3 items-start gap-6 ">
-     
-
         {/* Informações do Plano Section - ATUALIZADO */}
-        <section className="p-4 w-full bg-card-light border border-border rounded-md">
+        <section className="p-4 w-full bg-background border border-border rounded-md">
           <h2 className="text-xl font-semibold text-text mb-4 border-b pb-2">
             Informações do Plano
           </h2>
@@ -138,28 +189,31 @@ export default function SettingsPage() {
             </p>
             {userPlanName && userMaxGenerations !== null && (
               <p>
-                <strong>Gerações Utilizadas este período:</strong> {userGenerationsCount} de{" "}
+                <strong>Gerações Utilizadas este período:</strong>{" "}
+                {userGenerationsCount} de{" "}
                 {userMaxGenerations === 0 ? "Ilimitadas" : userMaxGenerations}
               </p>
             )}
             {/* NOVA LINHA PARA O TOTAL DE GERAÇÕES */}
             <p>
-                <strong>Total de Conteúdos Gerados:</strong>{" "}
-                {totalGeneratedContent !== null ? totalGeneratedContent : "Carregando..."}
+              <strong>Total de Conteúdos Gerados:</strong>{" "}
+              {totalGeneratedContent !== null
+                ? totalGeneratedContent
+                : "Carregando..."}
             </p>
           </div>
-           {userPlanName && userPlanName !== 'Unlimited' && (
-          <Link
-            href="/plans"
-            className="mt-4 inline-block bg-button hover:bg-hover text-white font-medium py-2 px-4 rounded-md transition duration-300"
-          >
-            Fazer Upgrade de Plano
-          </Link>
-        )}
+          {userPlanName && userPlanName !== "Unlimited" && (
+            <Link
+              href="/plans"
+              className="mt-4 inline-block bg-button hover:bg-hover text-white font-medium py-2 px-4 rounded-md transition duration-300"
+            >
+              Fazer Upgrade de Plano
+            </Link>
+          )}
         </section>
 
-           {/* Alterar Senha Section (mantido) */}
-        <section className="w-full border bg-card-light border-border p-4 rounded-md ">
+        {/* Alterar Senha Section (mantido) */}
+        <section className="w-full border bg-background border-border p-4 rounded-md ">
           <h2 className="text-xl font-semibold text-text mb-4 border-b pb-2">
             Alterar Senha
           </h2>
@@ -222,7 +276,7 @@ export default function SettingsPage() {
               <button
                 type="submit"
                 disabled={isLoadingPasswordChange}
-                className="bg-button hover:bg-hover text-white font-semibold font-md py-3 px-4 rounded focus:outline-none focus:shadow-outline w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-all
+                className="bg-button hover:bg-hover text-text font-semibold font-md py-3 px-4 rounded-md focus:outline-none focus:shadow-outline w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-all
                 "
               >
                 {isLoadingPasswordChange ? (
@@ -258,17 +312,17 @@ export default function SettingsPage() {
         </section>
 
         {/* Theme Toggle Section (mantido) */}
-        <section className="p-4 w-full bg-card-light border border-border rounded-md">
+        <section className="p-4 w-full bg-background border border-border rounded-md">
           <h2 className="text-xl font-semibold text-text mb-4 border-b pb-2">
             Configurações de Tema
           </h2>
           <div className="flex items-center justify-between space-x-4">
             <span className="text-text">Modo Escuro / Claro</span>
             <button
-              onClick={toggleTheme}
-              className="p-2 rounded-md bg-button text-white hover:bg-hover transition-colors flex items-center space-x-2"
+              onClick={handleToggleTheme}
+              className="p-2 rounded-md bg-button text-text hover:bg-hover transition-colors flex items-center space-x-2"
             >
-              {theme === 'light' ? (
+              {theme === "light" ? (
                 <>
                   <FaMoon /> <span>Modo Escuro</span>
                 </>

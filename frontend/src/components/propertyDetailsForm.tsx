@@ -207,14 +207,14 @@ const PropertyDetailsForm: React.FC<PropertyDetailsFormProps> = ({ onSubmit, loa
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="condoFee">Valor do Condomínio (R$)</Label>
+          <Label htmlFor="condoFee">Condomínio (R$)</Label>
           <Input id="condoFee" type="number" {...register("condoFee")} placeholder="Ex: 300" step="0.01" />
           {errors.condoFee && (
             <p className="text-red-500 text-sm">{errors.condoFee.message}</p>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="iptuValue">Valor do IPTU (R$)</Label>
+          <Label htmlFor="iptuValue">IPTU (R$)</Label>
           <Input id="iptuValue" type="number" {...register("iptuValue")} placeholder="Ex: 100" step="0.01" />
           {errors.iptuValue && (
             <p className="text-red-500 text-sm">{errors.iptuValue.message}</p>
@@ -348,7 +348,7 @@ const PropertyDetailsForm: React.FC<PropertyDetailsFormProps> = ({ onSubmit, loa
         </div>
       )}
 
-      <Button type="submit" className="w-full mt-6" disabled={loading}>
+      <Button type="submit" className="w-full mt-6 uppercase text-md font-semibold text-text" disabled={loading}>
         {loading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Gerando...

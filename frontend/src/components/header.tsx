@@ -22,7 +22,7 @@ export default function Header() {
         {/* Título/Logo */}
         <Link
           href="/dashboard"
-          className="text-3xl font-bold text-button hover:text-hover transition-colors"
+          className="text-3xl font-bold text-text hover:text-primary transition-colors ease-in-out"
         >
           AuraSync
         </Link>
@@ -31,7 +31,7 @@ export default function Header() {
       <div className="container mx-auto flex justify-end items-center gap-4">
         <Link
           href="/history"
-          className="hover:text-blue-700 text-text font-medium py-1 px-2 mr-4 text-md flex items-center space-x-1 transition-all"
+          className="hover:text-primary text-text font-medium py-1 px-2 mr-4 text-md flex items-center space-x-1 transition-all"
         >
           <span>Tutorial</span>
         </Link>
