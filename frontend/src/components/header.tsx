@@ -17,7 +17,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-card py-4 px-10 shadow-md w-full flex z-10 sticky top-0 left-0">
+    <header className="bg-card py-4 pl-4 pr-10 md:px-10 shadow-md w-full flex z-10 sticky top-0 left-0">
       <div className="container mx-auto flex justify-between items-center">
         {/* Título/Logo */}
         <Link
@@ -28,24 +28,16 @@ export default function Header() {
         </Link>
       </div>
       {/* Links de Navegação e Botões de Ação */}
-      <div className="container mx-auto flex justify-end items-center gap-4">
+      <div className="container mx-auto pr-3 md:pr-0 flex justify-end items-center gap-2">
         <Link
           href="/history"
-          className="hover:text-primary text-text font-medium py-1 px-2 mr-4 text-md flex items-center space-x-1 transition-all"
+          className="hover:text-primary text-text font-medium py-1 px-2 text-md flex items-center space-x-1 transition-all"
         >
           <span>Tutorial</span>
         </Link>
 
         <div>
-          <button
-            onClick={() => {
-              setIsLogoutModalOpen(true); 
-            }}
-            className="flex items-center space-x-1 w-full text-left px-2 py-1 text-sm text-red-500 rounded-md hover:text-white hover:bg-red-500 transition-colors ease-out"
-          >
-            <GiExitDoor size={26} />
-            <span className="text-[1rem]">Sair</span>
-          </button>
+          
         </div>
       </div>
 

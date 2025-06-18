@@ -1,3 +1,4 @@
+// frontend/src/components/sidebar.tsx
 "use client";
 
 import Link from "next/link";
@@ -15,15 +16,23 @@ import {
 } from "react-icons/fa";
 import { IoIosExit } from "react-icons/io";
 import { FiUser } from "react-icons/fi";
-import { useTheme } from "next-themes"; 
-import { usePathname } from "next/navigation"; // Importa o hook
+import { useTheme } from "next-themes";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils"; 
 
-export default function Sidebar() {
+// 1. Crie uma interface para as props que o Sidebar vai receber do seu pai (layout.tsx)
+interface SidebarProps {
+  isOpen: boolean; // Estado booleano que indica se o sidebar deve estar aberto (true) ou fechado (false)
+  onClose: () => void; // Função para fechar o sidebar, passada pelo componente pai
+}
+
+// 2. Modifique a exportação do componente para receber as novas props
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { logout, userEmail } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
-  const pathname = usePathname(); // Hook que pega o caminho atual
+  const pathname = usePathname();
 
   const getUserInitials = (email: string | null) => {
     if (!email) return "US";
@@ -32,7 +41,7 @@ export default function Sidebar() {
     return parts.substring(0, 2).toUpperCase();
   };
 
-   const handleToggleTheme = () => {
+  const handleToggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
   };
 
@@ -43,8 +52,9 @@ export default function Sidebar() {
         : "hover:bg-background text-text"
     }`;
 
+  // Lógica existente para fechar o dropdown do usuário ao clicar fora
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutsideDropdown = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
@@ -52,53 +62,84 @@ export default function Sidebar() {
         setIsDropdownOpen(false);
       }
     };
-
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutsideDropdown);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutsideDropdown);
     };
-  }, [dropdownRef]);
+  }, []);
+
+  // 3. Adicione uma lógica para fechar o sidebar ao clicar fora dele no mobile
+  useEffect(() => {
+    if (isOpen) { // Apenas se o sidebar estiver aberto
+      const handleOutsideClick = (event: MouseEvent) => {
+        // Obtenha a referência ao próprio elemento aside
+        const sidebarElement = document.getElementById('main-sidebar'); // Vamos adicionar este ID ao aside
+        // Se o clique não foi dentro do sidebar, e o sidebar existe, feche-o
+        if (sidebarElement && !sidebarElement.contains(event.target as Node)) {
+          onClose(); // Chama a função onClose passada pelo pai (layout.tsx)
+        }
+      };
+      document.addEventListener('mousedown', handleOutsideClick);
+      return () => {
+        document.removeEventListener('mousedown', handleOutsideClick);
+      };
+    }
+  }, [isOpen, onClose]); // Depende de isOpen e onClose
 
   return (
-    <aside className="fixed top-0 left-0 h-screen w-64 bg-card text-text shadow-lg p-6 flex flex-col z-0 transition-all duration-300 transform -translate-x-full md:translate-x-0">
-      <div className="flex-shrink-0 mt-10 mb-10"></div>
+    // 4. Ajuste as classes da tag <aside> para controlar a visibilidade e transição
+    // 'z-50' para sobrepor o conteúdo e o overlay no mobile. 'md:z-0' para desktop.
+    // 'cn' é usado para mesclar classes condicionalmente e as passadas externamente
+    <aside
+      id="main-sidebar"
+      className={cn(
+        // Classes base que se aplicam em todos os tamanhos, mas podem ser sobrescritas
+        "h-screen w-64 bg-card text-text shadow-lg p-6 flex flex-col transition-transform duration-300",
+        // Classes específicas para mobile (fixed, translate-x para esconder/mostrar)
+        "fixed top-0 left-0 z-50", // z-50 para mobile
+        isOpen ? "translate-x-0" : "-translate-x-full", // Controle de slide mobile
+        // Classes para desktop (md:), que sobrescrevem as de mobile
+        "md:translate-x-0 md:fixed md:w-64 md:z-0" // md:static aqui para garantir que sai do fixed
+      )}
+    >
+      <div className="flex-shrink-0 mt-10 mb-10"></div> {/* Conteúdo do cabeçalho do sidebar */}
 
       <nav className="flex-grow">
-        <ul className="space-y-4 ">
-          <li className="">
-            <Link href="/dashboard" className={linkClass("/dashboard")}>
+        <ul className="space-y-4">
+          <li>
+            <Link href="/dashboard" className={linkClass("/dashboard")} onClick={onClose}> {/* 5. Adicione onClick={onClose} para fechar o sidebar ao clicar no link */}
               <FaWpforms className="text-lg" />
               <span>Gerar Conteúdo</span>
             </Link>
           </li>
-          <li className="">
-            <Link href="/history" className={linkClass("/history")}>
+          <li>
+            <Link href="/history" className={linkClass("/history")} onClick={onClose}>
               <FaHistory className="text-lg" />
               <span>Histórico</span>
             </Link>
           </li>
-          <li className="">
-            <Link href="/analytics" className={linkClass("/analytics")}>
+          <li>
+            <Link href="/analytics" className={linkClass("/analytics")} onClick={onClose}>
               <FaChartBar className="text-lg" />
               <span>Analytics</span>
             </Link>
           </li>
-          <li className="">
-            <Link href="/templates" className={linkClass("/templates")}>
+          <li>
+            <Link href="/templates" className={linkClass("/templates")} onClick={onClose}>
               <FaStar className="text-lg" />
               <span>Templates</span>
             </Link>
           </li>
-          <li className="">
+          <li>
             <Link
               href="/plans"
-              className={`flex items-center space-x-3 p-2 rounded-md transition-colors font-medium
-          ${
-              pathname === "/plans"
-          ? "text-text bg-button"
-          : "bg-button hover:bg-button text-text"
-           }
-            `}
+              className={cn( // Usando cn para melhor legibilidade
+                `flex items-center space-x-3 p-2 rounded-md transition-colors font-medium`,
+                pathname === "/plans"
+                  ? "text-text bg-button"
+                  : "bg-button hover:bg-button text-text"
+              )}
+              onClick={onClose}
             >
               <FaCrown className="text-lg" />
               <span>Upgrade Plano</span>
@@ -108,7 +149,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Dropdown do usuário */}
-      <div className="mt-auto relative" ref={dropdownRef}>
+      <div className="mt-auto relative border-t pt-2" ref={dropdownRef}>
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className="flex items-center justify-between w-full p-2 rounded-md hover:bg-background transition-colors"
@@ -129,7 +170,7 @@ export default function Sidebar() {
             <Link
               href="/settings"
               className="flex items-center space-x-3 px-4 py-2 text-sm text-text hover:bg-card"
-              onClick={() => setIsDropdownOpen(false)}
+              onClick={() => { setIsDropdownOpen(false); onClose(); }} // Fecha dropdown E sidebar
             >
               <FaCog className="text-lg" />
               <span>Configurações da Conta</span>
@@ -148,6 +189,14 @@ export default function Sidebar() {
               </div>
               <span className="text-xs text-gray-500 capitalize">{theme}</span>
             </div>
+            {/* 6. Mova o botão de Logout para dentro do dropdown para melhor organização no mobile */}
+            <button
+              onClick={() => { logout(); setIsDropdownOpen(false); onClose(); }} // Fecha tudo ao deslogar
+              className="flex items-center space-x-3 px-4 py-2 text-sm text-red-500 hover:bg-card w-full text-left"
+            >
+              <IoIosExit className="text-lg" />
+              <span>Sair</span>
+            </button>
           </div>
         )}
       </div>

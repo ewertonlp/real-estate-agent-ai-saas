@@ -144,18 +144,15 @@ export default function PlansPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-card to-card-light rounded-lg py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      {" "}
-      <div className="max-w-full mx-auto text-center py-8">
-        {" "}
-        <h1 className="text-4xl font-semibold text-text mb-6">
+    <div className="min-h-screen bg-card rounded-lg py-12 px-4 sm:px-6 lg:px-8 max-w-9xl mx-auto">
+        <h1 className="text-3xl font-semibold text-text text-center mb-6">
           Escolha o Plano Ideal para Você
-        </h1>{" "}
+        </h1>
         <p className="text-xl text-text mb-12">
           Selecione o plano que melhor se adapta às suas necessidades e comece a
-          gerar conteúdo ilimitado!{" "}
+          gerar conteúdo ilimitado!
         </p>
-        {/* Period Toggle */}{" "}
+        {/* Period Toggle */}
         <div className="flex justify-center mb-10">
           {" "}
           <button
@@ -163,36 +160,36 @@ export default function PlansPage() {
             className={`py-2 px-6 rounded-bl-lg rounded-tl-lg font-semibold text-lg transition-colors ${
               selectedPeriod === "year"
                 ? "bg-button text-white"
-                : "bg-card-light text-text hover:bg-card"
+                : "bg-background text-text hover:bg-button/50"
             } `}
           >
-            Anual{" "}
-          </button>{" "}
+            Anual
+          </button>
           <button
             onClick={() => setSelectedPeriod("month")}
             className={`py-2 px-6 rounded-tr-lg rounded-br-lg font-semibold text-lg transition-colors
                 ${
                   selectedPeriod === "month"
                     ? "bg-button text-white"
-                    : "bg-card-light text-text hover:bg-card"
+                    : "bg-background text-text hover:bg-button/50"
                 } `}
           >
-            Mensal{" "}
-          </button>{" "}
-        </div>{" "}
+            Mensal
+          </button>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {" "}
+          
           {displayedPlans.map((plan) => (
             <div
               key={plan.id}
               className="bg-background rounded-lg shadow-md p-8 flex flex-col justify-between border hover:border-hover transition-all duration-300"
             >
-              {" "}
+              
               <div className="text-center">
-                {" "}
+                
                 <h2 className="text-3xl font-semibold text-text mb-4">
                   {plan.name}
-                </h2>{" "}
+                </h2>
                 <p className="text-text text-center mb-6">{plan.description}</p>{" "}
                 <div className="text-4xl text-center font-semibold text-button mb-6">
                   {
@@ -204,18 +201,18 @@ export default function PlansPage() {
                   }{" "}
                   <span className="text-xl font-medium">
                     /{plan.interval === "month" ? "mês" : "ano"}
-                  </span>{" "}
-                </div>{" "}
+                  </span>
+                </div>
                 <ul className="text-text text-center space-y-2 mb-8">
-                  {" "}
+              
                   <li className="flex items-center">
                     <FaCheckCircle className="text-green-500 mr-2" /> Acesso ao
                     Histórico
-                  </li>{" "}
+                  </li>
                   <li className="flex items-center">
                     <FaCheckCircle className="text-green-500 mr-2" /> Otimização
                     para Redes Sociais
-                  </li>{" "}
+                  </li>
                   {plan.name !== "Free" &&
                     (plan.name.includes("Basic") ||
                       plan.name.includes("Premium") ||
@@ -280,13 +277,13 @@ export default function PlansPage() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>{" "}
                   </svg>
-                ) : null}{" "}
+                ) : null}
                 {plan.name === "Free" ? "Plano Atual" : "Escolher Plano"}{" "}
-              </button>{" "}
+              </button>
             </div>
-          ))}{" "}
-        </div>{" "}
-      </div>{" "}
+          ))}
+        </div>
+      
     </div>
   );
 }

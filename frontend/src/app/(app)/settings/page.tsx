@@ -10,6 +10,7 @@ import { changeUserPassword, getUserAnalytics } from "@/lib/api"; // Importe get
 import { useTheme } from "next-themes";
 import { FaMoon, FaSun } from "react-icons/fa";
 import Loader from "@/components/loader";
+import { IoSettingsOutline } from "react-icons/io5";
 
 export default function SettingsPage() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -111,17 +112,18 @@ export default function SettingsPage() {
       await toast.promise(
         changeUserPassword(currentPassword, newPassword), // A promessa a ser resolvida
         {
-          pending: 'Alterando senha...', // Mensagem exibida enquanto a promessa está pendente
-          success: 'Senha alterada com sucesso! 🎉', // Mensagem de sucesso quando a promessa é resolvida
+          pending: "Alterando senha...", // Mensagem exibida enquanto a promessa está pendente
+          success: "Senha alterada com sucesso! 🎉", // Mensagem de sucesso quando a promessa é resolvida
           error: {
             render({ data }: any) {
               // 'data' contém o erro lançado pela promessa (catch)
-              const errorMessage = data?.message || "Ocorreu um erro ao alterar a senha.";
+              const errorMessage =
+                data?.message || "Ocorreu um erro ao alterar a senha.";
               console.error("Erro ao mudar senha (toast.promise):", data); // Log detalhado para depuração
               setError(errorMessage); // Opcional: atualiza o estado de erro, se quiser exibir também abaixo do formulário
               return errorMessage; // Mensagem de erro que será exibida no toast
-            }
-          }
+            },
+          },
         }
       );
       // Limpa os campos após sucesso
@@ -158,10 +160,9 @@ export default function SettingsPage() {
 
   return (
     <main className="bg-card p-8 rounded-lg shadow-md w-full max-w-full">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-medium text-text">
-          Configurações da Conta
-        </h1>
+      <div className="flex items-center justify-start gap-4 mb-12">
+        <IoSettingsOutline className="text-2xl" />
+        <h1 className="text-3xl font-medium ">Configurações da Conta</h1>
       </div>
 
       {error && (

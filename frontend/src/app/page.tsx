@@ -22,43 +22,54 @@ export default function Home() {
     <div className="min-h-screen bg-background text-text flex flex-col items-center justify-center overflow-hidden">
       <PublicHeader />
       {/* Hero Section */}
-      <section className="grid grid-cols-1 md:grid-cols-2 relative text-start my-20 px-4 pt-20 max-w-7xl w-full">
-        <div className="">
-          <h1 className="text-4xl md:text-6xl font-medium mb-6 leading-5 md:leading-[1.5] tracking-tight animate-fade-in-down">
-            Domine o Mercado Imobiliário com Conteúdo Imbatível.
-          </h1>
-          <p className="text-xl md:text-2xl mb-16  animate-fade-in-up max-w-3xl mx-auto">
-            Gere conteúdo através de Inteligência Artificial. Fácil, Rápido e
-            Direto.
-          </p>
+      <section className="grid grid-cols-1 md:grid-cols-2 relative text-start md:my-20 px-4 pt-20 max-w-7xl w-full">
+  <div className="">
+    <h1 className="text-4xl md:text-6xl font-medium mb-6 leading-[1.3] md:leading-[1.5] tracking-tight animate-fade-in-down">
+      Domine o Mercado Imobiliário com Conteúdo Imbatível.
+    </h1>
+    {/* Ajustei o mb-16 para mb-8 aqui para transferir o espaçamento para o contêiner dos botões */}
+    <p className="text-xl md:text-2xl mb-8 animate-fade-in-up md:max-w-3xl mx-auto">
+      Gere conteúdo através de Inteligência Artificial. Fácil, Rápido e Direto.
+    </p>
 
-          <Link
-            href="#plans"
-            className="bg-button border border-button text-white font-semibold py-4 px-10 rounded-lg text-lg shadow-2xl hover:bg-hover transition-all duration-300 transform hover:scale-105 active:scale-95  mr-4"
-          >
-            Comece a Vender Mais Hoje!
-          </Link>
-          <Link
-            href="/login"
-            className="border border-button text-button font-semibold py-4 px-10 rounded-lg text-lg shadow-xl hover:bg-white hover:text-blue-800 transition-all duration-300 transform hover:scale-105 active:scale-95"
-          >
-            Já sou Corretor AI
-          </Link>
-        </div>
-        <div className="bg-transparent -mt-20 animate-fade-in-up ml-10">
-          <Image
-            src="/corretor-hero-3d.png"
-            alt="Corretora de imóveis"
-            width={600}
-            height={100}
-          />
-        </div>
-      </section>
+    {/* NOVO CONTAINER PARA OS BOTÕES */}
+    {/* flex flex-col: para empilhar verticalmente
+        gap-4: para dar espaçamento de 16px entre eles
+        w-full: para que este contêiner ocupe a largura total disponível
+        mb-16: para manter o espaçamento após os botões, como o parágrafo tinha antes
+    */}
+    <div className="flex flex-col gap-4 mb-16">
+      <Link
+        href="#plans"
+        // w-full: Ocupa a largura total do seu contêiner flexível
+        // Removido 'mr-4' pois 'gap-4' já cuida do espaçamento
+        className="bg-button border border-button text-white font-semibold py-4 px-10 rounded-lg text-lg shadow-2xl hover:bg-hover transition-all duration-300 transform hover:scale-105 active:scale-95 w-full"
+      >
+        Comece a Vender Mais Hoje!
+      </Link>
+      <Link
+        href="/login"
+        // w-full: Ocupa a largura total do seu contêiner flexível
+        className="border border-button text-button text-center font-semibold py-4 px-10 rounded-lg text-lg shadow-xl hover:bg-white hover:text-blue-800 transition-all duration-300 transform hover:scale-105 active:scale-95 w-full"
+      >
+        Já sou Corretor AI
+      </Link>
+    </div>
+  </div>
+  <div className="bg-transparent mt-12 md:-mt-20 animate-fade-in-up ml-10">
+    <Image
+      src="/corretor-hero-3d.png"
+      alt="Corretora de imóveis"
+      width={600}
+      height={100}
+    />
+  </div>
+</section>
 
       {/* Benefits/Why Choose Us Section */}
-      <section className=" bg-card text-text border border-button my-10 p-12 rounded-xl shadow-2xl max-w-7xl w-full transition-transform duration-500">
+      <section className="bg-card text-text border border-button mx-3 my-10 p-8 rounded-xl shadow-2xl max-w-7xl transition-transform duration-500">
         <h2 className="text-[2.5rem] font-medium text-center mb-12 text-text">
-          Por Que Corretor AI?
+          Por Que Escolher AuraSync AI?
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="flex flex-col items-center p-6 rounded-lg  border border-blue-500 shadow-md text-center transform hover:scale-105 transition duration-300">
@@ -106,10 +117,11 @@ export default function Home() {
 
       {/* How It Works Section (Optional, but adds clarity) */}
       <section className="text-center my-16 max-w-4xl w-full animate-fade-in-up-slow">
-        <h2 className="text-[2.5rem] font-medium mb-10 text-text">
-          Como Funciona? Simples e Rápido!
+        <h2 className="text-[2.25rem] font-medium mb-2 text-text">
+          Como Funciona?
         </h2>
-        <div className="relative flex justify-center items-center">
+        <p className="text-[1.5rem]">Simples e Rápido!</p>
+        <div className="relative flex justify-center items-center mt-10 mx-3">
           <div className="absolute top-1/2 left-0 right-0 h-1 bg-button -z-10 hidden md:block"></div>{" "}
           {/* Linha conectora */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -199,28 +211,28 @@ export default function Home() {
       {/* Pricing Section - Highly Persuasive */}
       <section
         id="plans"
-        className="bg-button/40 mt-[450px] my-8 py-12 px-8 rounded-xl bg-card border border-button shadow-2xl max-w-7xl w-full animate-fadeIn"
+        className="mt-[450px] my-8 py-12 px-8 rounded-xl bg-card border border-button shadow-2xl max-w-7xl w-full animate-fadeIn"
       >
         <h2 className="text-4xl font-semibold text-center mb-20 text-text">
           Planos Que Impulsionam Seu Sucesso
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 justify-center gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 justify-center gap-12 md:gap-8">
           {/* Free Tier */}
           <div className="bg-background p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-slate-300 hover:border-blue-500">
             <div>
-              <h3 className="text-3xl font-bold text-gray-800 mb-4">
+              <h3 className="text-3xl font-bold text-text mb-4">
                 Grátis
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-text mb-6">
                 Experimente o poder da IA sem custo.
               </p>
               <div className="text-4xl font-extrabold text-blue-600 mb-6">
                 R$0<span className="text-xl font-normal">/mês</span>
               </div>
-              <p className="text-gray-700 text-lg  mb-6">
+              <p className="text-text text-lg  mb-6">
                 5 Gerações de Conteúdo por Mês
               </p>
-              <ul className="text-gray-700 text-left space-y-2 mb-8">
+              <ul className="text-text text-left space-y-2 mb-8">
                 <li className="flex items-center">
                   <FaCheckCircle className="text-green-500 mr-2" /> Acesso
                   Completo ao Histórico
@@ -246,19 +258,19 @@ export default function Home() {
           {/* Basic Tier - Example */}
           <div className="bg-background p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-slate-300 hover:border-blue-500">
             <div>
-              <h3 className="text-3xl font-bold text-gray-800 mb-4">
+              <h3 className="text-3xl font-bold text-text mb-4">
                 Plano Basic
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-text mb-6">
                 Para agências e corretores com alto volume.
               </p>
               <div className="text-4xl font-extrabold text-blue-600 mb-6">
                 R$20,00<span className="text-xl font-normal">/mês</span>
               </div>
-              <p className="text-gray-700 text-lg  mb-6">
+              <p className="text-text text-lg  mb-6">
                 Até 20 conteúdos por mês!
               </p>
-              <ul className="text-gray-700 text-left space-y-2 mb-8">
+              <ul className="text-text text-left space-y-2 mb-8">
                 <li className="flex items-center">
                   <FaCheckCircle className="text-green-500 mr-2" /> Tudo do
                   Plano Essencial
@@ -321,17 +333,17 @@ export default function Home() {
           {/* Premium Tier - Example (or Unlimited) */}
           <div className="bg-background p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-slate-300 hover:border-blue-500">
             <div>
-              <h3 className="text-3xl font-bold text-gray-800 mb-4">
+              <h3 className="text-3xl font-bold text-text mb-4">
                 Plano Ilimitado
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-text mb-6">
                 Para agências, Imobiliárias e corretores com alto volume.
               </p>
               <div className="text-4xl font-extrabold text-blue-600 mb-6">
                 R$100,00<span className="text-xl font-normal">/mês</span>
               </div>
-              <p className="text-gray-700 text-lg mb-6">Gerações ILIMITADAS!</p>
-              <ul className="text-gray-700 text-left space-y-2 mb-8">
+              <p className="text-text text-lg mb-6">Gerações ILIMITADAS!</p>
+              <ul className="text-text text-left space-y-2 mb-8">
                 <li className="flex items-center">
                   <FaCheckCircle className="text-green-500 mr-2" /> Tudo do
                   Plano Premium
@@ -353,11 +365,11 @@ export default function Home() {
       </section>
 
        {/* NEW ROI SECTION */}
-      <section className="text-center px-4 py-16 bg-card border border-button text-text rounded-xl shadow-2xl max-w-4xl w-full animate-fade-in-up my-16">
+      <section className="text-center px-4 py-16 bg-card border border-button text-text rounded-xl shadow-2xl max-w-4xl mx-3 animate-fade-in-up my-16">
         <h2 className="text-4xl md:text-5xl font-bold mb-6 text-text leading-tight">
-          Pense no Retorno do Seu Investimento.
+          Pense no Retorno do Seu Investimento
         </h2>
-        <p className="text-xl md:text-2xl text-text mb-8 opacity-90 max-w-3xl mx-auto">
+        <p className="text-xl md:text-2xl text-text mb-8 opacity-90 max-w-3xl mx-auto leading-[1.5]">
           Um investimento de apenas R$40/mês pode parecer pouco,
           mas se o Corretor AI te ajudar a gerar apenas <strong>uma venda a mais </strong>
           de um imóvel de R$300.000, com uma comissão média de R$6.000,
@@ -368,7 +380,7 @@ export default function Home() {
         </p>
         <Link
           href="/register"
-          className="bg-yellow-400 text-blue-900 font-bold py-4 px-12 rounded-lg text-xl shadow-2xl hover:bg-yellow-300 transition duration-300 transform hover:scale-105 active:scale-95 glow-button"
+          className="bg-yellow-400 text-blue-900 font-bold py-4 px-12 rounded-lg md:text-xl shadow-2xl hover:bg-yellow-300 transition duration-300 transform hover:scale-105 active:scale-95 glow-button"
         >
           COMECE A VENDER MAIS AGORA!
         </Link>
@@ -376,12 +388,12 @@ export default function Home() {
       {/* END NEW ROI SECTION */}
 
       {/* Final Call to Action */}
-      <section className="text-center px-4 py-16 mb-16 bg-card border border-button text-gray-800 rounded-xl shadow-2xl max-w-4xl w-full animate-fade-in-up">
-        <h2 className="text-4xl md:text-4xl font-bold mb-6 text-text leading-5">
-          Chega de Bloqueio Criativo.
+      <section className="text-center px-4 py-16 bg-card border border-button text-text rounded-xl shadow-2xl max-w-4xl mx-3 animate-fade-in-up my-16">
+        <h2 className="text-3xl md:text-4xl font-bold mb-6 text-text leading-tight">
+          Chega de Bloqueio Criativo
           <br />
         </h2>
-        <h3 className="text-4xl md:text-5xl font-bold mb-6 text-text leading-5">
+        <h3 className="text-4xl md:text-5xl font-bold mb-6 text-text leading-tight">
           Comece a Vender Mais Hoje!
         </h3>
         <p className="text-xl md:text-2xl text-text mb-12 opacity-90 max-w-3xl mx-auto">
@@ -390,7 +402,7 @@ export default function Home() {
         </p>
         <Link
           href="/register"
-          className="bg-yellow-400 text-blue-900 font-bold py-4 px-12 rounded-lg text-xl shadow-2xl hover:bg-yellow-300 transition duration-300 transform hover:scale-105 active:scale-95 glow-button"
+          className="bg-yellow-400 text-blue-900 font-bold py-4 px-12 rounded-lg md:text-xl shadow-2xl hover:bg-yellow-300 transition duration-300 transform hover:scale-105 active:scale-95 glow-button"
         >
           CADASTRE-SE GRÁTIS AGORA!
         </Link>
