@@ -48,7 +48,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const linkClass = (path: string) =>
     `flex items-center space-x-3 p-2 rounded-md transition-colors ${
       pathname === path
-        ? "bg-background text-primary font-medium"
+        ? "bg-background text-button font-medium"
         : "hover:bg-background text-text"
     }`;
 
@@ -158,7 +158,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             <div className="flex items-center justify-center w-8 h-8 rounded-full bg-button text-white text-sm font-medium">
               {userEmail ? getUserInitials(userEmail) : <FiUser size={18} />}
             </div>
-            <span className="text-xs font-medium truncate">
+            <span className="text-sm font-medium truncate">
               {userEmail || "Usuário"}
             </span>
           </div>

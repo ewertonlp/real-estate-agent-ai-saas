@@ -12,6 +12,7 @@ import {
   FaInstagram,
   FaFacebook,
   FaTelegramPlane,
+  FaArrowDown,
 } from "react-icons/fa"; // Novos ícones para persuasão
 import { MdOutlineEmail } from "react-icons/md";
 import PublicHeader from "@/components/publicHeader";
@@ -23,51 +24,47 @@ export default function Home() {
       <PublicHeader />
       {/* Hero Section */}
       <section className="grid grid-cols-1 md:grid-cols-2 relative text-start md:my-20 px-4 pt-20 max-w-7xl w-full">
-  <div className="">
-    <h1 className="text-4xl md:text-6xl font-medium mb-6 leading-[1.3] md:leading-[1.5] tracking-tight animate-fade-in-down">
-      Domine o Mercado Imobiliário com Conteúdo Imbatível.
-    </h1>
-    {/* Ajustei o mb-16 para mb-8 aqui para transferir o espaçamento para o contêiner dos botões */}
-    <p className="text-xl md:text-2xl mb-8 animate-fade-in-up md:max-w-3xl mx-auto">
-      Gere conteúdo através de Inteligência Artificial. Fácil, Rápido e Direto.
-    </p>
+        <div className="">
+          <h1 className="text-4xl md:text-6xl font-medium mb-6 leading-[1.3] md:leading-[1.5] tracking-tight animate-fade-in-down">
+            Domine o Mercado Imobiliário com Conteúdo Imbatível.
+          </h1>
+          {/* Ajustei o mb-16 para mb-8 aqui para transferir o espaçamento para o contêiner dos botões */}
+          <p className="text-xl md:text-2xl mb-8 animate-fade-in-up md:max-w-3xl mx-auto">
+            Gere conteúdo para posts, blog ou para sua lista de clientes, através de Inteligência Artificial. <br/>
+            <strong>Fácil, Rápido e
+            Direto!</strong>
+          </p>
 
-    {/* NOVO CONTAINER PARA OS BOTÕES */}
-    {/* flex flex-col: para empilhar verticalmente
-        gap-4: para dar espaçamento de 16px entre eles
-        w-full: para que este contêiner ocupe a largura total disponível
-        mb-16: para manter o espaçamento após os botões, como o parágrafo tinha antes
-    */}
-    <div className="flex flex-col gap-4 mb-16">
-      <Link
-        href="#plans"
-        // w-full: Ocupa a largura total do seu contêiner flexível
-        // Removido 'mr-4' pois 'gap-4' já cuida do espaçamento
-        className="bg-button border border-button text-white font-semibold py-4 px-10 rounded-lg text-lg shadow-2xl hover:bg-hover transition-all duration-300 transform hover:scale-105 active:scale-95 w-full"
-      >
-        Comece a Vender Mais Hoje!
-      </Link>
-      <Link
-        href="/login"
-        // w-full: Ocupa a largura total do seu contêiner flexível
-        className="border border-button text-button text-center font-semibold py-4 px-10 rounded-lg text-lg shadow-xl hover:bg-white hover:text-blue-800 transition-all duration-300 transform hover:scale-105 active:scale-95 w-full"
-      >
-        Já sou Corretor AI
-      </Link>
-    </div>
-  </div>
-  <div className="bg-transparent mt-12 md:-mt-20 animate-fade-in-up ml-10">
-    <Image
-      src="/corretor-hero-3d.png"
-      alt="Corretora de imóveis"
-      width={600}
-      height={100}
-    />
-  </div>
-</section>
+          <div className="flex flex-col md:flex-row gap-4 mb-16">
+            <Link
+              href="#plans"
+              // w-full: Ocupa a largura total do seu contêiner flexível
+              // Removido 'mr-4' pois 'gap-4' já cuida do espaçamento
+              className="bg-button border border-button text-white text-center font-semibold py-4 rounded-lg text-lg shadow-2xl hover:bg-hover transition-all duration-300 transform hover:scale-102 active:scale-95 w-full md:w-[300px]"
+            >
+              Comece Hoje Mesmo!
+            </Link>
+            <Link
+              href="/login"
+              // w-full: Ocupa a largura total do seu contêiner flexível
+              className="border border-button text-button text-center font-semibold py-4 px-10 rounded-lg text-lg shadow-xl hover:bg-white hover:text-blue-800 transition-all duration-300 transform hover:scale-102 active:scale-95 w-ful md:w-[300px]"
+            >
+              Já sou AuraSync AI
+            </Link>
+          </div>
+        </div>
+        <div className="bg-transparent mt-4 md:-mt-20 animate-fade-in-up md:ml-10">
+          <Image
+            src="/aurasync.jpg"
+            alt="Corretora de imóveis"
+            width={600}
+            height={100}
+          />
+        </div>
+      </section>
 
       {/* Benefits/Why Choose Us Section */}
-      <section className="bg-card text-text border border-button mx-3 my-10 p-8 rounded-xl shadow-2xl max-w-7xl transition-transform duration-500">
+      <section className="bg-card text-text border border-button mx-3 my-10 p-8 rounded-xl shadow-xl max-w-7xl transition-transform duration-500">
         <h2 className="text-[2.5rem] font-medium text-center mb-12 text-text">
           Por Que Escolher AuraSync AI?
         </h2>
@@ -125,7 +122,7 @@ export default function Home() {
           <div className="absolute top-1/2 left-0 right-0 h-1 bg-button -z-10 hidden md:block"></div>{" "}
           {/* Linha conectora */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            <div className="flex flex-col items-center bg-card text-gray-800 border border-button p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
+            <div className="flex flex-col items-center bg-card text-text border border-button p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
               <div className="w-16 h-16 rounded-full bg-button text-white flex items-center justify-center text-3xl font-bold mb-4 z-10 step-number">
                 1
               </div>
@@ -136,7 +133,7 @@ export default function Home() {
                 Insira detalhes como tipo, quartos, localização e diferenciais.
               </p>
             </div>
-            <div className="flex flex-col items-center bg-card text-gray-800 border border-button p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
+            <div className="flex flex-col items-center bg-card text-text border border-button p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
               <div className="w-16 h-16 rounded-full bg-button text-white flex items-center justify-center text-3xl font-bold mb-4 z-10 step-number">
                 2
               </div>
@@ -148,7 +145,7 @@ export default function Home() {
                 Emojis).
               </p>
             </div>
-            <div className="flex flex-col items-center bg-card text-gray-800 border border-button p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
+            <div className="flex flex-col items-center bg-card text-text border border-button p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
               <div className="w-16 h-16 rounded-full bg-button text-white flex items-center justify-center text-3xl font-bold mb-4 z-10 step-number">
                 3
               </div>
@@ -164,36 +161,35 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative text-center my-10 max-w-7xl w-full ">
-        {/* Linha horizontal (do topo esquerdo até perto da direita) */}
-        <div className="relative flex justify-center w-1/3 p-4 rounded-lg bg-card shadow-lg z-10 border border-border animate-slideUp">
+      <section className="relative text-center my-6 max-w-7xl mx-3 w-full flex flex-col items-center gap-10">
+        <div className="relative flex justify-center w-full max-w-md p-4 rounded-lg bg-card shadow-xl z-10 border border-border hover:shadow-2xl transition-shadow duration-300">
           <Image
             src="/prompt-imoveis.png"
             alt="prompt para gerar conteudo por IA"
             width={400}
             height={100}
           />
-        </div>
-        <div className="absolute top-[280px] left-[400px] w-[250px] h-0.5 border-t-4 z-0 border-button"></div>
-        <div className="absolute top-[280px] left-[650px] w-0.5 h-[250px] border-l-4 border-button"></div>
 
-        <div className="relative left-[350px] flex justify-center w-1/3 mt-10 p-4 rounded-lg bg-card border border-border shadow-lg z-50 animate-slideUp">
+          <FaArrowDown className="absolute bottom-[-30px] left-1/2 -translate-x-1/2 text-3xl text-primary z-30 " />
+        </div>
+
+        <div className="relative flex justify-center w-full max-w-md p-4 rounded-lg bg-card shadow-xl z-10 border border-border hover:shadow-2xl transition-shadow duration-300">
           <Image
             src="/conteudo-imoveis.png"
             alt="prompt para gerar conteudo por IA"
             width={400}
             height={100}
           />
+
+          <FaArrowDown className="absolute bottom-[-30px] left-1/2 -translate-x-1/2 text-3xl text-primary z-30" />
         </div>
-        <div className="absolute top-[1400px] left-[650px] w-[150px] h-0.5 border-t-4 border-button"></div>
-        <div className="absolute top-[1200px] left-[650px] w-0.5 h-[200px] border-l-4 border-button"></div>
-        <div className="absolute right-0 top-[1250px] flex-1 justify-center w-[500px] h-[auto] px-8 py-12 rounded-lg bg-card border border-border shadow-lg z-50 animate-slideUp">
+
+        <div className="relative flex-col justify-center w-full max-w-md mx-3 md:mx-0 px-4 py-8 rounded-lg bg-card shadow-xl z-10 border border-border hover:shadow-2xl transition-shadow duration-300">
           <div className="relative">
-            <h3 className="text-3xl font-semibold mb-4 text-button">
-              Divulgue
-            </h3>
+            <h3 className="text-3xl font-medium mb-4 text-text">Divulgue</h3>
             <p className="text-lg">
-              Envie diretamente para sua lista de clientes ou use como legenda em seus posts.{" "}
+              Envie diretamente para sua lista de clientes ou use como legenda
+              em seus posts.{" "}
             </p>
           </div>
           <div className="flex justify-center items-center gap-8 mt-12 ">
@@ -202,8 +198,6 @@ export default function Home() {
             <FaFacebook className="text-blue-600 w-10 h-10" />
             <FaTelegramPlane className="text-blue-400 w-10 h-10" />
             <MdOutlineEmail className="text-slate-400 w-10 h-10" />
-
-
           </div>
         </div>
       </section>
@@ -211,18 +205,16 @@ export default function Home() {
       {/* Pricing Section - Highly Persuasive */}
       <section
         id="plans"
-        className="mt-[450px] my-8 py-12 px-8 rounded-xl bg-card border border-button shadow-2xl max-w-7xl w-full animate-fadeIn"
+        className="my-16 py-12 px-8 rounded-xl bg-card border border-button shadow-xl max-w-7xl w-full animate-fadeIn"
       >
         <h2 className="text-4xl font-semibold text-center mb-20 text-text">
-          Planos Que Impulsionam Seu Sucesso
+          Escolha o Plano Ideal
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 justify-center gap-12 md:gap-8">
           {/* Free Tier */}
           <div className="bg-background p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-slate-300 hover:border-blue-500">
             <div>
-              <h3 className="text-3xl font-bold text-text mb-4">
-                Grátis
-              </h3>
+              <h3 className="text-3xl font-bold text-text mb-4">Grátis</h3>
               <p className="text-text mb-6">
                 Experimente o poder da IA sem custo.
               </p>
@@ -249,7 +241,7 @@ export default function Home() {
             </div>
             <Link
               href="/register"
-              className="bg-button text-md text-white font-semibold py-3 px-6 rounded-lg cursor-pointer"
+              className="bg-button text-md text-white hover:bg-blue-600 font-semibold py-3 px-6 rounded-lg cursor-pointer"
             >
               Comece Grátis
             </Link>
@@ -258,9 +250,7 @@ export default function Home() {
           {/* Basic Tier - Example */}
           <div className="bg-background p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-slate-300 hover:border-blue-500">
             <div>
-              <h3 className="text-3xl font-bold text-text mb-4">
-                Plano Basic
-              </h3>
+              <h3 className="text-3xl font-bold text-text mb-4">Basic</h3>
               <p className="text-text mb-6">
                 Para agências e corretores com alto volume.
               </p>
@@ -299,7 +289,7 @@ export default function Home() {
               <div className="absolute -top-7 right-1/2 translate-x-1/2 bg-yellow-400 text-blue-900 text-md font-bold px-3 py-1 rounded-lg shadow-lg">
                 MAIS POPULAR!
               </div>
-              <h3 className="text-3xl font-bold my-4">Plano Premium</h3>
+              <h3 className="text-3xl font-bold my-4">Premium</h3>
               <p className="opacity-90 mb-6">
                 Desbloqueie o potencial máximo de suas campanhas.
               </p>
@@ -333,9 +323,7 @@ export default function Home() {
           {/* Premium Tier - Example (or Unlimited) */}
           <div className="bg-background p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-slate-300 hover:border-blue-500">
             <div>
-              <h3 className="text-3xl font-bold text-text mb-4">
-                Plano Ilimitado
-              </h3>
+              <h3 className="text-3xl font-bold text-text mb-4">Unlimited</h3>
               <p className="text-text mb-6">
                 Para agências, Imobiliárias e corretores com alto volume.
               </p>
@@ -364,52 +352,56 @@ export default function Home() {
         </div>
       </section>
 
-       {/* NEW ROI SECTION */}
-      <section className="text-center px-4 py-16 bg-card border border-button text-text rounded-xl shadow-2xl max-w-4xl mx-3 animate-fade-in-up my-16">
-        <h2 className="text-4xl md:text-5xl font-bold mb-6 text-text leading-tight">
+      {/* NEW ROI SECTION */}
+      <section className="text-center px-6 md:px-12 py-16 bg-card border border-button text-text rounded-xl shadow-2xl max-w-4xl mx-3 animate-fade-in-up my-16">
+        <h2 className="text-3xl md:text-4xl font-bold mb-6 text-text leading-tight">
           Pense no Retorno do Seu Investimento
         </h2>
         <p className="text-xl md:text-2xl text-text mb-8 opacity-90 max-w-3xl mx-auto leading-[1.5]">
-          Um investimento de apenas R$40/mês pode parecer pouco,
-          mas se o Corretor AI te ajudar a gerar apenas <strong>uma venda a mais </strong>
-          de um imóvel de R$300.000, com uma comissão média de R$6.000,
-          o seu custo com a ferramenta se torna **insignificante**.
+          Com um investimento de apenas R$40/mês, o AuraSync AI pode{" "}
+          <strong>transformar seus resultados.</strong>
+        </p>
+        <p className="text-xl md:text-2xl text-text mb-8 opacity-90 max-w-3xl mx-auto leading-[1.5]">
+          Se a ferramenta te ajudar a fechar apenas uma{" "}
+          <strong>venda adicional de um imóvel</strong> de R$300.000, gerando
+          uma comissão média de R$6.000, o seu custo mensal se revela{" "}
+          <strong>totalmente superado</strong> pelo ganho, tornando-se um
+          detalhe diante da <strong>escala do seu sucesso.</strong>
         </p>
         <p className="text-2xl md:text-3xl font-medium text-text mb-12 opacity-90 max-w-3xl mx-auto">
-        Não é um custo, é um investimento para <strong>impulsionar</strong> suas vendas.
+          Não é um custo, é um investimento para <strong>impulsionar</strong>{" "}
+          suas vendas.
         </p>
         <Link
           href="/register"
-          className="bg-yellow-400 text-blue-900 font-bold py-4 px-12 rounded-lg md:text-xl shadow-2xl hover:bg-yellow-300 transition duration-300 transform hover:scale-105 active:scale-95 glow-button"
+          className="bg-yellow-400 text-blue-900 font-bold py-4 px-12 rounded-lg md:text-xl shadow-xl hover:bg-yellow-300 transition duration-300 transform hover:scale-105 active:scale-95 glow-button"
         >
-          COMECE A VENDER MAIS AGORA!
+        REGISTRE-SE AGORA!
         </Link>
       </section>
       {/* END NEW ROI SECTION */}
 
       {/* Final Call to Action */}
-      <section className="text-center px-4 py-16 bg-card border border-button text-text rounded-xl shadow-2xl max-w-4xl mx-3 animate-fade-in-up my-16">
-        <h2 className="text-3xl md:text-4xl font-bold mb-6 text-text leading-tight">
+      <section className="text-center px-4 py-16 bg-card border border-button text-text rounded-xl shadow-xl max-w-4xl mx-3 animate-fade-in-up my-16">
+        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-text leading-tight">
           Chega de Bloqueio Criativo
           <br />
         </h2>
-        <h3 className="text-4xl md:text-5xl font-bold mb-6 text-text leading-tight">
+        <h3 className="text-3xl md:text-4xl font-bold mb-6 text-text leading-tight">
           Comece a Vender Mais Hoje!
         </h3>
         <p className="text-xl md:text-2xl text-text mb-12 opacity-90 max-w-3xl mx-auto">
           Milhares de corretores já estão otimizando seu tempo e suas vendas com
-          a IA. Qual será seu próximo grande negócio?
+          a IA. Qual será sua próxima Grande Venda?
         </p>
         <Link
           href="/register"
           className="bg-yellow-400 text-blue-900 font-bold py-4 px-12 rounded-lg md:text-xl shadow-2xl hover:bg-yellow-300 transition duration-300 transform hover:scale-105 active:scale-95 glow-button"
         >
-          CADASTRE-SE GRÁTIS AGORA!
+          CADASTRE-SE GRÁTIS!
         </Link>
       </section>
-      <Footer/>
-
-     
+      <Footer />
 
       {/* Global styles for animations and glow effect - Add to globals.css if preferred */}
       <style jsx global>{`

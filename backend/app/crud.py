@@ -1,5 +1,6 @@
 # backend/app/crud.py
 
+from typing import Optional
 from sqlalchemy.orm import Session, joinedload
 from app import models, schemas
 from app.core.security import get_password_hash
@@ -16,19 +17,6 @@ def get_user_by_email(db: Session, email: str):
         .first()
     )
 
-    # # --- ADICIONE ESTAS LINHAS DE DEBUG AQUI ---
-    # print(f"DEBUG(CRUD): Usuário '{email}' recuperado: {user.id if user else 'NULO'}")
-    # if user:
-    #     print(f"DEBUG(CRUD): user.subscription_plan_id (do DB): {user.subscription_plan_id}")
-    #     if hasattr(user, 'subscription_plan') and user.subscription_plan is not None:
-    #         print(f"DEBUG(CRUD): user.subscription_plan object LOADED: ID={user.subscription_plan.id}, Name={user.subscription_plan.name}")
-    #     else:
-    #         print("DEBUG(CRUD): user.subscription_plan object is NONE (relacionamento não carregado ou nulo).")
-    # else:
-    #     print(f"DEBUG(CRUD): Usuário com email '{email}' NÃO ENCONTRADO.")
-    # # --- FIM DO DEBUG ---
-
-    # Certifique-se que você não tem um 'return db_user' duplicado aqui.
     return user
 
 def create_user(db: Session, user: schemas.UserCreate):
@@ -236,13 +224,11 @@ def update_subscription_plan(
 
 
 # Função para obter um plano de assinatura pelo nome (usado em subscriptions.py e em seeds/init_db.py se você tiver)
-def get_subscription_plan_by_name(db: Session, name: str):
-    return (
-        db.query(models.SubscriptionPlan)
-        .filter(models.SubscriptionPlan.name == name)
-        .first()
-    )
-
+def get_subscription_plan_by_name(db: Session, name: str, interval: Optional[str] = None): # MODIFICADO AQUI: adicione 'interval: Optional[str] = None'
+    query = db.query(models.SubscriptionPlan).filter(models.SubscriptionPlan.name == name)
+    if interval: # Adicione esta lógica para filtrar por intervalo, se fornecido
+        query = query.filter(models.SubscriptionPlan.interval == interval)
+    return query.first()
 
 # Adicione esta nova função para atualizar o customer_id do Stripe do usuário
 def update_user_stripe_customer_id(db: Session, user_id: int, stripe_customer_id: str):

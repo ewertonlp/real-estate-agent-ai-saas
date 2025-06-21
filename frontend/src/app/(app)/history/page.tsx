@@ -366,7 +366,7 @@ export default function HistoryPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
-          {history.map((item) => {
+          {history.map((item, index) => {
             const { propertyType, location } = extractPromptDetails(
               item.prompt_used
             );
@@ -377,7 +377,7 @@ export default function HistoryPage() {
             ); // Limita o texto gerado a 8 linhas
             return (
               <div
-                key={item.id}
+                 key={item.id !== undefined && item.id !== null ? item.id : `history-item-${index}`}
                 // Adicione 'flex flex-col h-full' para que o conteúdo possa crescer e o rodapé fique no final
                 className="bg-background border border-border rounded-lg shadow-lg relative flex flex-col h-full"
               >

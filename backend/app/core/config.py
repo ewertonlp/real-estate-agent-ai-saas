@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     # A base de configurações é SettingsConfigDict para Pydantic V2+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    DATABASE_URL: str = Field("sqlite:///./sql_app.db", env="DATABASE_URL")
+    DATABASE_URL: str = Field("sqlite:///D:/TEMPLATES/seu-saas-corretor/backend/sql_app.db", env="DATABASE_URL")
     SECRET_KEY: str = Field(..., env="SECRET_KEY")
     ALGORITHM: str = Field("HS256", env="ALGORITHM")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(30, env="ACCESS_TOKEN_EXPIRE_MINUTES")

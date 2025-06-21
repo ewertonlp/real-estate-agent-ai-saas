@@ -5,9 +5,15 @@ from fastapi.middleware.cors import CORSMiddleware
 # Importe o novo módulo de endpoints
 from app.api.endpoints import content_generator, auth, history, users, image_generator, subscriptions, prompt_templates # <-- Certifique-se que 'subscriptions' está aqui
 from app.core.database import Base, engine
+from app.core.config import settings
+# --- IMPORTS NECESSÁRIOS PARA O BLOCO DE STARTUP ---
+from sqlalchemy.orm import Session
+from app.core.database import SessionLocal # Importe SessionLocal
+from app.crud import get_all_subscription_plans # Importe a função CRUD para ler planos
+# --- FIM DOS IMPORTS NECESSÁRIOS ---
 
 # Cria as tabelas no banco de dados (para desenvolvimento)
-Base.metadata.create_all(bind=engine)
+# Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Gerador de Conteúdo para Corretores de Imóveis",
@@ -18,7 +24,7 @@ app = FastAPI(
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-     "http://localhost:8000",
+    "http://localhost:8000",
 ]
 
 app.add_middleware(
@@ -28,6 +34,36 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# --- BLOCO DE INICIALIZAÇÃO E DEBUG DO BANCO DE DADOS ---
+@app.on_event("startup")
+def on_startup():
+    print(f"\n--- INÍCIO DO PROCESSO DE STARTUP DO FASTAPI ---")
+    print(f"DEBUG: DATABASE_URL configurada: {settings.DATABASE_URL}")
+
+    # Opcional: Recriar tabelas se você quiser um ambiente limpo a cada restart (NÃO RECOMENDADO EM PROD)
+    # Se você está usando Alembic, esta linha geralmente deve ser comentada.
+    # Base.metadata.create_all(bind=engine)
+
+    # Inserção inicial de dados (se necessário e não for via script seed_plans.py)
+    # Por exemplo, se você quer ter certeza que o plano Free sempre existe no DB do servidor
+    # (Mas se você tem seed_plans.py, esta parte aqui pode ser duplicada ou omitida)
+
+    db: Session = SessionLocal()
+    try:
+        print("DEBUG: Lendo planos do DB no startup do FastAPI:")
+        all_plans_from_db = get_all_subscription_plans(db) # Usa o CRUD para ler
+        for p in all_plans_from_db:
+            print(f"  - Plano: {p.name} ({p.interval}), Max Gerações: {p.max_generations}, ID DB: {p.id}")
+        if not all_plans_from_db:
+            print("  - NENHUM plano encontrado no DB no startup. DB pode estar vazio.")
+    except Exception as e:
+        print(f"ERRO DE DEBUG NO STARTUP: Não foi possível ler planos do DB: {e}")
+    finally:
+        db.close()
+    print("--- FIM DO PROCESSO DE STARTUP DO FASTAPI ---\n")
+# --------------------------------------------------------
 
 app.include_router(content_generator.router, prefix="/api/v1", tags=["content_generator"])
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
