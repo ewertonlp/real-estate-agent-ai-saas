@@ -28,7 +28,8 @@ def seed_database():
         # --- Criação dos Planos (somente se não existirem) ---
 
         # Plano "Free"
-        if not get_subscription_plan_by_name(db, name="Free"):
+        # Use o intervalo "month" para o plano Free ao buscar e criar
+        if not get_subscription_plan_by_name(db, name="Free", interval="month"):
             free_plan_data = SubscriptionPlanCreate(
                 name="Free", description="Plano gratuito com gerações limitadas",
                 max_generations=settings.FREE_PLAN_MAX_GENERATIONS, unit_amount=0,

@@ -299,15 +299,15 @@ export default function DashboardPage() {
             <div className="flex-grow">
               {generatedContent ? (
                 <>
-                  <div className="border border-gray-300 dark:border-gray-600 rounded-md p-4 bg-gray-50 dark:bg-gray-700 h-full overflow-auto">
+                  <div className="flex flex-col justify-center border border-gray-300 dark:border-gray-600 rounded-md p-4 bg-card dark:bg-card h-full overflow-auto">
                     <p className="whitespace-pre-wrap">{generatedContent}</p>
-                  </div>
                   <button
-                    onClick={handleCopy} // <<< USANDO handleCopy AQUI
-                    className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-text font-semibold rounded-md shadow-md transition duration-300 ease-in-out"
+                    onClick={handleCopy} 
+                    className="mt-4 px-6 py-2 mx-auto bg-primary hover:bg-blue-600 text-text font-semibold rounded-md shadow-md transition duration-300 ease-in-out"
                   >
                     {showCopyMessage ? "Copiado!" : "Copiar Conteúdo"}
                   </button>
+                  </div>
                 </>
               ) : (
                 <p className="text-gray-500 dark:text-gray-400 text-center flex items-center justify-center h-full">

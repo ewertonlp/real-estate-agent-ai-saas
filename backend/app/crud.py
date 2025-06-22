@@ -128,29 +128,6 @@ def get_user_generated_contents(
     )
 
 
-def update_generated_content_favorite_status(
-    db: Session, content_id: int, user_id: int, is_favorite: bool
-):
-    """
-    Atualiza o status de favorito de um conteúdo gerado.
-    """
-    db_content = (
-        db.query(models.GeneratedContent)
-        .filter(
-            models.GeneratedContent.id == content_id,
-            models.GeneratedContent.owner_id == user_id,
-        )
-        .first()
-    )
-
-    if db_content:
-        db_content.is_favorite = is_favorite
-        db.add(db_content)
-        db.commit()
-        db.refresh(db_content)
-    return db_content
-
-
 def create_prompt_template(db: Session, template: schemas.PromptTemplateBase):
     db_template = models.PromptTemplate(**template.model_dump())
     db.add(db_template)
@@ -224,6 +201,7 @@ def update_subscription_plan(
 
 
 # Função para obter um plano de assinatura pelo nome (usado em subscriptions.py e em seeds/init_db.py se você tiver)
+# CORREÇÃO AQUI: Adicione 'interval: Optional[str] = None' e a lógica para filtrar
 def get_subscription_plan_by_name(db: Session, name: str, interval: Optional[str] = None): # MODIFICADO AQUI: adicione 'interval: Optional[str] = None'
     query = db.query(models.SubscriptionPlan).filter(models.SubscriptionPlan.name == name)
     if interval: # Adicione esta lógica para filtrar por intervalo, se fornecido
@@ -259,3 +237,25 @@ def get_total_generated_content_count(db: Session, user_id: int) -> int:
         .filter(models.GeneratedContent.owner_id == user_id)
         .scalar() # Usa .scalar() para obter o resultado de contagem diretamente
     )
+
+def update_generated_content_favorite_status(
+    db: Session, content_id: int, user_id: int, is_favorite: bool
+):
+    """
+    Atualiza o status de favorito de um conteúdo gerado.
+    """
+    db_content = (
+        db.query(models.GeneratedContent)
+        .filter(
+            models.GeneratedContent.id == content_id,
+            models.GeneratedContent.owner_id == user_id,
+        )
+        .first()
+    )
+
+    if db_content:
+        db_content.is_favorite = is_favorite
+        db.add(db_content)
+        db.commit()
+        db.refresh(db_content)
+    return db_content

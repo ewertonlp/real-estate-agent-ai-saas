@@ -25,11 +25,12 @@ logger = logging.getLogger(__name__) # Inicialize o logger para este módulo
 #     logger.addHandler(handler)
 
 
-# --- Temporary mapping for max_generations for paid plans (adjust as needed) ---
+# --- ATUALIZAÇÃO CRÍTICA AQUI: Mapeamento de Gerações por Plano E Intervalo ---
+# Use um dicionário aninhado ou chaves compostas para mapear gerações por nome E intervalo
 MAX_GENERATIONS_MAP = {
-    "Basic": 20,
-    "Premium": 50,
-    "Unlimited": 0,
+    "Basic": {"month": 20, "year": 240},  # 20 * 12
+    "Premium": {"month": 50, "year": 600}, # 50 * 12
+    "Unlimited": {"month": 0, "year": 0},  # Ilimitado (0) para ambos
 }
 # -----------------------------------------------------------------------------
 
@@ -43,32 +44,51 @@ async def get_subscription_plans(db: Session = Depends(get_db)):
         for sp_data in stripe_products_and_prices:
             plan_name = sp_data["name"]
             stripe_price_id = sp_data["price_id_stripe"]
+            plan_interval = sp_data["interval"] # Pega o intervalo do Stripe
 
-            logger.debug(f"Processando plano Stripe: {plan_name} com price_id: {stripe_price_id}")
+            logger.debug(f"Processando plano Stripe: {plan_name} com price_id: {stripe_price_id}, intervalo: {plan_interval}")
 
-            current_max_generations = MAX_GENERATIONS_MAP.get(plan_name, 0)
+            # Obtenha o max_generations com base no nome E no intervalo
+            current_max_generations = MAX_GENERATIONS_MAP.get(plan_name, {}).get(plan_interval, 0)
             if plan_name == "Free":
-                current_max_generations = settings.FREE_PLAN_MAX_GENERATIONS
+                current_max_generations = settings.FREE_PLAN_MAX_GENERATIONS # O Free plan tem um limite único
 
+            # Use o `interval` na busca do plano existente
             existing_plan = crud.get_subscription_plan_by_stripe_price_id(db, stripe_price_id)
 
             if existing_plan:
-                crud.update_subscription_plan(
-                    db,
-                    db_obj=existing_plan,
-                    obj_in=schemas.SubscriptionPlanUpdate(
-                        name=plan_name,
-                        description=sp_data["description"],
-                        unit_amount=sp_data["unit_amount"],
-                        currency=sp_data["currency"],
-                        interval=sp_data["interval"],
-                        interval_count=sp_data["interval_count"],
-                        type=sp_data["type"],
-                        price_id_stripe=stripe_price_id,
-                        max_generations=current_max_generations
+                # Verifique se o plano no DB precisa ser atualizado (nome, descrição, gerações etc.)
+                needs_update = False
+                if existing_plan.name != plan_name: needs_update = True
+                if existing_plan.description != sp_data["description"]: needs_update = True
+                if existing_plan.unit_amount != sp_data["unit_amount"]: needs_update = True
+                if existing_plan.currency != sp_data["currency"]: needs_update = True
+                if existing_plan.interval != sp_data["interval"]: needs_update = True
+                if existing_plan.interval_count != sp_data["interval_count"]: needs_update = True
+                if existing_plan.type != sp_data["type"]: needs_update = True
+                if existing_plan.max_generations != current_max_generations: needs_update = True
+                if existing_plan.is_active != True: needs_update = True # Garantir que planos Stripe ativos estejam ativos no DB
+
+                if needs_update:
+                    crud.update_subscription_plan(
+                        db,
+                        db_obj=existing_plan,
+                        obj_in=schemas.SubscriptionPlanUpdate(
+                            name=plan_name,
+                            description=sp_data["description"],
+                            unit_amount=sp_data["unit_amount"],
+                            currency=sp_data["currency"],
+                            interval=sp_data["interval"],
+                            interval_count=sp_data["interval_count"],
+                            type=sp_data["type"],
+                            price_id_stripe=stripe_price_id,
+                            max_generations=current_max_generations,
+                            is_active=True # Garantir que o plano esteja ativo
+                        )
                     )
-                )
-                logger.debug(f"Plano existente atualizado (por price_id): {existing_plan.name} - {existing_plan.interval}")
+                    logger.debug(f"Plano existente atualizado (por price_id): {existing_plan.name} - {existing_plan.interval}")
+                else:
+                    logger.debug(f"Plano existente inalterado: {existing_plan.name} - {existing_plan.interval}")
             else:
                 crud.create_subscription_plan(
                     db=db,
@@ -81,12 +101,14 @@ async def get_subscription_plans(db: Session = Depends(get_db)):
                         interval=sp_data["interval"],
                         interval_count=sp_data["interval_count"],
                         type=sp_data["type"],
-                        max_generations=current_max_generations
+                        max_generations=current_max_generations,
+                        is_active=True # Criar como ativo
                     )
                 )
                 logger.debug(f"Novo plano Stripe criado no DB: {plan_name} - {sp_data['interval']} (price_id: {stripe_price_id})")
 
-        free_plan_db = crud.get_subscription_plan_by_name(db, "Free")
+        # Garanta que o plano "Free" exista e esteja com as configurações corretas
+        free_plan_db = crud.get_subscription_plan_by_name(db, "Free", interval="month") # Especifica o intervalo para o plano Free
         if not free_plan_db:
             free_plan_db = crud.create_subscription_plan(
                 db=db,
@@ -99,16 +121,23 @@ async def get_subscription_plans(db: Session = Depends(get_db)):
                     interval="month",
                     interval_count=1,
                     type="recurring",
-                    max_generations=settings.FREE_PLAN_MAX_GENERATIONS
+                    max_generations=settings.FREE_PLAN_MAX_GENERATIONS,
+                    is_active=True
                 )
             )
             if not free_plan_db:
                 raise HTTPException(status_code=500, detail="Could not create Free plan.")
             logger.info("Plano 'Free' criado no banco de dados.")
         else:
+            # Atualiza o plano "Free" caso os valores configurados no .env tenham mudado
             if (free_plan_db.price_id_stripe != settings.STRIPE_FREE_PLAN_PRICE_ID or
                 free_plan_db.max_generations != settings.FREE_PLAN_MAX_GENERATIONS or
-                free_plan_db.unit_amount != 0):
+                free_plan_db.unit_amount != 0 or
+                free_plan_db.currency != "BRL" or # Garante que currency, interval, etc. estão corretos
+                free_plan_db.interval != "month" or
+                free_plan_db.interval_count != 1 or
+                free_plan_db.type != "recurring" or
+                free_plan_db.is_active != True): # Garante que o Free plan está ativo
                 
                 crud.update_subscription_plan(
                     db,
@@ -122,12 +151,13 @@ async def get_subscription_plans(db: Session = Depends(get_db)):
                         interval="month",
                         interval_count=1,
                         type="recurring",
-                        max_generations=settings.FREE_PLAN_MAX_GENERATIONS
+                        max_generations=settings.FREE_PLAN_MAX_GENERATIONS,
+                        is_active=True
                     )
                 )
                 logger.info("Plano 'Free' atualizado no banco de dados.")
 
-            if not any(p['price_id_stripe'] == settings.STRIPE_FREE_PLAN_PRICE_ID for p in stripe_products_and_prices):
+            if not any(p.get('price_id_stripe') == settings.STRIPE_FREE_PLAN_PRICE_ID for p in stripe_products_and_prices):
                 logger.warning(f"Preço Stripe ID {settings.STRIPE_FREE_PLAN_PRICE_ID} para o plano 'Free' não encontrado no Stripe (esperado).")
 
         db_plans = crud.get_all_subscription_plans(db)
@@ -224,12 +254,38 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         subscription = event['data']['object']
         customer_id = subscription.get('customer')
         new_status = subscription.get('status')
-        
+        current_price_id = subscription.get('items', {}).get('data', [{}])[0].get('price', {}).get('id')
+
         user = crud.get_user_by_stripe_customer_id(db, customer_id) # Use crud.get_user_by_stripe_customer_id
         if user:
             logger.info(f"Assinatura do cliente {customer_id} atualizada para status: {new_status}")
-            # Você pode adicionar lógica para lidar com diferentes status aqui
-            # Ex: se new_status == 'canceled', pode desativar funcionalidades premium
+            
+            # Se a assinatura for ativa e o preço mudar, atualize o plano do usuário
+            if new_status == 'active' and current_price_id and user.stripe_subscription_id == subscription.id:
+                target_plan = crud.get_subscription_plan_by_stripe_price_id(db, current_price_id)
+                if target_plan:
+                    user.subscription_plan_id = target_plan.id
+                    user.content_generations_count = 0 # Resetar contador ao mudar de plano (opcional, como no checkout)
+                    db.add(user)
+                    db.commit()
+                    db.refresh(user)
+                    logger.info(f"Usuário {user.email} plano atualizado para {target_plan.name} via customer.subscription.updated.")
+                else:
+                    logger.warning(f"AVISO: Plano Stripe ID {current_price_id} não encontrado no DB para o usuário {user.email} durante update de assinatura.")
+            elif new_status == 'canceled' or new_status == 'unpaid':
+                # Reverter para o plano 'Free' se a assinatura for cancelada ou não paga
+                free_plan = crud.get_subscription_plan_by_name(db, "Free")
+                if free_plan:
+                    user.stripe_subscription_id = None
+                    user.subscription_plan_id = free_plan.id
+                    user.content_generations_count = 0
+                    db.add(user)
+                    db.commit()
+                    db.refresh(user)
+                    logger.info(f"Assinatura do usuário {user.email} foi cancelada/não paga. Revertido para plano Free.")
+                else:
+                    logger.error(f"ERRO: Plano 'Free' não encontrado ao tentar reverter assinatura cancelada para {user.email}.")
+
         else:
             logger.warning(f"AVISO: Usuário com Stripe Customer ID {customer_id} não encontrado para o webhook updated.")
 
@@ -241,12 +297,19 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         if user:
             logger.info(f"Assinatura do cliente {customer_id} deletada.")
             user.stripe_subscription_id = None
-            user.subscription_plan_id = None # Ou defina para o plano Free se desejar
-            user.content_generations_count = 0 # Resetar gerações
-            db.add(user)
-            db.commit()
-            db.refresh(user)
-            logger.info(f"Assinatura do usuário {user.email} removida do DB.")
+            
+            # Atribuir o plano "Free" em vez de None
+            free_plan = crud.get_subscription_plan_by_name(db, "Free")
+            if free_plan:
+                user.subscription_plan_id = free_plan.id
+                user.content_generations_count = 0 # Resetar gerações
+                db.add(user)
+                db.commit()
+                db.refresh(user)
+                logger.info(f"Assinatura do usuário {user.email} removida do DB e atribuído plano Free.")
+            else:
+                logger.error(f"ERRO: Plano 'Free' não encontrado ao tentar remover assinatura para {user.email}.")
+
         else:
             logger.warning(f"AVISO: Usuário com Stripe Customer ID {customer_id} não encontrado para o webhook deleted.")
     

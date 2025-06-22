@@ -1,8 +1,8 @@
-"""Add is_active to SubscriptionPlan etc.
+"""create all tables
 
-Revision ID: c0491dfdde3d
+Revision ID: 8c91679e18dd
 Revises: 
-Create Date: 2025-06-09 14:46:10.695717
+Create Date: 2025-06-22 10:45:13.096921
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'c0491dfdde3d'
+revision: str = '8c91679e18dd'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -52,7 +52,7 @@ def upgrade() -> None:
     )
     with op.batch_alter_table('subscription_plans', schema=None) as batch_op:
         batch_op.create_index(batch_op.f('ix_subscription_plans_id'), ['id'], unique=False)
-        batch_op.create_index(batch_op.f('ix_subscription_plans_name'), ['name'], unique=True)
+        batch_op.create_index(batch_op.f('ix_subscription_plans_name'), ['name'], unique=False)
 
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
