@@ -120,6 +120,7 @@ export default function DashboardPage() {
     }
   }, [searchParams, router, fetchUserData]);
 
+
   const handleSubmit = async (formData: PropertyDetailsFormSchema) => {
     // ... (sua lógica handleSubmit, que está correta) ...
     if (!isAuthenticated || !userToken) {
@@ -135,6 +136,7 @@ export default function DashboardPage() {
       return;
     }
 
+    if (loading) return
     setLoading(true);
     setError("");
     setGeneratedContent("");

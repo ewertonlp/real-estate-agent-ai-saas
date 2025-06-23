@@ -165,11 +165,11 @@ export const generateContent = async (
     }
 
     const data: TextGenerationOutput = await response.json();
-    const generatedText = data.generated_text;
+    // const generatedText = data.generated_text;
 
-    // --- ADICIONE ESTA LINHA: CHAMADA PARA SALVAR O CONTEÚDO ---
-    await saveGeneratedContent(data.prompt_used, generatedText);
-    // --- FIM DA ADIÇÃO ---
+    // // --- ADICIONE ESTA LINHA: CHAMADA PARA SALVAR O CONTEÚDO ---
+    // await saveGeneratedContent(data.prompt_used, generatedText);
+    // // --- FIM DA ADIÇÃO ---
     return data;
   } catch (error) {
     console.error("Erro ao chamar a API do backend:", error);

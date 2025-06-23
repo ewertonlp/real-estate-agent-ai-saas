@@ -21,6 +21,7 @@ async def create_content(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),  # Tipo de sessão síncrona
 ):
+    print("⚠️ Endpoint /generate-content chamado!")
    
     # Construa a string do prompt para o Gemini usando 'property_details' diretamente
     # REMOVIDO: prompt_to_gemini = schemas.PropertyDetailsInput(...) - Não é necessário

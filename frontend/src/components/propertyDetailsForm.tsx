@@ -1,11 +1,9 @@
 // frontend/src/components/propertyDetailsForm.tsx
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form'; // Agora estará disponível
 import { zodResolver } from '@hookform/resolvers/zod'; // Agora estará disponível
 import { z } from 'zod'; // Agora estará disponível
-
-
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
@@ -44,39 +42,21 @@ export type PropertyDetailsFormSchema = z.infer<typeof PropertyDetailsFormSchema
 interface PropertyDetailsFormProps {
   onSubmit: (formData: PropertyDetailsFormSchema) => void;
   loading: boolean;
+  initialData?: Partial<PropertyDetailsFormSchema>; 
 }
 
-const PropertyDetailsForm: React.FC<PropertyDetailsFormProps> = ({ onSubmit, loading }) => {
+const PropertyDetailsForm: React.FC<PropertyDetailsFormProps> = ({ onSubmit, loading, initialData }) => {
   const {
     register,
     handleSubmit: hookFormHandleSubmit,
     watch,
     setValue,
+    reset,
     control,
     formState: { errors },
   } = useForm<PropertyDetailsFormSchema>({
     resolver: zodResolver(PropertyDetailsFormSchema),
-    defaultValues: {
-      propertyType: "",
-      bedrooms: "",
-      bathrooms: "",
-      location: "",
-      specialFeatures: "",
-      purpose: "",
-      targetAudience: "",
-      tone: "",
-      length: "",
-      language: "Português",
-      propertyValue: "",
-      condoFee: "",
-      iptuValue: "",
-      optimizeForSeoGmb: false,
-      seoKeywords: "",
-      contactPhone: "",
-      contactEmail: "",
-      contactWebsite: "",
-      propertyAddress: "",
-    },
+    defaultValues: initialData,
   });
 
   const onSubmitForm = (data: PropertyDetailsFormSchema) => {
@@ -85,6 +65,12 @@ const PropertyDetailsForm: React.FC<PropertyDetailsFormProps> = ({ onSubmit, loa
     console.log("PropertyDetailsForm: Dados coletados pelo react-hook-form:", data); // <<< ADICIONE ESTA LINHA
     onSubmit(data);
   };
+
+  useEffect(() => {
+  if (initialData) {
+    reset(initialData); // <<< isso aplica os valores iniciais corretamente quando mudam
+  }
+}, [initialData, reset]);
 
   // Observa os valores dos campos para renderização condicional ou display local
   const optimizeForSeoGmb = watch("optimizeForSeoGmb");
