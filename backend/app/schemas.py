@@ -20,7 +20,12 @@ class TokenData(BaseModel):
 
 # Esquema base para User
 class UserBase(BaseModel):
-    email: EmailStr
+    # email: EmailStr
+    nome: Optional[str] = None
+    creci: Optional[str] = None
+
+    class Config:
+        orm_mode = True
 
 # Esquema para criar um novo usuário (registro)
 class UserCreate(UserBase):
@@ -29,7 +34,6 @@ class UserCreate(UserBase):
 # Esquema para atualizar dados do usuário
 class UserUpdate(UserBase):
     password: Optional[str] = None
-    # subscription_plan_id é atualizado por outras rotas, não diretamente por user_update
 
 # Esquema para o modelo de usuário no banco de dados / retorno da API (User sem plano aninhado)
 # Esta é a classe que corresponde diretamente ao models.User no DB

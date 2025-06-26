@@ -5,7 +5,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session # Correctamente importado Session
 from app import crud, schemas, models # Certifique-se que 'models' está importado
 from app.core.security import get_current_user, get_password_hash, verify_password 
-from app.api.deps import get_db # Correctamente importado get_db
+from app.api.deps import get_db
+from app.core.security import get_current_active_user # Correctamente importado get_db
+from app.models import User
 # Remova esta importação se você a colocou temporariamente para debug:
 # from pydantic import ValidationError 
 
@@ -75,3 +77,18 @@ def get_user_analytics(
     return schemas.UserAnalytics(
         total_generated_content=total_generated
     )
+
+@router.post("/me/update-info", response_model=schemas.UserBase)
+def update_user_info(
+    payload: schemas.UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    # Em vez de esperar email no payload, use o usuário autenticado
+    updated_data = {
+        "nome": payload.nome,
+        "creci": payload.creci
+    }
+    
+    user = crud.update_user_info(db, current_user.id, updated_data)
+    return user

@@ -8,9 +8,12 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import { changeUserPassword, getUserAnalytics } from "@/lib/api"; // Importe getUserAnalytics
 import { useTheme } from "next-themes";
-import { FaMoon, FaSun } from "react-icons/fa";
+import { FaMoon, FaPencilAlt,  FaSun, FaTimes } from "react-icons/fa";
 import Loader from "@/components/loader";
 import { IoSettingsOutline } from "react-icons/io5";
+import { useForm } from "react-hook-form";
+import { updateUserInfo } from "@/lib/api";
+import { CancelarAssinaturaButton } from "@/components/btnCancelSubscription";
 
 export default function SettingsPage() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -18,6 +21,10 @@ export default function SettingsPage() {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoadingPasswordChange, setIsLoadingPasswordChange] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalContent, setModalContent] = useState("");
+  const [isEditInfoModal, setIsEditInfoModal] = useState(false);
   const [totalGeneratedContent, setTotalGeneratedContent] = useState<
     number | null
   >(null); // NOVO ESTADO
@@ -32,6 +39,14 @@ export default function SettingsPage() {
   } = useAuth();
   const router = useRouter();
   const { theme, setTheme } = useTheme();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<{ nome: string; creci: string }>();
+
 
   const fetchAnalytics = useCallback(async () => {
     if (!isAuthenticated) {
@@ -126,17 +141,13 @@ export default function SettingsPage() {
           },
         }
       );
-      // Limpa os campos após sucesso
+
       setCurrentPassword("");
       setNewPassword("");
       setConfirmNewPassword("");
-      // setError(null); // Opcional: Limpar erro se houve sucesso, o toast já indica
     } catch (err: any) {
-      // O toast.promise já lida com a exibição do erro, então o 'catch' aqui
-      // é mais para logs adicionais ou lógica que não seja feedback direto ao usuário.
-      // O estado 'error' já é atualizado dentro do render do toast.promise.
     } finally {
-      setIsLoadingPasswordChange(false); // Garante que o estado de carregamento do botão seja resetado
+      setIsLoadingPasswordChange(false);
     }
   };
 
@@ -148,6 +159,8 @@ export default function SettingsPage() {
     );
   }
 
+
+
   const handleToggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
   };
@@ -157,6 +170,42 @@ export default function SettingsPage() {
       <Loader message="Carregando autenticação..." /> // Usa o componente Loader
     );
   }
+
+const openEditInfoModal = () => {
+    setModalTitle("Editar Informações");
+    setIsModalOpen(true);
+    setIsEditInfoModal(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalTitle("");
+    setIsEditInfoModal(false);
+    reset(); // Reseta o formulário ao fechar
+  };
+
+ const onSubmitInfoModal = async (data: { nome: string; creci: string }) => {
+    try {
+      await updateUserInfo(data.nome, data.creci);
+      toast.success("Informações salvas com sucesso!");
+      closeModal();
+      
+      // Atualiza o contexto de autenticação se necessário
+      // (você pode precisar implementar esta função no AuthContext)
+      // refreshUserInfo(); 
+      
+    } catch (error: any) {
+      console.error("Erro ao atualizar informações:", error);
+      
+      // Tratamento específico para erro 401
+      if (error.message.includes("401")) {
+        toast.error("Sessão expirada. Por favor, faça login novamente.");
+        router.push("/login");
+      } else {
+        toast.error(error.message || "Erro ao salvar informações.");
+      }
+    }
+  };
 
   return (
     <main className="bg-card p-8 rounded-lg shadow-md w-full max-w-full">
@@ -175,12 +224,20 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md-grid-cols-2 lg:grid-cols-3 items-start gap-6 ">
+      <div className="grid grid-cols-1 items-start gap-6 max-w-xl mx-auto">
         {/* Informações do Plano Section - ATUALIZADO */}
-        <section className="p-4 w-full bg-background border border-border rounded-md">
-          <h2 className="text-xl font-semibold text-text mb-4 border-b pb-2">
-            Informações do Plano
-          </h2>
+        <section className="p-4 w-full border-b">
+          <div className="flex justify-between items-center mb-4 border-b pb-2">
+            <h2 className="text-xl font-semibold text-text ">
+              Minhas Informações
+            </h2>
+            <button className="">
+              <FaPencilAlt
+                onClick={openEditInfoModal}
+                className="text-text"
+              />
+            </button>
+          </div>
           <div className="space-y-2 text-text">
             <p>
               <strong>Email:</strong> {userEmail || "N/A"}
@@ -211,26 +268,23 @@ export default function SettingsPage() {
               Fazer Upgrade de Plano
             </Link>
           )}
+          <CancelarAssinaturaButton />
         </section>
 
+
         {/* Alterar Senha Section (mantido) */}
-        <section className="w-full border bg-background border-border p-4 rounded-md ">
-          <h2 className="text-xl font-semibold text-text mb-4 border-b pb-2">
+        <section className="w-full p-4 border-b">
+          <h2 className="text-xl font-medium text-text mb-4 border-b pb-2">
             Alterar Senha
           </h2>
           <form onSubmit={handleSubmitPasswordChange} className="space-y-4">
             <div>
-              <label
-                htmlFor="current-password"
-                className="block text-text text-sm font-medium mb-2"
-              >
-                Senha Atual:
-              </label>
               <input
                 id="current-password"
                 name="current_password"
                 type="password"
                 autoComplete="current-password"
+                placeholder="Senha atual"
                 required
                 className="appearance-none border rounded-md w-full py-3 px-4 bg-card border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
                 value={currentPassword}
@@ -238,17 +292,12 @@ export default function SettingsPage() {
               />
             </div>
             <div>
-              <label
-                htmlFor="new-password"
-                className="block text-text text-sm font-medium mb-2"
-              >
-                Nova Senha:
-              </label>
               <input
                 id="new-password"
                 name="new_password"
                 type="password"
                 autoComplete="new-password"
+                placeholder="Nova senha"
                 required
                 className="appearance-none border rounded-md w-full py-3 px-4 bg-card border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 value={newPassword}
@@ -256,28 +305,23 @@ export default function SettingsPage() {
               />
             </div>
             <div>
-              <label
-                htmlFor="confirm-new-password"
-                className="block text-text text-sm font-medium mb-2"
-              >
-                Confirmar Nova Senha:
-              </label>
               <input
                 id="confirm-new-password"
                 name="confirm_new_password"
                 type="password"
                 autoComplete="new-password"
+                placeholder="Confirme a nova senha"
                 required
                 className="appearance-none border rounded-md w-full py-3 px-4 bg-card border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 value={confirmNewPassword}
                 onChange={(e) => setConfirmNewPassword(e.target.value)}
               />
             </div>
-            <div className="pt-4">
+            <div className="py-4">
               <button
                 type="submit"
                 disabled={isLoadingPasswordChange}
-                className="bg-button hover:bg-hover text-text font-semibold font-md py-3 px-4 rounded-md focus:outline-none focus:shadow-outline w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-all
+                className="bg-button hover:bg-hover text-text font-medium font-md py-2 px-4 rounded-md focus:outline-none focus:shadow-outline w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-all
                 "
               >
                 {isLoadingPasswordChange ? (
@@ -313,15 +357,15 @@ export default function SettingsPage() {
         </section>
 
         {/* Theme Toggle Section (mantido) */}
-        <section className="p-4 w-full bg-background border border-border rounded-md">
-          <h2 className="text-xl font-semibold text-text mb-4 border-b pb-2">
+        <section className="p-4 w-full border-b ">
+          <h2 className="text-xl font-medium text-text mb-4 border-b pb-2">
             Configurações de Tema
           </h2>
           <div className="flex items-center justify-between space-x-4">
             <span className="text-text">Modo Escuro / Claro</span>
             <button
               onClick={handleToggleTheme}
-              className="p-2 rounded-md bg-button text-text hover:bg-hover transition-colors flex items-center space-x-2"
+              className="p-2 rounded-md bg-button/25 text-text hover:bg-button transition-colors flex items-center space-x-2"
             >
               {theme === "light" ? (
                 <>
@@ -336,6 +380,83 @@ export default function SettingsPage() {
           </div>
         </section>
       </div>
+       {/* Modal para edição de informações */}
+      {isModalOpen && isEditInfoModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+          <div 
+            className="bg-card p-6 rounded-lg shadow-xl w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold">{modalTitle}</h3>
+              <button 
+                onClick={closeModal}
+                className="text-text hover:text-red-500"
+              >
+                <FaTimes />
+              </button>
+            </div>
+            
+            {/* Formulário movido para dentro do modal */}
+            <form onSubmit={handleSubmit(onSubmitInfoModal)} className="space-y-4 py-4">
+              <div>
+                <input
+                  id="nome"
+                  placeholder="Nome completo"
+                  {...register("nome", { required: "Nome é obrigatório" })}
+                  className="w-full px-4 py-2 bg-background border border-button rounded-md text-text"
+                />
+                {errors.nome && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.nome.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <input
+                  id="creci"
+                  placeholder="Número do CRECI"
+                  {...register("creci", {
+                    required: "O número do CRECI é obrigatório",
+                    pattern: {
+                      value: /^[0-9A-Za-z-]+$/,
+                      message: "Formato inválido para o CRECI",
+                    },
+                  })}
+                  className="w-full px-4 py-2 border border-button rounded-md bg-background text-text"
+                />
+                {errors.creci && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.creci.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-4 flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="px-4 py-2 bg-background text-text rounded hover:bg-my-card-light transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-4 py-2 bg-button text-text rounded hover:bg-primary disabled:opacity-50"
+                >
+                  {isSubmitting ? "Salvando..." : "Salvar"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
+    
   );
+  
 }
+
+

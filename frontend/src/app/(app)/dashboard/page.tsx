@@ -29,6 +29,7 @@ export default function DashboardPage() {
     fetchUserData,
   } = useAuth();
 
+  console.log(userMaxGenerations)
   const router = useRouter();
   const searchParams = useSearchParams();
   const { userEmail } = useAuth();
@@ -122,11 +123,12 @@ export default function DashboardPage() {
 
 
   const handleSubmit = async (formData: PropertyDetailsFormSchema) => {
-    // ... (sua lógica handleSubmit, que está correta) ...
+    
     if (!isAuthenticated || !userToken) {
       setError(
         "Você não está logado ou a sessão expirou. Por favor, faça login novamente."
       );
+      toast.error("Você não está logado. por favor, faça login novamente.")
       console.error(
         "Erro: Usuário não autenticado no handleSubmit. isAuthenticated:",
         isAuthenticated,
@@ -135,6 +137,21 @@ export default function DashboardPage() {
       );
       return;
     }
+
+  if (
+  userMaxGenerations !== null &&
+  userMaxGenerations !== 0 &&
+  userGenerationsCount !== null &&
+  userGenerationsCount >= userMaxGenerations
+) {
+  toast.error(
+    "Você atingiu o limite de gerações do seu plano. Faça o upgrade para continuar gerando conteúdos."
+  );
+  setError(
+    "Você atingiu o limite de gerações do seu plano. Faça o upgrade para continuar."
+  );
+  return;
+}
 
     if (loading) return
     setLoading(true);
@@ -259,7 +276,7 @@ export default function DashboardPage() {
           </p>
           {userPlanName && userMaxGenerations !== null && (
             <p>
-              <strong>Gerações Utilizadas este período:</strong>{" "}
+              <strong>Gerações Utilizadas no período:</strong>{" "}
               {userGenerationsCount} de{" "}
               {userMaxGenerations === 0 ? "Ilimitadas" : userMaxGenerations}
             </p>

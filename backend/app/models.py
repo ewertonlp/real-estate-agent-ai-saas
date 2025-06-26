@@ -5,6 +5,7 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, T
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy.sql import func
 from app.core.database import Base
+from datetime import datetime
 
 # --- Novo Modelo: SubscriptionPlan ---
 class SubscriptionPlan(Base):
@@ -20,6 +21,7 @@ class SubscriptionPlan(Base):
     type = Column(String, nullable=False, default="recurring")
     max_generations = Column(Integer, nullable=False, default=0)
     is_active = Column(Boolean, default=True, nullable=False) # <--- ADICIONE ESTA LINHA SE AINDA NÃO ESTÁ LÁ
+    
 
     users = relationship("User", back_populates="subscription_plan")
 
@@ -47,8 +49,12 @@ class User(Base):
     
     content_generations_count = Column(Integer, default=0, nullable=False)
     generated_contents = relationship("GeneratedContent", back_populates="owner")
+    last_reset = Column(DateTime, default=datetime.utcnow)
 
+    nome = Column(String, nullable=True)
+    creci = Column(String, nullable=True)
 
+    
 class GeneratedContent(Base):
     __tablename__ = "generated_contents" # Nome da nova tabela
 

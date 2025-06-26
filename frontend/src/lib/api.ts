@@ -597,3 +597,61 @@ export async function getPromptTemplates(): Promise<PromptTemplate[]> {
     throw error;
   }
 }
+
+export const updateUserInfo = async (nome: string, creci: string): Promise<any> => {
+  const token = Cookies.get("access_token"); // Usar cookies em vez de localStorage
+  
+  if (!token) {
+    throw new Error('Token de autenticação não encontrado');
+  }
+
+  const response = await fetch(`${BACKEND_URL}/api/v1/users/me/update-info`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ nome, creci }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.detail || 'Erro ao atualizar informações do usuário');
+  }
+
+  return response.json();
+};
+
+
+
+export async function cancelSubscription(): Promise<{ detail: string }> {
+  const token = Cookies.get("access_token");
+
+  if (!token) {
+    throw new Error("Usuário não autenticado.");
+  }
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/v1/subscriptions/cancel-subscription`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Erro ao cancelar assinatura:", errorData);
+      if (response.status === 401) {
+        throw new Error("Sessão expirada. Faça login novamente.");
+      }
+      throw new Error(errorData.detail || "Erro ao cancelar assinatura.");
+    }
+
+    return response.json(); // deve retornar { detail: "Assinatura cancelada com sucesso." }
+  } catch (error) {
+    console.error("Erro de rede ao tentar cancelar assinatura:", error);
+    throw error;
+  }
+}

@@ -10,6 +10,7 @@ from fastapi import Depends, HTTPException, status # Certifique-se de importar D
 from fastapi.security import OAuth2PasswordBearer
 from app.api.deps import get_db # <<< ADICIONE ESTA LINHA
 from sqlalchemy.orm import Session 
+from app.models import User 
 
 # O OAuth2PasswordBearer é usado para obter o token do cabeçalho Authorization
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
@@ -89,3 +90,11 @@ async def get_current_user(
         raise credentials_exception
     
     return user
+
+
+def get_current_active_user(
+    current_user: User = Depends(get_current_user),
+):
+    if not current_user.is_active:
+        raise HTTPException(status_code=400, detail="Usuário inativo")
+    return current_user

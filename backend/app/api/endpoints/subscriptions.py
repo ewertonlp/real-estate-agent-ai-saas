@@ -314,3 +314,27 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
             logger.warning(f"AVISO: Usuário com Stripe Customer ID {customer_id} não encontrado para o webhook deleted.")
     
     return JSONResponse(content={"received": True}, status_code=200)
+
+# CANCELAR ASSINATURA
+@router.post("/cancel-subscription", status_code=200)
+async def cancel_user_subscription(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    if not current_user.stripe_subscription_id:
+        raise HTTPException(status_code=400, detail="Usuário não possui uma assinatura ativa.")
+
+    try:
+        subscription = await stripe_service.cancel_subscription(
+            current_user.stripe_subscription_id,
+            at_period_end=True  # ou False se quiser cancelamento imediato
+        )
+        
+        return {
+            "message": "Assinatura marcada para cancelamento ao final do período.",
+            "subscription_id": subscription.id,
+            "cancel_at_period_end": subscription.cancel_at_period_end,
+            "current_period_end": subscription.current_period_end
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

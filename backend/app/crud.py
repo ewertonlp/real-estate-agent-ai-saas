@@ -1,5 +1,6 @@
 # backend/app/crud.py
 
+from http.client import HTTPException
 from typing import Optional
 from sqlalchemy.orm import Session, joinedload
 from app import models, schemas
@@ -259,3 +260,19 @@ def update_generated_content_favorite_status(
         db.commit()
         db.refresh(db_content)
     return db_content
+
+def get_all_users(db: Session):
+    return db.query(models.User).options(joinedload(models.User.subscription_plan)).all()
+
+
+def update_user_info(db: Session, user_id: int, payload: schemas.UserUpdate):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+
+    user.nome = payload.nome
+    user.creci = payload.creci
+
+    db.commit()
+    db.refresh(user)
+    return user

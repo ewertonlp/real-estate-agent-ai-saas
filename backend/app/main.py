@@ -2,15 +2,15 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-# Importe o novo módulo de endpoints
 from app.api.endpoints import content_generator, auth, history, users, image_generator, subscriptions, prompt_templates # <-- Certifique-se que 'subscriptions' está aqui
 from app.core.database import Base, engine
 from app.core.config import settings
-# --- IMPORTS NECESSÁRIOS PARA O BLOCO DE STARTUP ---
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal # Importe SessionLocal
 from app.crud import get_all_subscription_plans # Importe a função CRUD para ler planos
-# --- FIM DOS IMPORTS NECESSÁRIOS ---
+from app.jobs.monthly_reset import start_scheduler
+
+start_scheduler()
 
 # Cria as tabelas no banco de dados (para desenvolvimento)
 # Base.metadata.create_all(bind=engine)

@@ -155,14 +155,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           className="flex items-center justify-between w-full p-2 rounded-md hover:bg-background transition-colors"
         >
           <div className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-button text-white text-sm font-medium">
+            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-button text-white text-xs font-medium">
               {userEmail ? getUserInitials(userEmail) : <FiUser size={18} />}
             </div>
-            <span className="text-sm font-medium truncate">
+            <span className="text-sm font-normal truncate">
               {userEmail || "Usuário"}
             </span>
           </div>
-          <FaCog className="text-lg text-text" />
+          <FaCog className="text-xl text-text ml-1" />
         </button>
 
         {isDropdownOpen && (

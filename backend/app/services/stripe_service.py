@@ -160,3 +160,21 @@ async def get_all_stripe_products_and_prices() -> List[Dict[str, Any]]:
 
     logger.info(f"Final list of products and prices fetched from Stripe: {all_prices_data}")
     return all_prices_data
+
+
+# CANCELAR ASSINATURA
+
+async def cancel_subscription(subscription_id: str, at_period_end: bool = True):
+    """
+    Cancela uma assinatura do Stripe.
+    Se at_period_end=True, cancela no fim do período atual.
+    Se False, cancela imediatamente.
+    """
+    try:
+        subscription = stripe.Subscription.modify(
+            subscription_id,
+            cancel_at_period_end=at_period_end
+        )
+        return subscription
+    except Exception as e:
+        raise Exception(f"Erro ao cancelar assinatura: {str(e)}")
