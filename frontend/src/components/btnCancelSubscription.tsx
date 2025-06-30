@@ -1,60 +1,79 @@
 "use client";
 
 import { useState } from "react";
-import { cancelSubscription } from "@/lib/api";
 import { toast } from "react-toastify";
-import { useAuth } from "@/context/AuthContext";
+import { cancelSubscription } from "@/lib/api"; // Certifique-se de ter essa função
+import { FaTimes } from "react-icons/fa";
 
 export function CancelarAssinaturaButton() {
-  const {
-    userPlanName,
-    fetchUserData,
-    isLoading: authLoading,
-  } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
 
-  const [loading, setLoading] = useState(false);
-  const [cancelled, setCancelled] = useState(false);
-
-  const isFreePlan = userPlanName === "Free" || userPlanName === null;
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   const handleCancel = async () => {
-    const confirm = window.confirm("Tem certeza que deseja cancelar sua assinatura?");
-    if (!confirm) return;
-
-    setLoading(true);
+    setIsCancelling(true);
     try {
-      const result = await cancelSubscription();
-      toast.success(result.detail || "Assinatura cancelada com sucesso.");
-      await fetchUserData(); // Atualiza dados no contexto
-      setCancelled(true);
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao cancelar assinatura.");
+      await cancelSubscription();
+      toast.success("Assinatura cancelada com sucesso! Você ainda terá acesso até o final do período atual.");
+      closeModal();
+    } catch (err) {
+      console.error("Erro ao cancelar assinatura:", err);
+      toast.error("Não foi possível cancelar a assinatura.");
     } finally {
-      setLoading(false);
+      setIsCancelling(false);
     }
   };
 
   return (
     <>
-      {/* <p className="text-sm mb-3">
-        <strong>Plano atual:</strong>{" "}
-        {cancelled ? "Free (após cancelamento)" : userPlanName || "Carregando..."}
-      </p> */}
+      <button
+        onClick={openModal}
+        className="mt-4 text-red-600 hover:text-red-700 underline font-medium"
+      >
+        Cancelar Assinatura
+      </button>
 
-      {!isFreePlan && !cancelled && (
-        <button
-          onClick={handleCancel}
-          disabled={loading || authLoading}
-          className="bg-destructive text-white my-4 px-4 py-2 rounded-md hover:bg-red-700"
-        >
-          {loading ? "Cancelando..." : "Cancelar assinatura"}
-        </button>
-      )}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+          <div
+            className="bg-card p-6 rounded-lg shadow-xl w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold text-text">Cancelar Assinatura</h3>
+              <button
+                onClick={closeModal}
+                className="text-text hover:text-red-500"
+              >
+                <FaTimes />
+              </button>
+            </div>
 
-      {cancelled && (
-        <p className="text-green-600 text-sm mt-2">
-          Assinatura cancelada. Você foi revertido para o plano Free.
-        </p>
+            <p className="text-text mb-4">
+              Tem certeza que deseja cancelar sua assinatura?
+              <br />
+              <span className="font-medium">Você ainda poderá usar o plano atual até o fim do período já pago.</span>
+            </p>
+
+            <div className="flex justify-end space-x-2 mt-4">
+              <button
+                onClick={closeModal}
+                className="px-4 py-2 bg-background text-text rounded hover:bg-my-card-light transition-colors"
+              >
+                Voltar
+              </button>
+              <button
+                onClick={handleCancel}
+                disabled={isCancelling}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
+              >
+                {isCancelling ? "Cancelando..." : "Confirmar Cancelamento"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

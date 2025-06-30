@@ -73,21 +73,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUserPlanName(null);
         setUserGenerationsCount(null);
         setUserMaxGenerations(null);
-        // Opcional: toast.error('Falha ao carregar dados do usuário.');
+        toast.error('Falha ao carregar dados do usuário.');
       }
     }
   }, []);
 
   // Efeito para carregar o token do localStorage ao montar o componente
-  useEffect(() => {
-    const token =  Cookies.get('access_token'); 
-    if (token) {
-      setUserToken(token);
-      decodeTokenAndSetUserEmail(token); 
-      fetchUserData();
-    }
-    setIsLoading(false); // Token verificado, carregamento concluído
-  }, [fetchUserData]);
+useEffect(() => {
+  const token = Cookies.get("access_token");
+  if (token) {
+    setUserToken(token);
+    fetchUserData(); // Já vai buscar e setar o email real
+  }
+  setIsLoading(false);
+}, [fetchUserData]);
 
   // Função de Login
   const login = async (email: string, password: string) => {
@@ -96,7 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await loginUser(email, password);
       Cookies.set('access_token', data.access_token, { expires: 1, secure: process.env.NODE_ENV === 'production' });
       setUserToken(data.access_token);
-      decodeTokenAndSetUserEmail(data.access_token);
+      // decodeTokenAndSetUserEmail(data.access_token);
       await fetchUserData(); // Busca dados do usuário após o login bem-sucedido
       router.push('/dashboard');
     } catch (error) {

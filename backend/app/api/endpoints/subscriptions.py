@@ -1,11 +1,15 @@
 # backend/app/api/endpoints/subscriptions.py
+import asyncio
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.responses import JSONResponse # Importar JSONResponse se usado no webhook
 from sqlalchemy.orm import Session
 from app import crud, schemas, models # Certifique-se que crud, schemas, models estão importados
 from app.core.config import settings
+from app.services.email_service import send_cancellation_email_resend, send_plan_subscribed_email_resend
 from app.services import stripe_service
+
+from datetime import datetime
 import logging
 
 from app.core.database import get_db # <--- MANTENHA ESTA IMPORTAÇÃO
@@ -245,6 +249,27 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
                     db.commit()
                     db.refresh(user)
                     logger.info(f"Usuário {user.email} atualizado para o plano {target_plan.name}.")
+
+                     # NOVO: Enviar e-mail de plano contratado aqui
+                    # A data de início da assinatura é geralmente o momento em que a sessão é concluída
+                    # A data de término pode ser obtida da assinatura Stripe ou calculada com base no plano
+                    try:
+                        # Recupera os detalhes completos da assinatura do Stripe para obter as datas
+                        stripe_subscription = stripe.Subscription.retrieve(subscription_id)
+                        start_date = datetime.fromtimestamp(stripe_subscription.current_period_start).strftime("%d/%m/%Y")
+                        end_date = datetime.fromtimestamp(stripe_subscription.current_period_end).strftime("%d/%m/%Y")
+                        plan_name = target_plan.name # Nome do plano do seu DB
+
+                        asyncio.create_task(send_plan_subscribed_email_resend(
+                            to_email=user.email,
+                            name=user.nome or "Usuário",
+                            plan_name=plan_name,
+                            start_date=start_date,
+                            end_date=end_date
+                        ))
+                        logger.info(f"E-mail de plano contratado enviado para {user.email}.")
+                    except Exception as e:
+                        logger.error(f"ERRO: Falha ao enviar e-mail de plano contratado para {user.email}: {e}")
                 else:
                     logger.warning(f"AVISO: Plano Stripe ID {price_id_from_metadata} não encontrado no DB para o usuário {user.email}.")
             else:
@@ -316,20 +341,43 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
     return JSONResponse(content={"received": True}, status_code=200)
 
 # CANCELAR ASSINATURA
-@router.post("/cancel-subscription", status_code=200)
+@router.post("/cancel-subscription", status_code=status.HTTP_200_OK, summary="Cancela a assinatura de um usuário")
 async def cancel_user_subscription(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
+    """
+    Cancela a assinatura Stripe de um usuário.
+    A assinatura será cancelada ao final do período atual.
+    """
     if not current_user.stripe_subscription_id:
-        raise HTTPException(status_code=400, detail="Usuário não possui uma assinatura ativa.")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Usuário não possui uma assinatura ativa.")
 
     try:
+        # Chama o serviço Stripe para cancelar a assinatura
         subscription = await stripe_service.cancel_subscription(
             current_user.stripe_subscription_id,
-            at_period_end=True  # ou False se quiser cancelamento imediato
+            at_period_end=True  # Define para cancelar no final do período atual
         )
-        
+
+        # Opcional: Atualizar o status da assinatura no seu banco de dados, se necessário
+        # Exemplo: current_user.subscription_status = "canceled_at_period_end"
+        # db.add(current_user)
+        # db.commit()
+        # db.refresh(current_user)
+
+        # Enviar e-mail de confirmação de cancelamento em segundo plano
+        # Converte o timestamp do Stripe para uma string de data formatada
+        subscription_end = datetime.fromtimestamp(subscription.current_period_end).strftime("%d/%m/%Y")
+
+        # Cria uma tarefa assíncrona para enviar o e-mail,
+        # permitindo que a resposta da API seja retornada imediatamente.
+        asyncio.create_task(send_cancellation_email_resend(
+            to_email=current_user.email,
+            nome=current_user.nome or "Usuário", # Usa o nome do usuário ou "Usuário" como fallback
+            subscription_end=subscription_end
+        ))
+
         return {
             "message": "Assinatura marcada para cancelamento ao final do período.",
             "subscription_id": subscription.id,
@@ -337,4 +385,6 @@ async def cancel_user_subscription(
             "current_period_end": subscription.current_period_end
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Captura e levanta uma exceção HTTP para erros no processo de cancelamento
+        print(f"Erro ao cancelar assinatura ou enviar e-mail: {e}") # Log para depuração
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Erro ao processar o cancelamento da assinatura: {str(e)}")

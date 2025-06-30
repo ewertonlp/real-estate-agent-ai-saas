@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.endpoints import content_generator, auth, history, users, image_generator, subscriptions, prompt_templates # <-- Certifique-se que 'subscriptions' está aqui
+from app.api.endpoints import content_generator, auth, history, users, image_generator, subscriptions, prompt_templates, emails # <-- Certifique-se que 'subscriptions' está aqui
 from app.core.database import Base, engine
 from app.core.config import settings
 from sqlalchemy.orm import Session
@@ -75,6 +75,9 @@ app.include_router(prompt_templates.router, prefix="/api/v1/prompt_templates", t
 # --- ESTA LINHA É A MAIS CRÍTICA PARA O SEU 404 ---
 app.include_router(subscriptions.router, prefix="/api/v1/subscriptions", tags=["Subscriptions"]) #
 # -----------------------------------------------
+
+app.include_router(emails.router, prefix="/api/v1/emails", tags=["Emails"])
+
 
 @app.get("/")
 async def read_root():

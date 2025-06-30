@@ -20,7 +20,7 @@ class TokenData(BaseModel):
 
 # Esquema base para User
 class UserBase(BaseModel):
-    # email: EmailStr
+    email: EmailStr
     nome: Optional[str] = None
     creci: Optional[str] = None
 

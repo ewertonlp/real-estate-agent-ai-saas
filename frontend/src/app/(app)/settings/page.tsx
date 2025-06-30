@@ -8,7 +8,7 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import { changeUserPassword, getUserAnalytics } from "@/lib/api"; // Importe getUserAnalytics
 import { useTheme } from "next-themes";
-import { FaMoon, FaPencilAlt,  FaSun, FaTimes } from "react-icons/fa";
+import { FaMoon, FaPencilAlt, FaSun, FaTimes } from "react-icons/fa";
 import Loader from "@/components/loader";
 import { IoSettingsOutline } from "react-icons/io5";
 import { useForm } from "react-hook-form";
@@ -28,6 +28,9 @@ export default function SettingsPage() {
   const [totalGeneratedContent, setTotalGeneratedContent] = useState<
     number | null
   >(null); // NOVO ESTADO
+  
+
+
 
   const {
     isAuthenticated,
@@ -46,7 +49,6 @@ export default function SettingsPage() {
     formState: { errors, isSubmitting },
     reset,
   } = useForm<{ nome: string; creci: string }>();
-
 
   const fetchAnalytics = useCallback(async () => {
     if (!isAuthenticated) {
@@ -159,8 +161,6 @@ export default function SettingsPage() {
     );
   }
 
-
-
   const handleToggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
   };
@@ -171,7 +171,7 @@ export default function SettingsPage() {
     );
   }
 
-const openEditInfoModal = () => {
+  const openEditInfoModal = () => {
     setModalTitle("Editar Informações");
     setIsModalOpen(true);
     setIsEditInfoModal(true);
@@ -184,19 +184,18 @@ const openEditInfoModal = () => {
     reset(); // Reseta o formulário ao fechar
   };
 
- const onSubmitInfoModal = async (data: { nome: string; creci: string }) => {
+  const onSubmitInfoModal = async (data: { nome: string; creci: string }) => {
     try {
       await updateUserInfo(data.nome, data.creci);
       toast.success("Informações salvas com sucesso!");
       closeModal();
-      
+
       // Atualiza o contexto de autenticação se necessário
       // (você pode precisar implementar esta função no AuthContext)
-      // refreshUserInfo(); 
-      
+      // refreshUserInfo();
     } catch (error: any) {
       console.error("Erro ao atualizar informações:", error);
-      
+
       // Tratamento específico para erro 401
       if (error.message.includes("401")) {
         toast.error("Sessão expirada. Por favor, faça login novamente.");
@@ -206,6 +205,8 @@ const openEditInfoModal = () => {
       }
     }
   };
+
+  
 
   return (
     <main className="bg-card p-8 rounded-lg shadow-md w-full max-w-full">
@@ -232,10 +233,7 @@ const openEditInfoModal = () => {
               Minhas Informações
             </h2>
             <button className="">
-              <FaPencilAlt
-                onClick={openEditInfoModal}
-                className="text-text"
-              />
+              <FaPencilAlt onClick={openEditInfoModal} className="text-text" />
             </button>
           </div>
           <div className="space-y-2 text-text">
@@ -268,9 +266,8 @@ const openEditInfoModal = () => {
               Fazer Upgrade de Plano
             </Link>
           )}
-          <CancelarAssinaturaButton />
+          <CancelarAssinaturaButton/>
         </section>
-
 
         {/* Alterar Senha Section (mantido) */}
         <section className="w-full p-4 border-b">
@@ -380,25 +377,28 @@ const openEditInfoModal = () => {
           </div>
         </section>
       </div>
-       {/* Modal para edição de informações */}
+      {/* Modal para edição de informações */}
       {isModalOpen && isEditInfoModal && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div 
+          <div
             className="bg-card p-6 rounded-lg shadow-xl w-full max-w-md"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold">{modalTitle}</h3>
-              <button 
+              <button
                 onClick={closeModal}
                 className="text-text hover:text-red-500"
               >
                 <FaTimes />
               </button>
             </div>
-            
+
             {/* Formulário movido para dentro do modal */}
-            <form onSubmit={handleSubmit(onSubmitInfoModal)} className="space-y-4 py-4">
+            <form
+              onSubmit={handleSubmit(onSubmitInfoModal)}
+              className="space-y-4 py-4"
+            >
               <div>
                 <input
                   id="nome"
@@ -453,10 +453,8 @@ const openEditInfoModal = () => {
           </div>
         </div>
       )}
-    </main>
+
     
+    </main>
   );
-  
 }
-
-

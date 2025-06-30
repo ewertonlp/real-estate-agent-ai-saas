@@ -1,6 +1,8 @@
 # backend/app/api/endpoints/users.py
 
+import asyncio
 from typing import List, Optional
+from app.services.email_service import send_password_changed_email_resend
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session # Correctamente importado Session
 from app import crud, schemas, models # Certifique-se que 'models' está importado
@@ -38,6 +40,11 @@ def change_my_password(
     db.add(current_user)
     db.commit()
     # Não precisa de db.refresh(current_user) se o retorno for 204 No Content.
+
+    asyncio.create_task(send_password_changed_email_resend(
+        to_email=current_user.email,
+        name=current_user.nome or "Usuário" # Usa o nome do usuário ou "Usuário" como fallback
+    ))
     
     return # Não retorna nenhum corpo
 
