@@ -28,17 +28,17 @@ export default function SettingsPage() {
   const [totalGeneratedContent, setTotalGeneratedContent] = useState<
     number | null
   >(null); // NOVO ESTADO
-  
-
-
 
   const {
     isAuthenticated,
     isLoading: isAuthLoading,
     userEmail,
+    userNome,
+    userCreci,
     userPlanName,
     userGenerationsCount,
     userMaxGenerations,
+    fetchUserData,
   } = useAuth();
   const router = useRouter();
   const { theme, setTheme } = useTheme();
@@ -186,27 +186,27 @@ export default function SettingsPage() {
 
   const onSubmitInfoModal = async (data: { nome: string; creci: string }) => {
     try {
-      await updateUserInfo(data.nome, data.creci);
+      if (!userEmail) {
+        toast.error("Email do usuário não encontrado.");
+        return;
+      }
+      await updateUserInfo(userEmail, data.nome, data.creci);
+      await fetchUserData();
       toast.success("Informações salvas com sucesso!");
       closeModal();
-
-      // Atualiza o contexto de autenticação se necessário
-      // (você pode precisar implementar esta função no AuthContext)
-      // refreshUserInfo();
     } catch (error: any) {
       console.error("Erro ao atualizar informações:", error);
 
-      // Tratamento específico para erro 401
-      if (error.message.includes("401")) {
-        toast.error("Sessão expirada. Por favor, faça login novamente.");
-        router.push("/login");
+      // Verifica se o erro é um AxiosError e mostra a mensagem correta
+      if (error.response?.data?.detail) {
+        toast.error(error.response.data.detail);
+      } else if (typeof error.message === "string") {
+        toast.error(error.message);
       } else {
-        toast.error(error.message || "Erro ao salvar informações.");
+        toast.error("Erro desconhecido ao salvar informações.");
       }
     }
   };
-
-  
 
   return (
     <main className="bg-card p-8 rounded-lg shadow-md w-full max-w-full">
@@ -241,6 +241,12 @@ export default function SettingsPage() {
               <strong>Email:</strong> {userEmail || "N/A"}
             </p>
             <p>
+              <strong>Nome:</strong> {userNome || "Não informado"}
+            </p>
+            <p>
+              <strong>CRECI:</strong> {userCreci || "Não informado"}
+            </p>
+            <p>
               <strong>Plano Atual:</strong> {userPlanName || "Carregando..."}
             </p>
             {userPlanName && userMaxGenerations !== null && (
@@ -261,17 +267,20 @@ export default function SettingsPage() {
           {userPlanName && userPlanName !== "Unlimited" && (
             <Link
               href="/plans"
-              className="mt-4 inline-block bg-button hover:bg-hover text-white font-medium py-2 px-4 rounded-md transition duration-300"
+              className="mt-4 inline-block bg-button hover:bg-primary text-white font-medium py-2 px-4 rounded-md transition duration-300"
             >
               Fazer Upgrade de Plano
             </Link>
           )}
-          <CancelarAssinaturaButton/>
+          {userPlanName && userPlanName !== "Free" && (
+            <CancelarAssinaturaButton />
+          )
+          }
         </section>
 
         {/* Alterar Senha Section (mantido) */}
         <section className="w-full p-4 border-b">
-          <h2 className="text-xl font-medium text-text mb-4 border-b pb-2">
+          <h2 className="text-xl font-semibold text-text mb-4">
             Alterar Senha
           </h2>
           <form onSubmit={handleSubmitPasswordChange} className="space-y-4">
@@ -355,7 +364,7 @@ export default function SettingsPage() {
 
         {/* Theme Toggle Section (mantido) */}
         <section className="p-4 w-full border-b ">
-          <h2 className="text-xl font-medium text-text mb-4 border-b pb-2">
+          <h2 className="text-xl font-semibold text-text mb-2 pb-2">
             Configurações de Tema
           </h2>
           <div className="flex items-center justify-between space-x-4">
@@ -453,8 +462,6 @@ export default function SettingsPage() {
           </div>
         </div>
       )}
-
-    
     </main>
   );
 }

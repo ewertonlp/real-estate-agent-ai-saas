@@ -17,6 +17,7 @@ import {
 import { MdOutlineEmail } from "react-icons/md";
 import PublicHeader from "@/components/publicHeader";
 import Footer from "@/components/footer";
+import FAQ from "@/components/FAQ";
 
 export default function Home() {
   return (
@@ -353,7 +354,7 @@ export default function Home() {
       </section>
 
       {/* NEW ROI SECTION */}
-      <section className="text-center px-6 md:px-12 py-16 bg-card border border-button text-text rounded-xl shadow-2xl max-w-4xl mx-3 animate-fade-in-up my-16">
+      <section className="text-center px-6 md:px-12 py-16 bg-card border border-button text-text rounded-xl shadow-xl max-w-4xl mx-3 animate-fade-in-up my-16">
         <h2 className="text-3xl md:text-4xl font-bold mb-6 text-text leading-tight">
           Pense no Retorno do Seu Investimento
         </h2>
@@ -380,7 +381,10 @@ export default function Home() {
         </Link>
       </section>
       {/* END NEW ROI SECTION */}
+      <section className="text-center px-4 py-16 bg-card border border-button text-text rounded-xl shadow-xl max-w-4xl mx-3 animate-fade-in-up my-16">
 
+      <FAQ  />
+      </section>
       {/* Final Call to Action */}
       <section className="text-center px-4 py-16 bg-card border border-button text-text rounded-xl shadow-xl max-w-4xl mx-3 animate-fade-in-up my-16">
         <h2 className="text-2xl md:text-3xl font-bold mb-6 text-text leading-tight">

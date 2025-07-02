@@ -28,7 +28,7 @@ interface SidebarProps {
 
 // 2. Modifique a exportação do componente para receber as novas props
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
-  const { logout, userEmail } = useAuth();
+  const { logout, userEmail, userNome } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
@@ -48,7 +48,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const linkClass = (path: string) =>
     `flex items-center space-x-3 p-2 rounded-md transition-colors ${
       pathname === path
-        ? "bg-background text-button font-medium"
+        ? "bg-background text-primary font-medium"
         : "hover:bg-background text-text"
     }`;
 
@@ -84,17 +84,22 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         document.removeEventListener('mousedown', handleOutsideClick);
       };
     }
-  }, [isOpen, onClose]); // Depende de isOpen e onClose
+  }, [isOpen, onClose]); 
+
+  const getEmailDisplay = (email: string | null) => {
+  if (!email) return "Usuário";
+  const [name, domain] = email.split("@");
+  const shortenedName = name.length > 15 ? name.slice(0, 8) + "…" : name;
+  return `${shortenedName}@${domain}`;
+};
 
   return (
-    // 4. Ajuste as classes da tag <aside> para controlar a visibilidade e transição
-    // 'z-50' para sobrepor o conteúdo e o overlay no mobile. 'md:z-0' para desktop.
     // 'cn' é usado para mesclar classes condicionalmente e as passadas externamente
     <aside
       id="main-sidebar"
       className={cn(
         // Classes base que se aplicam em todos os tamanhos, mas podem ser sobrescritas
-        "h-screen w-64 bg-card text-text shadow-lg p-6 flex flex-col transition-transform duration-300",
+        "h-screen w-64 bg-card text-text shadow-lg px-4 py-2 flex flex-col transition-transform duration-300",
         // Classes específicas para mobile (fixed, translate-x para esconder/mostrar)
         "fixed top-0 left-0 z-50", // z-50 para mobile
         isOpen ? "translate-x-0" : "-translate-x-full", // Controle de slide mobile
@@ -102,12 +107,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         "md:translate-x-0 md:fixed md:w-64 md:z-0" // md:static aqui para garantir que sai do fixed
       )}
     >
-      <div className="flex-shrink-0 mt-10 mb-10"></div> {/* Conteúdo do cabeçalho do sidebar */}
+      <div className="flex-shrink-0 mt-10 mb-10"></div> 
 
       <nav className="flex-grow">
-        <ul className="space-y-4">
+        <ul className="space-y-2">
           <li>
-            <Link href="/dashboard" className={linkClass("/dashboard")} onClick={onClose}> {/* 5. Adicione onClick={onClose} para fechar o sidebar ao clicar no link */}
+            <Link href="/dashboard" className={linkClass("/dashboard")} onClick={onClose}> 
               <FaWpforms className="text-lg" />
               <span>Gerar Conteúdo</span>
             </Link>
@@ -152,14 +157,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       <div className="mt-auto relative border-t pt-2" ref={dropdownRef}>
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="flex items-center justify-between w-full p-2 rounded-md hover:bg-background transition-colors"
+          className="flex items-center justify-between w-full py-2 px-1 rounded-md hover:bg-background transition-colors"
         >
           <div className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-button text-white text-xs font-medium">
+            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-button text-white text-[0.5rem] font-medium">
               {userEmail ? getUserInitials(userEmail) : <FiUser size={18} />}
             </div>
-            <span className="text-sm font-normal truncate">
-              {userEmail || "Usuário"}
+            <span className="text-xs font-normal truncate">
+              {(userNome) || getEmailDisplay(userEmail) || "Usuario"}
             </span>
           </div>
           <FaCog className="text-xl text-text ml-1" />

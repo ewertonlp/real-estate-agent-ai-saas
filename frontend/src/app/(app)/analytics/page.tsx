@@ -28,14 +28,14 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <main className="bg-card p-8 rounded-lg shadow-md w-full max-w-2xl mx-auto mt-8">
+    <main className="bg-card p-8 rounded-lg shadow-md w-full max-w-4xl mx-auto">
       <h1 className="text-2xl font-medium text-text text-center mb-6">
-        Seus Dados de Analytics
+        Dados disponível no momento. 🚧
       </h1>
 
-      <div className="mt-8 text-center text-text text-md">
+      <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-8 rounded-md shadow-sm text-center">
         <p>
-          Em breve, esta página terá análises mais detalhadas e gráficos sobre o uso da plataforma!
+          🚧 Em breve esta página terá análises mais detalhadas e gráficos sobre o uso da plataforma!
         </p>
       </div>
     </main>

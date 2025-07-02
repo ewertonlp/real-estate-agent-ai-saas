@@ -270,8 +270,8 @@ def update_user_info(db: Session, user_id: int, payload: schemas.UserUpdate):
     if not user:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
-    user.nome = payload.nome
-    user.creci = payload.creci
+    user.nome = payload["nome"]
+    user.creci = payload["creci"]
 
     db.commit()
     db.refresh(user)

@@ -25,7 +25,7 @@ class UserBase(BaseModel):
     creci: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_mode = True
 
 # Esquema para criar um novo usuário (registro)
 class UserCreate(UserBase):
@@ -227,3 +227,8 @@ class GeneratedContentUpdateFavorite(BaseModel):
 
     class Config:
         from_attributes = True
+        
+
+class UserUpdateInfo(BaseModel):
+    nome: str
+    creci: str

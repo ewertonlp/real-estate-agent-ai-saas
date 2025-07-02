@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext"; // Importa o hook de autenticação
 import { GiExitDoor } from "react-icons/gi";
 import PopupModal from "./popupModal";
+import { IoMdHelpCircleOutline } from "react-icons/io";
 
 export default function Header() {
   const { logout } = useAuth();
@@ -30,10 +31,11 @@ export default function Header() {
       {/* Links de Navegação e Botões de Ação */}
       <div className="container mx-auto pr-3 md:pr-0 flex justify-end items-center gap-2">
         <Link
-          href="/history"
-          className="hover:text-primary text-text font-medium py-1 px-2 text-md flex items-center space-x-1 transition-all"
+          href="/ajuda"
+          className="hover:text-primary text-text font-medium py-1 px-2 text-md flex items-center space-x-2 transition-all"
         >
-          <span>Tutorial</span>
+          <IoMdHelpCircleOutline size={24} />
+          <span>Ajuda</span>
         </Link>
 
         <div>

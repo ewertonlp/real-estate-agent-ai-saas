@@ -463,6 +463,8 @@ export interface SubscriptionPlan {
 export interface UserWithPlan {
   id: number;
   email: string;
+  nome: string | null;     
+  creci: string | null; 
   is_active: boolean;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
@@ -598,7 +600,7 @@ export async function getPromptTemplates(): Promise<PromptTemplate[]> {
   }
 }
 
-export const updateUserInfo = async (nome: string, creci: string): Promise<any> => {
+export const updateUserInfo = async (email: string, nome: string, creci: string): Promise<any> => {
   const token = Cookies.get("access_token"); // Usar cookies em vez de localStorage
   
   if (!token) {
@@ -611,7 +613,7 @@ export const updateUserInfo = async (nome: string, creci: string): Promise<any> 
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     },
-    body: JSON.stringify({ nome, creci }),
+    body: JSON.stringify({ email, nome, creci }),
   });
 
   if (!response.ok) {

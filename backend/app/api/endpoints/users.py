@@ -85,17 +85,10 @@ def get_user_analytics(
         total_generated_content=total_generated
     )
 
-@router.post("/me/update-info", response_model=schemas.UserBase)
+@router.post("/me/update-info")
 def update_user_info(
-    payload: schemas.UserUpdate,
+    updated_data: schemas.UserUpdateInfo,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_user)
 ):
-    # Em vez de esperar email no payload, use o usuário autenticado
-    updated_data = {
-        "nome": payload.nome,
-        "creci": payload.creci
-    }
-    
-    user = crud.update_user_info(db, current_user.id, updated_data)
-    return user
+    return crud.update_user_info(db, current_user.id, updated_data.dict())

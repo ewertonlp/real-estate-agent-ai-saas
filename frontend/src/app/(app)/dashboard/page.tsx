@@ -265,7 +265,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-card text-text p-4 sm:p-6 lg:p-8 rounded-lg">
-      <div className="flex items-center justify-between gap-4 mb-12 mx-auto">
+      <div className="flex items-start justify-between gap-4 mb-12 mx-auto">
         <div className="flex items-center gap-4">
           <FaWpforms className="text-2xl" />
           <h1 className="text-lg lg:text-3xl font-medium ">Gerar Conteúdo</h1>
@@ -294,7 +294,10 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-8xl mx-auto">
+        
         <div className="bg-card dark:bg-card p-6 rounded-lg border border-border overflow-hidden">
+          <h2 className="mb-12 text-lg text-center text-text">Preencha o formulário abaixo para gerar conteúdo extraordinário!
+          </h2>
           <PropertyDetailsForm
             onSubmit={handleSubmit}
             loading={loading}

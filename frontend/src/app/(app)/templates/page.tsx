@@ -23,21 +23,24 @@ export default function TemplatesPage() {
       return;
     }
 
-    if (isAuthenticated) {
-      const fetchTemplates = async () => {
-        try {
-          const fetchedTemplates = await getPromptTemplates();
-          setTemplates(fetchedTemplates);
-        } catch (err: any) {
-          setError(err.message || 'Erro ao carregar templates.');
-          toast.error(err.message || 'Erro ao carregar templates.');
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      fetchTemplates();
-    }
-  }, [isAuthenticated, isAuthLoading, router]);
+    // if (isAuthenticated) {
+    //   const fetchTemplates = async () => {
+    //     try {
+    //       const fetchedTemplates = await getPromptTemplates();
+    //       setTemplates(fetchedTemplates);
+    //     } catch (err: any) {
+    //       setError(err.message || 'Erro ao carregar templates.');
+    //       toast.error(err.message || 'Erro ao carregar templates.');
+    //     } finally {
+    //       setIsLoading(false);
+    //     }
+    //   };
+    //   fetchTemplates();
+    // }
+  if (isAuthenticated) {
+    setIsLoading(false);
+  }
+}, [isAuthenticated, isAuthLoading, router]);
 
   if (isAuthLoading || isLoading) {
     return (
@@ -60,8 +63,12 @@ export default function TemplatesPage() {
   return (
      <main className="bg-card p-8 rounded-lg shadow-md w-full max-w-4xl mx-auto">
       <h1 className="text-2xl font-medium text-text text-center mb-10">
-        Nossos Templates de Conteúdo
+         Nenhum template disponível no momento. 🚧
       </h1>
+
+      <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-8 rounded-md shadow-sm text-center">
+      🚧 Em breve: novos templates exclusivos serão adicionados à plataforma!
+    </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {templates.map((template) => (

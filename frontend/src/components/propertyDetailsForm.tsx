@@ -11,6 +11,7 @@ import { Switch } from './ui/switch'; // Adicionado para consistência com o sni
 import { Loader2 } from 'lucide-react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
+import Tooltip from './tooltip';
 
 // Seu schema Zod, deve ser o mesmo que você usa no useForm
 // Mantido o schema aqui para clareza, mas considere exportá-lo de um arquivo schemas/form.ts
@@ -138,7 +139,9 @@ const PropertyDetailsForm: React.FC<PropertyDetailsFormProps> = ({ onSubmit, loa
       {/* Example structure for a field */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="propertyType">Tipo de Imóvel</Label>
+          <Label htmlFor="propertyType" className="flex items-center">Tipo de Imóvel
+            <Tooltip text="Selecione o tipo de imóvel, como apartamento, casa, terreno, etc." />
+          </Label>
           <Select onValueChange={(value) => setValue("propertyType", value)} value={propertyType}>
             <SelectTrigger id="propertyType">
               <SelectValue placeholder="Selecione o tipo" />
@@ -155,28 +158,35 @@ const PropertyDetailsForm: React.FC<PropertyDetailsFormProps> = ({ onSubmit, loa
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="bedrooms">Quartos (Opcional)</Label>
+          <Label htmlFor="bedrooms">Quartos (Opcional)
+            <Tooltip text="Informe o número de quartos, incluindo Suíte." />
+          </Label>
           <Input id="bedrooms" type="number" {...register("bedrooms")} placeholder="Ex: 3" />
           {errors.bedrooms && (
             <p className="text-red-500 text-sm">{errors.bedrooms.message}</p>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="bathrooms">Banheiros (Opcional)</Label>
+          <Label htmlFor="bathrooms">Banheiros (Opcional)
+            <Tooltip text="Informe o número de banheiros disponíveis." /></Label>
           <Input id="bathrooms" type="number" {...register("bathrooms")} placeholder="Ex: 2" />
           {errors.bathrooms && (
             <p className="text-red-500 text-sm">{errors.bathrooms.message}</p>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="location">Localização</Label>
+          <Label htmlFor="location">Localização 
+            <Tooltip text="Indique o bairro, cidade ou região onde o imóvel está localizado." />
+          </Label>
           <Input id="location" {...register("location")} placeholder="Ex: Centro, São Paulo" />
           {errors.location && (
             <p className="text-red-500 text-sm">{errors.location.message}</p>
           )}
         </div>
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="specialFeatures">Características Especiais (Opcional)</Label>
+          <Label htmlFor="specialFeatures">Características Especiais (Opcional)
+            <Tooltip text="Exemplo: piscina, academia, varanda gourmet, vagas de garagem." />
+          </Label>
           <Textarea id="specialFeatures" {...register("specialFeatures")} placeholder="Ex: Piscina, academia, varanda gourmet" rows={3} />
           {errors.specialFeatures && (
             <p className="text-red-500 text-sm">{errors.specialFeatures.message}</p>
@@ -186,21 +196,27 @@ const PropertyDetailsForm: React.FC<PropertyDetailsFormProps> = ({ onSubmit, loa
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="propertyValue">Valor do Imóvel (R$)</Label>
+          <Label htmlFor="propertyValue">Valor do Imóvel (R$)
+            <Tooltip text="Informe o valor do imóvel em reais (opcional)." />
+          </Label>
           <Input id="propertyValue" type="number" {...register("propertyValue")} placeholder="Ex: 500000" step="0.01" />
           {errors.propertyValue && (
             <p className="text-red-500 text-sm">{errors.propertyValue.message}</p>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="condoFee">Condomínio (R$)</Label>
+          <Label htmlFor="condoFee">Condomínio (R$)
+            <Tooltip text="Informe o valor do condomínio em reais (opcional)." />
+          </Label>
           <Input id="condoFee" type="number" {...register("condoFee")} placeholder="Ex: 300" step="0.01" />
           {errors.condoFee && (
             <p className="text-red-500 text-sm">{errors.condoFee.message}</p>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="iptuValue">IPTU (R$)</Label>
+          <Label htmlFor="iptuValue">IPTU (R$)
+            <Tooltip text="Informe o valor do IPTU em reais (opcional)." />
+          </Label>
           <Input id="iptuValue" type="number" {...register("iptuValue")} placeholder="Ex: 100" step="0.01" />
           {errors.iptuValue && (
             <p className="text-red-500 text-sm">{errors.iptuValue.message}</p>
@@ -210,7 +226,8 @@ const PropertyDetailsForm: React.FC<PropertyDetailsFormProps> = ({ onSubmit, loa
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="purpose">Finalidade</Label>
+          <Label htmlFor="purpose">Finalidade 
+            <Tooltip text="Selecione se o imóvel é para venda ou aluguel." /></Label>
           <Select onValueChange={(value) => setValue("purpose", value)} value={purpose}>
             <SelectTrigger id="purpose">
               <SelectValue placeholder="Selecione a finalidade" />
@@ -225,14 +242,18 @@ const PropertyDetailsForm: React.FC<PropertyDetailsFormProps> = ({ onSubmit, loa
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="targetAudience">Público-alvo (Opcional)</Label>
+          <Label htmlFor="targetAudience">Público-alvo (Opcional)
+             <Tooltip text="Selecione o público alvo do imóvel. Ex: família com filhos, Jovem casal, Investidor." />
+          </Label>
           <Input id="targetAudience" {...register("targetAudience")} placeholder="Ex: Famílias jovens, Investidores" />
           {errors.targetAudience && (
             <p className="text-red-500 text-sm">{errors.targetAudience.message}</p>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="tone">Tom (Opcional)</Label>
+          <Label htmlFor="tone">Tom (Opcional)
+             <Tooltip text="Escolha o tom do texto gerado (formal, amigável, entusiasmado, luxuoso)." />
+          </Label>
           <Select onValueChange={(value) => setValue("tone", value)} value={tone}>
             <SelectTrigger id="tone">
               <SelectValue placeholder="Selecione o tom" />
@@ -249,7 +270,9 @@ const PropertyDetailsForm: React.FC<PropertyDetailsFormProps> = ({ onSubmit, loa
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="length">Objetivo (Opcional)</Label>
+          <Label htmlFor="length">Objetivo (Opcional)
+            <Tooltip text="Selecione se o conteúdo é para Stories, Post no Feed ou Blog." />
+          </Label>
           <Select onValueChange={(value) => setValue("length", value)} value={length}>
             <SelectTrigger id="length">
               <SelectValue placeholder="Selecione o objetivo" />
@@ -288,7 +311,9 @@ const PropertyDetailsForm: React.FC<PropertyDetailsFormProps> = ({ onSubmit, loa
           checked={optimizeForSeoGmb}
           onCheckedChange={(checked) => setValue("optimizeForSeoGmb", checked)}
         />
-        <Label htmlFor="optimizeForSeoGmb">Otimizar para SEO/Google Meu Negócio</Label>
+        <Label htmlFor="optimizeForSeoGmb">Otimizar para SEO/Google Meu Negócio 
+          <Tooltip text="Ative para incluir informações extras para melhorar o SEO e Google Meu Negócio." />
+        </Label>
       </div>
 
       {optimizeForSeoGmb && (
@@ -296,35 +321,45 @@ const PropertyDetailsForm: React.FC<PropertyDetailsFormProps> = ({ onSubmit, loa
           <h3 className="text-lg font-semibold mb-2">Detalhes de SEO/GMB</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="seoKeywords">Palavras-chave SEO (Opcional)</Label>
-              <Input id="seoKeywords" {...register("seoKeywords")} placeholder="Ex: apartamento à venda Mogi, imóvel 3 quartos" />
+              <Label htmlFor="seoKeywords">Palavras-chave SEO (Opcional)
+                 <Tooltip text="Insira palavras-chave essenciais para ser melhor localizado. Ex.: Apartamento 3 Dorms São Paulo." />
+              </Label>
+              <Input id="seoKeywords" {...register("seoKeywords")} placeholder="Ex: apartamento à venda São Paulo, imóvel 3 quartos" />
               {errors.seoKeywords && (
                 <p className="text-red-500 text-sm">{errors.seoKeywords.message}</p>
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="contactPhone">Telefone de Contato (Opcional)</Label>
+              <Label htmlFor="contactPhone">Telefone de Contato (Opcional)
+                <Tooltip text="Informe o número de Telefone/WhatsApp." />
+              </Label>
               <Input id="contactPhone" {...register("contactPhone")} placeholder="Ex: (11) 98765-4321" />
               {errors.contactPhone && (
                 <p className="text-red-500 text-sm">{errors.contactPhone.message}</p>
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="contactEmail">Email de Contato (Opcional)</Label>
+              <Label htmlFor="contactEmail">Email de Contato (Opcional)
+                <Tooltip text="Informe o email que costuma de comunicar com seus clientes." />
+              </Label>
               <Input id="contactEmail" type="email" {...register("contactEmail")} placeholder="Ex: seuemail@dominio.com" />
               {errors.contactEmail && (
                 <p className="text-red-500 text-sm">{errors.contactEmail.message}</p>
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="contactWebsite">Website (Opcional)</Label>
+              <Label htmlFor="contactWebsite">Website (Opcional)
+                <Tooltip text="Informe o site/blog, caso possua." />
+              </Label>
               <Input id="contactWebsite" type="url" {...register("contactWebsite")} placeholder="Ex: https://seusite.com.br" />
               {errors.contactWebsite && (
                 <p className="text-red-500 text-sm">{errors.contactWebsite.message}</p>
               )}
             </div>
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="propertyAddress">Endereço do Imóvel (Opcional)</Label>
+              <Label htmlFor="propertyAddress">Endereço do Imóvel (Opcional)
+                <Tooltip text="Informe o endereço do imóvel, caso seja necessário." />
+              </Label>
               <Textarea id="propertyAddress" {...register("propertyAddress")} placeholder="Ex: Rua Exemplo, 123, Bairro, Cidade - SP" rows={2} />
               {errors.propertyAddress && (
                 <p className="text-red-500 text-sm">{errors.propertyAddress.message}</p>

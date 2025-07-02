@@ -19,17 +19,20 @@ async def send_registration_email_resend(to_email: str, name: str):
             "name": name
         })
 
+        params: resend.Emails.SendParams = {
+        "from": "AuraSync <onboarding@resend.dev>",
+        "to": [to_email],
+        "subject": "Bem-vindo(a) à AuraSync!",
+        "html": html_content
+    }
+
         try:
-            # AQUI: A chamada para resend.emails.send()
-            resend.emails.send({ # Este é o método que estava faltando
-                "from": "AuraSync <info@aurasyncai.com>",  # Use o domínio verificado
-                "to": [to_email],
-                "subject": "Bem-vindo(a) à AuraSync!",
-                "html": html_content
-            })
-            print(f"E-mail de registro enviado para: {to_email}")
+            email = resend.Emails.send(params)
+            print(email)  # Log da resposta da API
+            return email
         except Exception as e:
-            print(f"Erro ao enviar e-mail de registro para {to_email}: {e}")
+            print("Erro ao enviar email:", str(e))
+        raise
 
 
 
@@ -44,8 +47,8 @@ async def send_password_changed_email_resend(to_email: str, name: str):
 
     try:
         # Envia o e-mail usando o Resend
-        resend.emails.send({
-            "from": "AuraSync <info@aurasyncai.com>",  # Domínio verificado no Resend
+        await resend.emails.send({
+            "from": "AuraSync <onboarding@resend.dev>",  # Domínio verificado no Resend
             "to": [to_email],
             "subject": "Sua senha foi alterada com sucesso",
             "html": html_content
@@ -68,8 +71,8 @@ async def send_plan_subscribed_email_resend(to_email: str, name: str, plan_name:
 
     try:
         # Envia o e-mail usando o Resend
-        resend.emails.send({
-            "from": "AuraSync <info@aurasyncai.com>",  # Domínio verificado no Resend
+        await resend.emails.send({
+            "from": "AuraSync <onboarding@resend.dev>",  # Domínio verificado no Resend
             "to": [to_email],
             "subject": "Confirmação de Assinatura do Plano AuraSync",
             "html": html_content
@@ -90,8 +93,8 @@ async def send_cancellation_email_resend(to_email: str, nome: str, subscription_
     })
 
     try:
-        resend.emails.send({
-            "from": "AuraSync <info@aurasyncai.com>",  # Domínio verificado no Resend
+        await resend.emails.send({
+            "from": "AuraSync <onboarding@resend.dev>",  # Domínio verificado no Resend
             "to": [to_email],
             "subject": "Sua assinatura foi cancelada",
             "html": html_content
