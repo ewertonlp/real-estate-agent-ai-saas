@@ -26,51 +26,51 @@ export default function Home() {
       {/* Hero Section */}
       <section className="grid grid-cols-1 md:grid-cols-2 relative text-start md:my-20 px-4 pt-20 max-w-7xl w-full">
         <div className="">
-          <h1 className="text-4xl md:text-6xl font-medium mb-6 leading-[1.3] md:leading-[1.5] tracking-tight animate-fade-in-down">
+          <h1 className="text-4xl md:text-6xl font-medium mb-6 leading-[1.1] md:leading-[1.25] tracking-tight animate-fade-in-down">
             Domine o Mercado Imobiliário com Conteúdo Imbatível.
           </h1>
           {/* Ajustei o mb-16 para mb-8 aqui para transferir o espaçamento para o contêiner dos botões */}
           <p className="text-xl md:text-2xl mb-8 animate-fade-in-up md:max-w-3xl mx-auto">
-            Gere conteúdo para posts, blog ou para sua lista de clientes, através de Inteligência Artificial. <br/>
+            <strong>Gere conteúdo</strong> persuasivo para posts, blog ou para sua lista de clientes, através da AuraSync, sua <strong>Agente IA</strong> pessoal criadora de conteúdos para o Mercado Imobiliário. <br/><br/>
             <strong>Fácil, Rápido e
             Direto!</strong>
           </p>
 
-          <div className="flex flex-col md:flex-row gap-4 mb-16">
+          <div className="flex flex-col md:flex-row gap-4 mt-12">
             <Link
               href="#plans"
               // w-full: Ocupa a largura total do seu contêiner flexível
               // Removido 'mr-4' pois 'gap-4' já cuida do espaçamento
-              className="bg-button border border-button text-white text-center font-semibold py-4 rounded-lg text-lg shadow-2xl hover:bg-hover transition-all duration-300 transform hover:scale-102 active:scale-95 w-full md:w-[300px]"
+              className="bg-button border border-button text-white text-center font-semibold py-4 rounded-lg text-lg shadow-2xl hover:bg-primary transition-all duration-300 transform hover:scale-105 active:scale-100 w-full md:w-[300px]"
             >
               Comece Hoje Mesmo!
             </Link>
             <Link
               href="/login"
               // w-full: Ocupa a largura total do seu contêiner flexível
-              className="border border-button text-button text-center font-semibold py-4 px-10 rounded-lg text-lg shadow-xl hover:bg-white hover:text-blue-800 transition-all duration-300 transform hover:scale-102 active:scale-95 w-ful md:w-[300px]"
+              className="border border-button text-button text-center font-semibold py-4 px-10 rounded-lg text-lg shadow-xl hover:bg-white hover:text-primary transition-all duration-300 transform hover:scale-105 active:scale-95 w-ful md:w-[300px]"
             >
               Já sou AuraSync AI
             </Link>
           </div>
         </div>
-        <div className="bg-transparent mt-4 md:-mt-20 animate-fade-in-up md:ml-10">
+        <div className="bg-transparent mt-4  animate-fade-in-up md:ml-10">
           <Image
-            src="/aurasync.jpg"
+            src="/corretora-de-imoveis.jpg"
             alt="Corretora de imóveis"
             width={600}
-            height={100}
+            height={50}
           />
         </div>
       </section>
 
       {/* Benefits/Why Choose Us Section */}
-      <section className="bg-card text-text border border-button mx-3 my-10 p-8 rounded-xl shadow-xl max-w-7xl transition-transform duration-500">
-        <h2 className="text-[2.5rem] font-medium text-center mb-12 text-text">
+      <section className="bg-card text-text shadow-xl border-button my-12 py-12 px-16 max-w-full transition-transform duration-500">
+        <h2 className="text-[2.5rem] font-medium text-center mb-8 text-text">
           Por Que Escolher AuraSync AI?
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div className="flex flex-col items-center p-6 rounded-lg  border border-blue-500 shadow-md text-center transform hover:scale-105 transition duration-300">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+          <div className="flex flex-col items-center p-6 rounded-lg border border-blue-500 shadow-md text-center transform hover:scale-105 hover:shadow-xl transition duration-300">
             <FaRocket className="text-button text-5xl mb-4 animate-bounce-slow" />
             <h3 className="text-2xl font-semibold mb-2 text-button">
               Acelere Suas Vendas
@@ -80,7 +80,7 @@ export default function Home() {
               oportunidade por falta de tempo.
             </p>
           </div>
-          <div className="flex flex-col items-center p-6 rounded-lg bg-card-light border border-green-400 shadow-md text-center transform hover:scale-105 transition duration-300">
+          <div className="flex flex-col items-center p-6 rounded-lg bg-card-light border border-green-400 shadow-md text-center transform hover:scale-105 hover:shadow-xl transition duration-300">
             <FaLightbulb className="text-green-500 text-5xl mb-4 animate-pulse-slow" />
             <h3 className="text-2xl font-semibold mb-2 text-green-500">
               Inovação ao Seu Alcance
@@ -90,7 +90,7 @@ export default function Home() {
               realmente se conectam com seu público.
             </p>
           </div>
-          <div className="flex flex-col items-center p-6 rounded-lg bg-card-light border border-purple-400 shadow-md text-center transform hover:scale-105 transition duration-300">
+          <div className="flex flex-col items-center p-6 rounded-lg bg-card-light border border-purple-400 shadow-md text-center transform hover:scale-105 hover:shadow-xl transition duration-300">
             <FaChartLine className="text-purple-500 text-5xl mb-4 animate-fade-in-left-slow" />
             <h3 className="text-2xl font-semibold mb-2 text-purple-500">
               Maximize Sua Visibilidade
@@ -100,7 +100,7 @@ export default function Home() {
               imóveis em destaque.
             </p>
           </div>
-          <div className="flex flex-col items-center p-6 rounded-lg bg-card-light border border-red-400 shadow-md text-center transform hover:scale-105 transition duration-300">
+          <div className="flex flex-col items-center p-6 rounded-lg bg-card-light border border-red-400 shadow-md text-center transform hover:scale-105 hover:shadow-xl transition duration-300">
             <FaShieldAlt className="text-red-500 text-5xl mb-4 animate-fade-in-right-slow" />
             <h3 className="text-2xl font-semibold mb-2 text-red-500">
               Foque no Que Importa
@@ -206,12 +206,12 @@ export default function Home() {
       {/* Pricing Section - Highly Persuasive */}
       <section
         id="plans"
-        className="my-16 py-12 px-8 rounded-xl bg-card border border-button shadow-xl max-w-7xl w-full animate-fadeIn"
+        className="my-16 py-12 px-16 bg-card  border-button shadow-xl max-w-full w-full animate-fadeIn"
       >
         <h2 className="text-4xl font-semibold text-center mb-20 text-text">
           Escolha o Plano Ideal
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 justify-center gap-12 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 justify-center gap-12 md:gap-8 my-12">
           {/* Free Tier */}
           <div className="bg-background p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-slate-300 hover:border-blue-500">
             <div>
@@ -354,7 +354,7 @@ export default function Home() {
       </section>
 
       {/* NEW ROI SECTION */}
-      <section className="text-center px-6 md:px-12 py-16 bg-card border border-button text-text rounded-xl shadow-xl max-w-4xl mx-3 animate-fade-in-up my-16">
+      <section className="text-center px-6 md:px-12 py-16 bg-card  text-text rounded-lg shadow-xl max-w-4xl mx-3 animate-fade-in-up my-16">
         <h2 className="text-3xl md:text-4xl font-bold mb-6 text-text leading-tight">
           Pense no Retorno do Seu Investimento
         </h2>
@@ -381,12 +381,13 @@ export default function Home() {
         </Link>
       </section>
       {/* END NEW ROI SECTION */}
-      <section className="text-center px-4 py-16 bg-card border border-button text-text rounded-xl shadow-xl max-w-4xl mx-3 animate-fade-in-up my-16">
 
+      <section className="text-center px-4 py-16 bg-card  text-text rounded-lg shadow-xl max-w-4xl mx-3 animate-fade-in-up my-16">
       <FAQ  />
       </section>
+
       {/* Final Call to Action */}
-      <section className="text-center px-4 py-16 bg-card border border-button text-text rounded-xl shadow-xl max-w-4xl mx-3 animate-fade-in-up my-16">
+      <section className="bg-card text-text text-center shadow-xl rounded-lg my-12 py-12 px-16 max-w-full transition-transform duration-500">
         <h2 className="text-2xl md:text-3xl font-bold mb-6 text-text leading-tight">
           Chega de Bloqueio Criativo
           <br />

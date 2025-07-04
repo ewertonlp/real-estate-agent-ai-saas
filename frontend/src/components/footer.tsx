@@ -45,14 +45,7 @@ export default function Footer() {
                   Preços
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/faq"
-                  className="  text-text hover:text-button py-1  text-sm flex items-center space-x-1 transition-all"
-                >
-                  <span>FAQ</span>
-                </Link>
-              </li>
+             
             </ul>
           </nav>
         </div>
@@ -86,7 +79,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/faq"
+                  href="/FAQ"
                   className="  text-text hover:text-button py-1 text-sm flex items-center space-x-1 transition-all"
                 >
                   <span>FAQ</span>
