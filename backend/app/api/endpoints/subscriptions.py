@@ -212,93 +212,146 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
 
     if not sig_header:
         logger.error("###### ERRO (Webhook): Cabeçalho 'stripe-signature' ausente. Retornando 400. ######")
-        raise HTTPException(status_code=400, detail="Cabeçalho 'stripe-signature' ausente.")
+        return JSONResponse(content={"error": "Cabeçalho 'stripe-signature' ausente"}, status_code=400)
 
     try:
         event = await stripe_service.retrieve_stripe_event(payload, sig_header)
         logger.info(f"###### DEBUG (Webhook): Evento Stripe construído com sucesso: {event['type']} (ID: {event['id']}) ######")
     except ValueError as e:
         logger.error(f"Erro de payload do webhook: {e}")
-        raise HTTPException(status_code=400, detail=f"Payload inválido: {e}")
+        return JSONResponse(content={"error": f"Payload inválido: {e}"}, status_code=400)
     except stripe.error.SignatureVerificationError as e:
         logger.error(f"Erro de verificação de assinatura do webhook: {e}")
-        raise HTTPException(status_code=400, detail=f"Assinatura do webhook inválida: {e}")
+        return JSONResponse(content={"error": f"Assinatura do webhook inválida: {e}"}, status_code=400)
     except Exception as e:
-        logger.exception(f"Erro inesperado ao processar webhook: {e}") # Usar exception para ver traceback
-        raise HTTPException(status_code=500, detail=f"Erro inesperado ao processar webhook: {e}")
+        logger.exception(f"Erro inesperado ao processar webhook: {e}")
+        return JSONResponse(content={"error": f"Erro inesperado: {e}"}, status_code=500)
 
+    # Processar evento checkout.session.completed
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
+        
+        # 1. Verificação segura de metadata
+        metadata = session.get('metadata', {})
+        user_id_from_metadata = metadata.get('user_id')
+        price_id_from_metadata = metadata.get('price_id')
+        
+        # 2. Obter campos essenciais
         customer_id = session.get('customer')
         subscription_id = session.get('subscription')
-        user_id_from_metadata = session['metadata'].get('user_id')
-        price_id_from_metadata = session['metadata'].get('price_id')
+        
+        logger.info(f"Checkout Session Completed: Customer {customer_id}, "
+                   f"Subscription {subscription_id}, "
+                   f"User {user_id_from_metadata}, "
+                   f"Price {price_id_from_metadata}")
 
-        logger.info(f"Checkout Session Completed: Customer {customer_id}, Subscription {subscription_id}, User {user_id_from_metadata}, Price {price_id_from_metadata}")
+        # 3. Validação de campos obrigatórios
+        if not all([user_id_from_metadata, subscription_id, price_id_from_metadata]):
+            logger.error("Dados essenciais faltando no webhook: user_id, subscription_id ou price_id")
+            return JSONResponse(
+                content={"error": "Dados incompletos no metadata"},
+                status_code=400
+            )
 
-        if user_id_from_metadata and subscription_id:
-            user = crud.get_user(db, int(user_id_from_metadata)) # Use crud.get_user
-            if user:
-                user.stripe_subscription_id = subscription_id
-                
-                target_plan = crud.get_subscription_plan_by_stripe_price_id(db, price_id_from_metadata) # Use crud.get_subscription_plan_by_stripe_price_id
-                if target_plan:
-                    user.subscription_plan_id = target_plan.id
-                    user.content_generations_count = 0 # Resetar contador ao mudar de plano (opcional)
-                    db.add(user)
-                    db.commit()
-                    db.refresh(user)
-                    logger.info(f"Usuário {user.email} atualizado para o plano {target_plan.name}.")
+        try:
+            user_id = int(user_id_from_metadata)
+        except (TypeError, ValueError):
+            logger.error(f"User ID inválido: {user_id_from_metadata}")
+            return JSONResponse(
+                content={"error": "User ID deve ser um número inteiro"},
+                status_code=400
+            )
 
-                     # NOVO: Enviar e-mail de plano contratado aqui
-                    # A data de início da assinatura é geralmente o momento em que a sessão é concluída
-                    # A data de término pode ser obtida da assinatura Stripe ou calculada com base no plano
-                    try:
-                        # Recupera os detalhes completos da assinatura do Stripe para obter as datas
-                        stripe_subscription = stripe.Subscription.retrieve(subscription_id)
-                        start_date = datetime.fromtimestamp(stripe_subscription.current_period_start).strftime("%d/%m/%Y")
-                        end_date = datetime.fromtimestamp(stripe_subscription.current_period_end).strftime("%d/%m/%Y")
-                        plan_name = target_plan.name # Nome do plano do seu DB
+        # 4. Busca de usuário
+        user = crud.get_user(db, user_id)
+        if not user:
+            logger.error(f"Usuário não encontrado: ID {user_id}")
+            return JSONResponse(
+                content={"error": "Usuário não encontrado"},
+                status_code=404
+            )
+        
+        # 5. Busca de plano
+        target_plan = crud.get_subscription_plan_by_stripe_price_id(db, price_id_from_metadata)
+        if not target_plan:
+            logger.error(f"Plano não encontrado: Price ID {price_id_from_metadata}")
+            return JSONResponse(
+                content={"error": "Plano de assinatura não encontrado"},
+                status_code=404
+            )
 
-                        asyncio.create_task(send_plan_subscribed_email_resend(
-                            to_email=user.email,
-                            name=user.nome or "Usuário",
-                            plan_name=plan_name,
-                            start_date=start_date,
-                            end_date=end_date
-                        ))
-                        logger.info(f"E-mail de plano contratado enviado para {user.email}.")
-                    except Exception as e:
-                        logger.error(f"ERRO: Falha ao enviar e-mail de plano contratado para {user.email}: {e}")
-                else:
-                    logger.warning(f"AVISO: Plano Stripe ID {price_id_from_metadata} não encontrado no DB para o usuário {user.email}.")
-            else:
-                logger.warning(f"AVISO: Usuário com ID {user_id_from_metadata} não encontrado para o webhook.")
+        # 6. Atualizar informações do usuário
+        try:
+            user.stripe_subscription_id = subscription_id
+            user.subscription_plan_id = target_plan.id
+            user.content_generations_count = 0
+            
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+            logger.info(f"Usuário {user.email} atualizado para o plano {target_plan.name}.")
+        except Exception as e:
+            logger.exception(f"Erro ao atualizar usuário: {e}")
+            db.rollback()
+            return JSONResponse(
+                content={"error": "Erro ao atualizar informações do usuário"},
+                status_code=500
+            )
 
+        # 7. Enviar e-mail de confirmação (assíncrono)
+        try:
+            stripe_subscription = stripe.Subscription.retrieve(subscription_id)
+            start_date = datetime.fromtimestamp(stripe_subscription.current_period_start).strftime("%d/%m/%Y")
+            end_date = datetime.fromtimestamp(stripe_subscription.current_period_end).strftime("%d/%m/%Y")
+            
+            asyncio.create_task(send_plan_subscribed_email_resend(
+                to_email=user.email,
+                name=user.nome or "Usuário",
+                plan_name=target_plan.name,
+                start_date=start_date,
+                end_date=end_date
+            ))
+            logger.info(f"E-mail de confirmação enviado para {user.email}.")
+        except Exception as e:
+            logger.error(f"ERRO ao enviar e-mail: {e}")
+            # Não interrompe o fluxo principal por erro no e-mail
+
+    # Processar evento customer.subscription.updated
     elif event['type'] == 'customer.subscription.updated':
         subscription = event['data']['object']
         customer_id = subscription.get('customer')
         new_status = subscription.get('status')
-        current_price_id = subscription.get('items', {}).get('data', [{}])[0].get('price', {}).get('id')
+        subscription_id = subscription.get('id')
+        
+        # Obter price_id atual
+        try:
+            current_price_id = subscription['items']['data'][0]['price']['id']
+        except (KeyError, IndexError):
+            current_price_id = None
+            logger.warning("Não foi possível obter o price_id da assinatura atualizada")
 
-        user = crud.get_user_by_stripe_customer_id(db, customer_id) # Use crud.get_user_by_stripe_customer_id
-        if user:
-            logger.info(f"Assinatura do cliente {customer_id} atualizada para status: {new_status}")
-            
-            # Se a assinatura for ativa e o preço mudar, atualize o plano do usuário
-            if new_status == 'active' and current_price_id and user.stripe_subscription_id == subscription.id:
+        user = crud.get_user_by_stripe_customer_id(db, customer_id)
+        if not user:
+            logger.warning(f"Usuário com Stripe Customer ID {customer_id} não encontrado")
+            return JSONResponse(content={"warning": "Usuário não encontrado"}, status_code=200)
+
+        logger.info(f"Assinatura atualizada: Customer {customer_id}, Status: {new_status}")
+        
+        try:
+            # Atualização de plano
+            if new_status == 'active' and current_price_id:
                 target_plan = crud.get_subscription_plan_by_stripe_price_id(db, current_price_id)
                 if target_plan:
                     user.subscription_plan_id = target_plan.id
-                    user.content_generations_count = 0 # Resetar contador ao mudar de plano (opcional, como no checkout)
+                    user.content_generations_count = 0
                     db.add(user)
                     db.commit()
-                    db.refresh(user)
-                    logger.info(f"Usuário {user.email} plano atualizado para {target_plan.name} via customer.subscription.updated.")
+                    logger.info(f"Plano do usuário {user.email} atualizado para {target_plan.name}")
                 else:
-                    logger.warning(f"AVISO: Plano Stripe ID {current_price_id} não encontrado no DB para o usuário {user.email} durante update de assinatura.")
-            elif new_status == 'canceled' or new_status == 'unpaid':
-                # Reverter para o plano 'Free' se a assinatura for cancelada ou não paga
+                    logger.warning(f"Plano com price_id {current_price_id} não encontrado")
+            
+            # Cancelamento ou não pagamento
+            elif new_status in ['canceled', 'unpaid']:
                 free_plan = crud.get_subscription_plan_by_name(db, "Free")
                 if free_plan:
                     user.stripe_subscription_id = None
@@ -306,38 +359,42 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
                     user.content_generations_count = 0
                     db.add(user)
                     db.commit()
-                    db.refresh(user)
-                    logger.info(f"Assinatura do usuário {user.email} foi cancelada/não paga. Revertido para plano Free.")
+                    logger.info(f"Usuário {user.email} revertido para plano Free")
                 else:
-                    logger.error(f"ERRO: Plano 'Free' não encontrado ao tentar reverter assinatura cancelada para {user.email}.")
+                    logger.error("Plano Free não encontrado no banco de dados")
+        except Exception as e:
+            logger.exception(f"Erro ao processar atualização de assinatura: {e}")
+            db.rollback()
 
-        else:
-            logger.warning(f"AVISO: Usuário com Stripe Customer ID {customer_id} não encontrado para o webhook updated.")
-
+    # Processar evento customer.subscription.deleted
     elif event['type'] == 'customer.subscription.deleted':
         subscription = event['data']['object']
         customer_id = subscription.get('customer')
+        subscription_id = subscription.get('id')
         
-        user = crud.get_user_by_stripe_customer_id(db, customer_id) # Use crud.get_user_by_stripe_customer_id
-        if user:
-            logger.info(f"Assinatura do cliente {customer_id} deletada.")
-            user.stripe_subscription_id = None
-            
-            # Atribuir o plano "Free" em vez de None
+        user = crud.get_user_by_stripe_customer_id(db, customer_id)
+        if not user:
+            logger.warning(f"Usuário com Stripe Customer ID {customer_id} não encontrado")
+            return JSONResponse(content={"warning": "Usuário não encontrado"}, status_code=200)
+
+        logger.info(f"Assinatura excluída: Customer {customer_id}, Subscription {subscription_id}")
+        
+        try:
             free_plan = crud.get_subscription_plan_by_name(db, "Free")
             if free_plan:
+                user.stripe_subscription_id = None
                 user.subscription_plan_id = free_plan.id
-                user.content_generations_count = 0 # Resetar gerações
+                user.content_generations_count = 0
                 db.add(user)
                 db.commit()
-                db.refresh(user)
-                logger.info(f"Assinatura do usuário {user.email} removida do DB e atribuído plano Free.")
+                logger.info(f"Usuário {user.email} atribuído ao plano Free")
             else:
-                logger.error(f"ERRO: Plano 'Free' não encontrado ao tentar remover assinatura para {user.email}.")
+                logger.error("Plano Free não encontrado no banco de dados")
+        except Exception as e:
+            logger.exception(f"Erro ao processar exclusão de assinatura: {e}")
+            db.rollback()
 
-        else:
-            logger.warning(f"AVISO: Usuário com Stripe Customer ID {customer_id} não encontrado para o webhook deleted.")
-    
+    # Responder para todos os tipos de evento
     return JSONResponse(content={"received": True}, status_code=200)
 
 # CANCELAR ASSINATURA

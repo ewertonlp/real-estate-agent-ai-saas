@@ -9,22 +9,22 @@ export default function PublicHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Estado para controlar a abertura/fechamento do menu móvel
 
   return (
-    <header className="bg-card py-6 shadow-sm w-full relative"> {/* Adicione 'relative' para posicionamento absoluto do menu móvel */}
+    <header className="bg-transparent relative py-6 w-full top-0 left-0"> {/* Adicione 'relative' para posicionamento absoluto do menu móvel */}
       <div className="max-w-7xl w-full flex justify-between items-center mx-auto px-4 sm:px-6 lg:px-8"> {/* Adicionado px para padding em telas pequenas */}
         {/* Título/Logo */}
         <Link
           href="/"
-          className="text-2xl font-bold text-text hover:text-primary transition-colors z-20" // z-index para ficar acima do menu móvel
+          className="text-2xl font-bold text-white hover:scale-110 transition-all  ease-out z-20" // z-index para ficar acima do menu móvel
         >
           AuraSync AI
         </Link>
 
         {/* Ícone do Hambúrguer para Mobile */}
         <button
-          className="md:hidden text-text text-2xl z-20" // Visível apenas em telas menores que 'md'
-          onClick={() => setIsMenuOpen(!isMenuOpen)} // Alterna o estado do menu
+          className="md:hidden text-white text-2xl z-20" 
+          onClick={() => setIsMenuOpen(!isMenuOpen)} 
         >
-          {isMenuOpen ? <FaTimes /> : <FaBars />} {/* Mostra X quando aberto, Hambúrguer quando fechado */}
+          {isMenuOpen ? <FaTimes /> : <FaBars />}
         </button>
 
         {/* Navegação e Botões para Desktop (visíveis apenas em telas maiores que 'md') */}
@@ -33,7 +33,7 @@ export default function PublicHeader() {
             <li>
               <Link
                 href="/services"
-                className="text-text hover:text-primary font-medium py-1 px-3 text-md flex items-center space-x-1 transition-all"
+                className="text-white hover:scale-110 font-medium py-1 px-3 text-md flex items-center space-x-1 transition-all ease-out"
               >
                 <span>Serviços</span>
               </Link>
@@ -41,7 +41,7 @@ export default function PublicHeader() {
             <li>
               <Link
                 href="/aboutUs"
-                className="text-text hover:text-primary font-medium py-1 px-3 text-md flex items-center space-x-1 transition-all"
+                className="text-white hover:scale-110 font-medium py-1 px-3 text-md flex items-center space-x-1 transition-all ease-out"
               >
                 Sobre nós
               </Link>
@@ -49,7 +49,7 @@ export default function PublicHeader() {
             <li>
               <Link
                 href="/#plans"
-                className="text-text hover:text-primary font-medium py-1 px-3 text-md flex items-center space-x-1 transition-all"
+                className="text-white hover:scale-110 font-medium py-1 px-3 text-md flex items-center space-x-1 transition-all ease-out"
               >
                 Preços
               </Link>
@@ -57,7 +57,7 @@ export default function PublicHeader() {
             <li>
               <Link
                 href="/contact"
-                className="text-text hover:text-primary font-medium py-1 px-3 text-md flex items-center space-x-1 transition-all"
+                className="text-white hover:scale-110 font-medium py-1 px-3 text-md flex items-center space-x-1 transition-all ease-out"
               >
                 <span>Contato</span>
               </Link>
@@ -72,7 +72,7 @@ export default function PublicHeader() {
               <li>
                 <Link
                   href="/login"
-                  className="text-text hover:text-primary font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all"
+                  className="text-white hover:scale-110 font-medium py-1 px-3 rounded-md text-md flex items-center space-x-1 transition-all ease-out"
                 >
                   <span>Login</span>
                 </Link>
@@ -80,7 +80,7 @@ export default function PublicHeader() {
               <li>
                 <Link
                   href="/register"
-                  className="text-white bg-button hover:bg-my-button-hover font-medium py-2 px-3 rounded-lg text-md flex items-center space-x-1 transition-all ease-in-out"
+                  className="text-white border border-white/70 bg-transparent hover:scale-110 font-medium py-2 px-6 rounded-full text-md flex items-center space-x-1 transition-all ease-in-out"
                 >
                   Cadastro
                 </Link>
@@ -93,12 +93,12 @@ export default function PublicHeader() {
       {/* Menu Móvel (Overlay) */}
       {/* Renderizado condicionalmente baseado no estado isMenuOpen */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-card shadow-lg py-6 border-t border-border z-10">
-          <ul className="flex flex-col items-center gap-4">
+        <div className="md:hidden absolute top-full left-0 h-screen right-0 bg-gradient-to-tr from-[#2350cc] to-[#1C2792] shadow-lg py-6 border-t border-white/50 z-50">
+          <ul className="flex flex-col items-center gap-4 text-white">
             <li>
               <Link
                 href="/services"
-                className="text-text hover:text-primary font-medium py-2 px-4 block w-full text-center"
+                className="hover:text-neutral-200 font-medium py-2 px-4 block w-full text-center"
                 onClick={() => setIsMenuOpen(false)} // Fecha o menu ao clicar no link
               >
                 Serviços
@@ -107,7 +107,7 @@ export default function PublicHeader() {
             <li>
               <Link
                 href="/aboutUs"
-                className="text-text hover:text-primary font-medium py-2 px-4 block w-full text-center"
+                className="hover:text-neutral-200 font-medium py-2 px-4 block w-full text-center"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Sobre nós
@@ -116,7 +116,7 @@ export default function PublicHeader() {
             <li>
               <Link
                 href="/#plans"
-                className="text-text hover:text-primary font-medium py-2 px-4 block w-full text-center"
+                className="hover:text-neutral-200  font-medium py-2 px-4 block w-full text-center"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Preços
@@ -125,17 +125,18 @@ export default function PublicHeader() {
             <li>
               <Link
                 href="/contact"
-                className="text-text hover:text-primary font-medium py-2 px-4 block w-full text-center"
+                className="hover:text-neutral-200  font-medium py-2 px-4 block w-full text-center"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Contato
               </Link>
             </li>
             {/* Separador visual para os botões de autenticação */}
-            <li className="w-full border-t border-border pt-4 mt-4">
+            <li className="w-full border-t border-white/50 pt-4 mt-4">
+            
               <Link
                 href="/login"
-                className="text-text hover:text-primary font-medium py-2 px-4 block w-full text-center"
+                className="hover:text-neutral-200  font-medium py-2 px-4 block w-full text-center"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Login
@@ -144,8 +145,7 @@ export default function PublicHeader() {
             <li>
               <Link
                 href="/register"
-                // Ajuste de classes para centralizar o botão de cadastro no mobile
-                className="text-white bg-button hover:bg-my-button-hover font-medium py-2 px-12 block w-full text-center rounded-lg mx-auto "
+                className="bg-gradient-to-tr from-purple-700 to-pink-500  text-white font-medium py-3 px-12 block w-full text-center rounded-full mx-auto "
                 onClick={() => setIsMenuOpen(false)}
               >
                 Cadastre-se

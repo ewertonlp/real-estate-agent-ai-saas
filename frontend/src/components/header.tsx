@@ -4,7 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext"; // Importa o hook de autenticação
-import { GiExitDoor } from "react-icons/gi";
+
 import PopupModal from "./popupModal";
 import { IoMdHelpCircleOutline } from "react-icons/io";
 
@@ -18,7 +18,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-card py-4 pl-4 pr-10 md:px-10 shadow-md w-full flex z-10 sticky top-0 left-0">
+    <header className="bg-transparent py-4 pl-4 pr-10 md:px-10 shadow-md w-full flex z-10 sticky top-0 left-0">
       <div className="container mx-auto flex justify-between items-center">
         {/* Título/Logo */}
         <Link

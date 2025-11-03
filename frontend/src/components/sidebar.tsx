@@ -141,8 +141,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               className={cn( // Usando cn para melhor legibilidade
                 `flex items-center space-x-3 p-2 rounded-md transition-colors font-medium`,
                 pathname === "/plans"
-                  ? "text-text bg-button"
-                  : "bg-button hover:bg-button text-text"
+                  ? "text-white bg-button"
+                  : "bg-button hover:bg-primary text-white"
               )}
               onClick={onClose}
             >

@@ -5,11 +5,12 @@
 @tailwind utilities;
 
 @layer base {
-  :root { /* Tema Claro - Personalize com seus valores HSL */
+  :root {
+    /* Tema Claro - Personalize com seus valores HSL */
     --background: 0 0% 95%; /* Cinza claro */
     --foreground: 222.2 47.4% 11.2%; /* Quase preto */
 
-    --card: 0, 5%, 99%; 
+    --card: 0, 5%, 99%;
     --card-foreground: 222.2 47.4% 11.2%;
     --text: 222.2 47.4% 11.2%;
     --button: 214 100% 65%;
@@ -45,11 +46,12 @@
     --my-button-hover: 214 100% 45%; /* seu #007fff */
   }
 
-  .dark { /* Tema Escuro - Personalize com seus valores HSL */
+  .dark {
+    /* Tema Escuro - Personalize com seus valores HSL */
     --background: 216, 37%, 13%; /* Azul muito escuro */
     --foreground: 0, 8%, 98%; /* Quase branco */
 
-    --card: 237.6, 19%, 26%; 
+    --card: 237.6, 19%, 26%;
     --card-foreground: 210 20% 98%;
     --text: 210 20% 98%;
     --button: 214 100% 65%;
@@ -97,5 +99,194 @@
     scroll-behavior: smooth;
     list-style: none;
     transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
+
+/* Shapes */
+.clip-polygon {
+  clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 0% 100%);
+}
+.clip-polygon-footer {
+  clip-path: polygon(0% 10%, 100% 0%, 100% 100%, 0% 100%);
+}
+.clip-polygon-pricing {
+  clip-path: polygon(0% 10%, 100% 0%, 100% 90%, 0% 100%);
+}
+
+
+/* Animation */
+.animate-fade-in-down {
+  animation: fade-in-down 1s ease-out forwards;
+}
+.animate-fade-in-up {
+  animation: fade-in-up 1s ease-out forwards;
+  animation-delay: 0.2s;
+}
+.animate-scale-in {
+  animation: scale-in 0.8s ease-out forwards;
+  animation-delay: 0.4s;
+}
+.animate-fade-in {
+  animation: fade-in 1s ease-out forwards;
+  animation-delay: 0.6s;
+}
+.animate-bounce-slow {
+  animation: bounce-slow 4s infinite ease-in-out;
+}
+.animate-pulse-slow {
+  animation: pulse-slow 3s infinite ease-in-out;
+}
+.animate-fade-in-left-slow {
+  animation: fade-in-left-slow 1.5s ease-out forwards;
+  animation-delay: 0.8s;
+}
+.animate-fade-in-right-slow {
+  animation: fade-in-right-slow 1.5s ease-out forwards;
+  animation-delay: 1s;
+}
+.animate-fade-in-up-slow {
+  animation: fade-in-up-slow 1.5s ease-out forwards;
+  animation-delay: 1.2s;
+}
+
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes bounce-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+@keyframes pulse-slow {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+@keyframes fade-in-left-slow {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes fade-in-right-slow {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes fade-in-up-slow {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.glow-button {
+  position: relative;
+  z-index: 1;
+}
+.glow-button::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #ffd700, #ffa500, #ffd700); /* Dourado */
+  filter: blur(8px);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 9999px; /* Para coincidir com rounded-full */
+}
+.glow-button:hover::before {
+  opacity: 1;
+}
+.circle-step {
+  position: relative;
+}
+.step-number {
+  border: 4px solid white; /* Borda branca para destacar o número */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+/* Responsividade da linha conectora */
+@media (min-width: 768px) {
+  /* md */
+  .circle-step:nth-child(1)::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -50px; /* Metade da distância entre os círculos */
+    width: 100px; /* Distância entre os círculos */
+    height: 2px;
+    background-color: #60a5fa; /* Cor azul 400 */
+    z-index: -1;
+  }
+  .circle-step:nth-child(2)::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -50px;
+    width: 100px;
+    height: 2px;
+    background-color: #60a5fa;
+    z-index: -1;
   }
 }

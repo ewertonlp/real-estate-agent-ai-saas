@@ -11,9 +11,14 @@ import {
 } from "@/lib/api";
 import Image from "next/image";
 import { toast } from "react-toastify";
-import { FaCcAmex, FaCcMastercard, FaCcVisa, FaCheckCircle, FaLock } from "react-icons/fa"; // Importe FaLock para segurança
-// Se quiser logos de cartões, importe-os também:
-// import { FaCcVisa, FaCcMastercard, FaCcAmex } from "react-icons/fa"; 
+import {
+  FaCcAmex,
+  FaCcMastercard,
+  FaCcVisa,
+  FaCheckCircle,
+  FaLock,
+} from "react-icons/fa"; // Importe FaLock para segurança
+import { planFeatures } from "@/data/subscriptionPlans";
 
 export default function PlansPage() {
   const [allPlans, setAllPlans] = useState<SubscriptionPlan[]>([]);
@@ -191,55 +196,19 @@ export default function PlansPage() {
                 </span>
               </div>
               <ul className="text-text text-left space-y-2 mb-8">
-                <li className="flex items-center">
-                  <FaCheckCircle className="text-green-500 mr-2 flex-shrink-0" />{" "}
-                  <span>Acesso ao Histórico de Conteúdo</span>
-                </li>
-                <li className="flex items-center">
-                  <FaCheckCircle className="text-green-500 mr-2 flex-shrink-0" />{" "}
-                  <span>Otimização para Redes Sociais</span>
-                </li>
-                <li className="flex items-center">
-                  <FaCheckCircle className="text-green-500 mr-2 flex-shrink-0" />
-                  <span>
-                    {plan.max_generations === 0
-                      ? "Gerações de Conteúdo Ilimitadas"
-                      : `${plan.max_generations} Gerações de Conteúdo por ${
-                          plan.interval === "month" ? "mês" : "ano"
-                        }`}
-                  </span>
-                </li>
-                {plan.name !== "Free" && (
-                  <>
-                    {" "}
-                    <li className="flex items-center">
-                      <FaCheckCircle className="text-green-500 mr-2 flex-shrink-0" />{" "}
-                      <span>Otimização para SEO & GMB</span>
-                    </li>{" "}
-                    <li className="flex items-center">
-                      <FaCheckCircle className="text-green-500 mr-2 flex-shrink-0" />{" "}
-                      <span>Suporte Premium via Chat</span>
-                    </li>{" "}
-                  </>
-                )}{" "}
-                {plan.name === "Unlimited" && (
-                  <>
-                    {" "}
-                    <li className="flex items-center">
-                      <FaCheckCircle className="text-green-500 mr-2 flex-shrink-0" />{" "}
-                      <span>Novos Recursos Exclusivos</span>
-                    </li>{" "}
-                    <li className="flex items-center">
-                      <FaCheckCircle className="text-green-500 mr-2 flex-shrink-0" />{" "}
-                      <span>Prioridade no Suporte</span>
-                    </li>{" "}
-                  </>
-                )}{" "}
-              </ul>{" "}
+                {planFeatures[plan.name]?.[plan.interval]?.map(
+                  (feature, index) => (
+                    <li key={index} className="flex items-center">
+                      <FaCheckCircle className="text-green-500 mr-2 flex-shrink-0" />
+                      <span>{feature}</span>
+                    </li>
+                  )
+                )}
+              </ul>
             </div>{" "}
             <button
               onClick={() => handleSubscribe(plan.price_id_stripe)}
-              className={`w-full py-3 px-2 rounded-md font-semibold text-lg transition duration-300 ${
+              className={`w-full py-3 px-2 rounded-md font-semibold text-lg hover:bg-primary transition duration-300 ${
                 plan.name === "Free"
                   ? "bg-gray-400 text-white cursor-not-allowed"
                   : "bg-button text-white hover:bg-hover"
@@ -284,16 +253,21 @@ export default function PlansPage() {
           <span>Pagamento 100% seguro via Stripe.</span>
         </div>
         <p>
-          Seus dados de pagamento são criptografados e processados diretamente pelo Stripe, garantindo a máxima segurança.
-          Nenhuma informação sensível é armazenada em nossos servidores.
+          Seus dados de pagamento são criptografados e processados diretamente
+          pelo Stripe, garantindo a máxima segurança. Nenhuma informação
+          sensível é armazenada em nossos servidores.
         </p>
         {/* Você pode adicionar logos de bandeiras de cartão aqui se quiser */}
-        
+
         <div className="flex justify-center gap-4 mt-4 text-3xl">
-         
-        <Image src="/stripe-payments.png" alt="Stripe logo" width={150} height={50} />
+          <Image
+            src="/stripe-payments.png"
+            alt="Stripe logo"
+            width={150}
+            height={50}
+          />
         </div>
-       
+
         <p className="mt-4">
           Assinaturas são recorrentes e podem ser canceladas a qualquer momento.
         </p>

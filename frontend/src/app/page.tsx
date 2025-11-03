@@ -7,64 +7,70 @@ import {
   FaLightbulb,
   FaChartLine,
   FaShieldAlt,
-  FaCheckCircle,
   FaWhatsapp,
   FaInstagram,
   FaFacebook,
   FaTelegramPlane,
   FaArrowDown,
-} from "react-icons/fa"; // Novos ícones para persuasão
+} from "react-icons/fa"; 
 import { MdOutlineEmail } from "react-icons/md";
 import PublicHeader from "@/components/publicHeader";
 import Footer from "@/components/footer";
 import FAQ from "@/components/FAQ";
+import Pricing from "@/components/pricing";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background text-text flex flex-col items-center justify-center overflow-hidden">
-      <PublicHeader />
-      {/* Hero Section */}
-      <section className="grid grid-cols-1 md:grid-cols-2 relative text-start md:my-20 px-4 pt-20 max-w-7xl w-full">
-        <div className="">
-          <h1 className="text-4xl md:text-6xl font-medium mb-6 leading-[1.1] md:leading-[1.25] tracking-tight animate-fade-in-down">
-            Domine o Mercado Imobiliário com Conteúdo Imbatível.
-          </h1>
-          {/* Ajustei o mb-16 para mb-8 aqui para transferir o espaçamento para o contêiner dos botões */}
-          <p className="text-xl md:text-2xl mb-8 animate-fade-in-up md:max-w-3xl mx-auto">
-            <strong>Gere conteúdo</strong> persuasivo para posts, blog ou para sua lista de clientes, através da AuraSync, sua <strong>Agente IA</strong> pessoal criadora de conteúdos para o Mercado Imobiliário. <br/><br/>
-            <strong>Fácil, Rápido e
-            Direto!</strong>
-          </p>
+    <div className="min-h-screen mx-auto text-white bg-white flex flex-col items-center justify-center overflow-hidden">
+      <div className="min-h-screen w-full clip-polygon bg-gradient-to-tr from-[#1B45B4] to-[#1C2792] drop-shadow-lg">
+        <div className="absolute top-0 left-0 w-96 h-48 bg-blue-400 rounded-full blur-3xl opacity-40"></div>
 
-          <div className="flex flex-col md:flex-row gap-4 mt-12">
-            <Link
-              href="#plans"
-              // w-full: Ocupa a largura total do seu contêiner flexível
-              // Removido 'mr-4' pois 'gap-4' já cuida do espaçamento
-              className="bg-button border border-button text-white text-center font-semibold py-4 rounded-lg text-lg shadow-2xl hover:bg-primary transition-all duration-300 transform hover:scale-105 active:scale-100 w-full md:w-[300px]"
-            >
-              Comece Hoje Mesmo!
-            </Link>
-            <Link
-              href="/login"
-              // w-full: Ocupa a largura total do seu contêiner flexível
-              className="border border-button text-button text-center font-semibold py-4 px-10 rounded-lg text-lg shadow-xl hover:bg-white hover:text-primary transition-all duration-300 transform hover:scale-105 active:scale-95 w-ful md:w-[300px]"
-            >
-              Já sou AuraSync AI
-            </Link>
+        <div className="absolute top-0 right-0 w-[768px] h-48 bg-blue-400 rounded-full blur-3xl opacity-30"></div>
+
+        <div className="absolute bottom-0 right-60 w-96 h-48 bg-blue-500 rounded-full blur-2xl opacity-30"></div>
+        <PublicHeader />
+        {/* Hero Section */}
+        <section className="flex flex-col items-center justify-center mx-auto relative text-center md:my-12 px-4 pt-8 max-w-7xl w-full ">
+          <div className="mb-12">
+            <h1 className="text-4xl md:text-6xl font-semibold mb-6 md:leading-[1.25] tracking-tight animate-fade-in-down leading-tight drop-shadow-lg">
+              Domine o Mercado Imobiliário com Conteúdo Imbatível.
+            </h1>
+
+            <p className="text-xl md:text-2xl mb-8 animate-fade-in-up md:max-w-3xl mx-auto">
+              <strong>Gere conteúdo</strong> persuasivo para posts, blog ou para
+              sua lista de clientes, através da AuraSync, sua{" "}
+              <strong>Agente IA</strong> pessoal criadora de conteúdos para o
+              Mercado Imobiliário. <br />
+              <br />
+              <strong>Fácil, Rápido e Direto!</strong>
+            </p>
+
+            <div className="flex flex-col md:flex-row items-center justify-center gap-8 mt-12">
+              <Link
+                href="#plans"
+                className="bg-gradient-to-tr from-purple-700 to-pink-500  text-white text-center font-semibold py-4 rounded-full text-lg shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-100 w-full md:w-[300px]"
+              >
+                Experimente Grátis
+              </Link>
+              <Link
+                href="/login"
+                className="border border-white/70 bg-transparent text-white text-center font-semibold py-4 px-10 rounded-full text-lg shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 w-full md:w-[300px]"
+              >
+                Já sou AuraSync AI
+              </Link>
+            </div>
           </div>
-        </div>
-        <div className="bg-transparent mt-4  animate-fade-in-up md:ml-10">
-          <Image
+          <div className="bg-transparent mt-4  animate-fade-in-up md:ml-10">
+            {/* <Image
             src="/corretora-de-imoveis.jpg"
             alt="Corretora de imóveis"
             width={600}
             height={50}
-          />
-        </div>
-      </section>
+          /> */}
+          </div>
+        </section>
+      </div>
 
-      {/* Benefits/Why Choose Us Section */}
       <section className="bg-card text-text shadow-xl border-button my-12 py-12 px-16 max-w-full transition-transform duration-500">
         <h2 className="text-[2.5rem] font-medium text-center mb-8 text-text">
           Por Que Escolher AuraSync AI?
@@ -203,155 +209,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing Section - Highly Persuasive */}
-      <section
-        id="plans"
-        className="my-16 py-12 px-16 bg-card  border-button shadow-xl max-w-full w-full animate-fadeIn"
-      >
-        <h2 className="text-4xl font-semibold text-center mb-20 text-text">
-          Escolha o Plano Ideal
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 justify-center gap-12 md:gap-8 my-12">
-          {/* Free Tier */}
-          <div className="bg-background p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-slate-300 hover:border-blue-500">
-            <div>
-              <h3 className="text-3xl font-bold text-text mb-4">Grátis</h3>
-              <p className="text-text mb-6">
-                Experimente o poder da IA sem custo.
-              </p>
-              <div className="text-4xl font-extrabold text-blue-600 mb-6">
-                R$0<span className="text-xl font-normal">/mês</span>
-              </div>
-              <p className="text-text text-lg  mb-6">
-                5 Gerações de Conteúdo por Mês
-              </p>
-              <ul className="text-text text-left space-y-2 mb-8">
-                <li className="flex items-center">
-                  <FaCheckCircle className="text-green-500 mr-2" /> Acesso
-                  Completo ao Histórico
-                </li>
-                <li className="flex items-center">
-                  <FaCheckCircle className="text-green-500 mr-2" /> Geração de
-                  Textos Básicos
-                </li>
-                <li className="flex items-center text-gray-500 line-through">
-                  <FaCheckCircle className="text-gray-400 mr-2" /> Otimização
-                  Avançada (SEO/GMB)
-                </li>
-              </ul>
-            </div>
-            <Link
-              href="/register"
-              className="bg-button text-md text-white hover:bg-blue-600 font-semibold py-3 px-6 rounded-lg cursor-pointer"
-            >
-              Comece Grátis
-            </Link>
-          </div>
-
-          {/* Basic Tier - Example */}
-          <div className="bg-background p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-slate-300 hover:border-blue-500">
-            <div>
-              <h3 className="text-3xl font-bold text-text mb-4">Basic</h3>
-              <p className="text-text mb-6">
-                Para agências e corretores com alto volume.
-              </p>
-              <div className="text-4xl font-extrabold text-blue-600 mb-6">
-                R$20,00<span className="text-xl font-normal">/mês</span>
-              </div>
-              <p className="text-text text-lg  mb-6">
-                Até 20 conteúdos por mês!
-              </p>
-              <ul className="text-text text-left space-y-2 mb-8">
-                <li className="flex items-center">
-                  <FaCheckCircle className="text-green-500 mr-2" /> Tudo do
-                  Plano Essencial
-                </li>
-                <li className="flex items-center">
-                  <FaCheckCircle className="text-green-500 mr-2" /> Otimização
-                  Avançada (SEO/GMB)
-                </li>
-                <li className="flex items-center text-gray-500 line-through">
-                  <FaCheckCircle className="text-gray-400 mr-2" /> Suporte
-                  Prioritário
-                </li>
-              </ul>
-            </div>
-            <Link
-              href="/plans"
-              className="bg-button text-md text-white font-semibold py-3 px-6 rounded-lg cursor-pointer hover:bg-blue-600 transition duration-300 active:scale-95"
-            >
-              Quero Assinar
-            </Link>
-          </div>
-
-          {/* Premium Tier - Example (or Unlimited) */}
-          <div className="bg-button text-white p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full  border-4 border-yellow-400 scale-105 relative z-10">
-            <div>
-              <div className="absolute -top-7 right-1/2 translate-x-1/2 bg-yellow-400 text-blue-900 text-md font-bold px-3 py-1 rounded-lg shadow-lg">
-                MAIS POPULAR!
-              </div>
-              <h3 className="text-3xl font-bold my-4">Premium</h3>
-              <p className="opacity-90 mb-6">
-                Desbloqueie o potencial máximo de suas campanhas.
-              </p>
-              <div className="text-4xl font-extrabold mb-6">
-                R$40,00<span className="text-xl font-normal">/mês</span>
-              </div>
-              <p className="mb-6 text-lg ">50 Gerações de Conteúdo por Mês</p>
-              <ul className="text-left space-y-2 mb-8">
-                <li className="flex items-center">
-                  <FaCheckCircle className="text-yellow-400 mr-2" /> Tudo do
-                  Plano Basic
-                </li>
-                <li className="flex items-center">
-                  <FaCheckCircle className="text-yellow-400 mr-2" /> Acesso a
-                  Templates Premium
-                </li>
-                <li className="flex items-center">
-                  <FaCheckCircle className="text-yellow-400 mr-2" /> Suporte
-                  Prioritário
-                </li>
-              </ul>
-            </div>
-            <Link
-              href="/plans"
-              className="bg-yellow-300 text-blue-800 font-semibold py-3 px-6 rounded-lg hover:bg-yellow-300 transition duration-300 transform hover:scale-105 active:scale-95 glow-button"
-            >
-              Escolher o Premium
-            </Link>
-          </div>
-
-          {/* Premium Tier - Example (or Unlimited) */}
-          <div className="bg-background p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-slate-300 hover:border-blue-500">
-            <div>
-              <h3 className="text-3xl font-bold text-text mb-4">Unlimited</h3>
-              <p className="text-text mb-6">
-                Para agências, Imobiliárias e corretores com alto volume.
-              </p>
-              <div className="text-4xl font-extrabold text-blue-600 mb-6">
-                R$100,00<span className="text-xl font-normal">/mês</span>
-              </div>
-              <p className="text-text text-lg mb-6">Gerações ILIMITADAS!</p>
-              <ul className="text-text text-left space-y-2 mb-8">
-                <li className="flex items-center">
-                  <FaCheckCircle className="text-green-500 mr-2" /> Tudo do
-                  Plano Premium
-                </li>
-                <li className="flex items-center">
-                  <FaCheckCircle className="text-green-400 mr-2" /> Suporte
-                  Prioritário
-                </li>
-              </ul>
-            </div>
-            <Link
-              href="/plans"
-              className="bg-button text-md text-white font-semibold py-3 px-6 rounded-lg cursor-pointer hover:bg-blue-600 transition duration-300 active:scale-95"
-            >
-              Quero Assinar
-            </Link>
-          </div>
-        </div>
-      </section>
+      <Pricing />
 
       {/* NEW ROI SECTION */}
       <section className="text-center px-6 md:px-12 py-16 bg-card  text-text rounded-lg shadow-xl max-w-4xl mx-3 animate-fade-in-up my-16">
@@ -375,15 +233,15 @@ export default function Home() {
         </p>
         <Link
           href="/register"
-          className="bg-yellow-400 text-blue-900 font-bold py-4 px-12 rounded-lg md:text-xl shadow-xl hover:bg-yellow-300 transition duration-300 transform hover:scale-105 active:scale-95 glow-button"
+          className="bg-gradient-to-tr from-purple-700 to-pink-500 text-white hover:scale-110 font-bold py-4 px-12 rounded-full md:text-xl shadow-xl transition duration-300 transform  active:scale-95"
         >
-        REGISTRE-SE AGORA!
+          REGISTRE-SE AGORA!
         </Link>
       </section>
       {/* END NEW ROI SECTION */}
 
       <section className="text-center px-4 py-16 bg-card  text-text rounded-lg shadow-xl max-w-4xl mx-3 animate-fade-in-up my-16">
-      <FAQ  />
+        <FAQ />
       </section>
 
       {/* Final Call to Action */}
@@ -401,196 +259,14 @@ export default function Home() {
         </p>
         <Link
           href="/register"
-          className="bg-yellow-400 text-blue-900 font-bold py-4 px-12 rounded-lg md:text-xl shadow-2xl hover:bg-yellow-300 transition duration-300 transform hover:scale-105 active:scale-95 glow-button"
+          className="bg-gradient-to-tr from-purple-700 to-pink-500 text-white hover:scale-110  font-bold py-4 px-12 rounded-full md:text-xl shadow-2xl transition duration-300 transform active:scale-95"
         >
           CADASTRE-SE GRÁTIS!
         </Link>
       </section>
       <Footer />
 
-      {/* Global styles for animations and glow effect - Add to globals.css if preferred */}
-      <style jsx global>{`
-        .animate-fade-in-down {
-          animation: fade-in-down 1s ease-out forwards;
-        }
-        .animate-fade-in-up {
-          animation: fade-in-up 1s ease-out forwards;
-          animation-delay: 0.2s;
-        }
-        .animate-scale-in {
-          animation: scale-in 0.8s ease-out forwards;
-          animation-delay: 0.4s;
-        }
-        .animate-fade-in {
-          animation: fade-in 1s ease-out forwards;
-          animation-delay: 0.6s;
-        }
-        .animate-bounce-slow {
-          animation: bounce-slow 4s infinite ease-in-out;
-        }
-        .animate-pulse-slow {
-          animation: pulse-slow 3s infinite ease-in-out;
-        }
-        .animate-fade-in-left-slow {
-          animation: fade-in-left-slow 1.5s ease-out forwards;
-          animation-delay: 0.8s;
-        }
-        .animate-fade-in-right-slow {
-          animation: fade-in-right-slow 1.5s ease-out forwards;
-          animation-delay: 1s;
-        }
-        .animate-fade-in-up-slow {
-          animation: fade-in-up-slow 1.5s ease-out forwards;
-          animation-delay: 1.2s;
-        }
-
-        @keyframes fade-in-down {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes scale-in {
-          from {
-            opacity: 0;
-            transform: scale(0.8);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-        @keyframes bounce-slow {
-          0%,
-          100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-        }
-        @keyframes pulse-slow {
-          0%,
-          100% {
-            transform: scale(1);
-            opacity: 1;
-          }
-          50% {
-            transform: scale(1.05);
-            opacity: 0.8;
-          }
-        }
-        @keyframes fade-in-left-slow {
-          from {
-            opacity: 0;
-            transform: translateX(-30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-        @keyframes fade-in-right-slow {
-          from {
-            opacity: 0;
-            transform: translateX(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-        @keyframes fade-in-up-slow {
-          from {
-            opacity: 0;
-            transform: translateY(50px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .glow-button {
-          position: relative;
-          z-index: 1;
-        }
-        .glow-button::before {
-          content: "";
-          position: absolute;
-          top: -2px;
-          left: -2px;
-          right: -2px;
-          bottom: -2px;
-          background: linear-gradient(
-            45deg,
-            #ffd700,
-            #ffa500,
-            #ffd700
-          ); /* Dourado */
-          filter: blur(8px);
-          z-index: -1;
-          opacity: 0;
-          transition: opacity 0.3s ease-in-out;
-          border-radius: 9999px; /* Para coincidir com rounded-full */
-        }
-        .glow-button:hover::before {
-          opacity: 1;
-        }
-        .circle-step {
-          position: relative;
-        }
-        .step-number {
-          border: 4px solid white; /* Borda branca para destacar o número */
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        /* Responsividade da linha conectora */
-        @media (min-width: 768px) {
-          /* md */
-          .circle-step:nth-child(1)::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            right: -50px; /* Metade da distância entre os círculos */
-            width: 100px; /* Distância entre os círculos */
-            height: 2px;
-            background-color: #60a5fa; /* Cor azul 400 */
-            z-index: -1;
-          }
-          .circle-step:nth-child(2)::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            right: -50px;
-            width: 100px;
-            height: 2px;
-            background-color: #60a5fa;
-            z-index: -1;
-          }
-        }
-      `}</style>
+      
     </div>
   );
 }

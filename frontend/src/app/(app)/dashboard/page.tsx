@@ -285,7 +285,7 @@ export default function DashboardPage() {
           {userPlanName && userPlanName !== 'Unlimited' && (
             <Link
               href="/plans"
-              className="mt-4 inline-block bg-button hover:bg-hover text-text font-medium py-2 px-4 rounded-md transition duration-300"
+              className="mt-4 inline-block bg-button hover:bg-primary text-white font-medium py-2 px-4 rounded-md transition duration-300"
             >
               Fazer Upgrade do Plano
             </Link>
