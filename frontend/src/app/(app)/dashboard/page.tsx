@@ -270,7 +270,7 @@ export default function DashboardPage() {
           <FaWpforms className="text-2xl" />
           <h1 className="text-lg lg:text-3xl font-medium ">Gerar Conteúdo</h1>
         </div>
-        <div>
+        {/* <div>
           <p>
             <strong>Plano Atual:</strong> {userPlanName || "Carregando..."}
           </p>
@@ -281,7 +281,7 @@ export default function DashboardPage() {
               {userMaxGenerations === 0 ? "Ilimitadas" : userMaxGenerations}
             </p>
           )}
-          {/* Opcional: Link para Upgrade de Plano, similar ao da página de Settings */}
+         
           {userPlanName && userPlanName !== 'Unlimited' && (
             <Link
               href="/plans"
@@ -290,7 +290,7 @@ export default function DashboardPage() {
               Fazer Upgrade do Plano
             </Link>
           )}
-        </div>
+        </div> */}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-8xl mx-auto">

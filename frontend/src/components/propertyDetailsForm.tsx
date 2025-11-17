@@ -369,7 +369,7 @@ const PropertyDetailsForm: React.FC<PropertyDetailsFormProps> = ({ onSubmit, loa
         </div>
       )}
 
-      <Button type="submit" className="w-full mt-6 uppercase text-md font-semibold text-text" disabled={loading}>
+      <Button type="submit" className="w-full py-6 mt-6 uppercase text-md font-semibold text-white" disabled={loading}>
         {loading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Gerando...

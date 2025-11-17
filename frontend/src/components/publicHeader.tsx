@@ -16,7 +16,7 @@ export default function PublicHeader() {
           href="/"
           className="text-2xl font-bold text-white hover:scale-110 transition-all  ease-out z-20" // z-index para ficar acima do menu móvel
         >
-          AuraSync AI
+          Realtor AI
         </Link>
 
         {/* Ícone do Hambúrguer para Mobile */}

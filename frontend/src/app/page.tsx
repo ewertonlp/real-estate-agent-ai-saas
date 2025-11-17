@@ -52,11 +52,12 @@ export default function Home() {
               >
                 Experimente Grátis
               </Link>
+              
               <Link
                 href="/login"
                 className="border border-white/70 bg-transparent text-white text-center font-semibold py-4 px-10 rounded-full text-lg shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 w-full md:w-[300px]"
               >
-                Já sou AuraSync AI
+                Já sou Realtor AI
               </Link>
             </div>
           </div>
