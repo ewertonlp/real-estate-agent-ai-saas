@@ -1,4 +1,3 @@
-// frontend/src/components/sidebar.tsx
 "use client";
 
 import Link from "next/link";
@@ -18,15 +17,13 @@ import { IoIosExit } from "react-icons/io";
 import { FiUser } from "react-icons/fi";
 import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils"; 
+import { cn } from "@/lib/utils";
 
-// 1. Crie uma interface para as props que o Sidebar vai receber do seu pai (layout.tsx)
 interface SidebarProps {
-  isOpen: boolean; // Estado booleano que indica se o sidebar deve estar aberto (true) ou fechado (false)
-  onClose: () => void; // Função para fechar o sidebar, passada pelo componente pai
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-// 2. Modifique a exportação do componente para receber as novas props
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { logout, userEmail, userNome } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -52,7 +49,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         : "hover:bg-background text-text"
     }`;
 
-  // Lógica existente para fechar o dropdown do usuário ao clicar fora
   useEffect(() => {
     const handleClickOutsideDropdown = (event: MouseEvent) => {
       if (
@@ -68,69 +64,80 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     };
   }, []);
 
-  // 3. Adicione uma lógica para fechar o sidebar ao clicar fora dele no mobile
   useEffect(() => {
-    if (isOpen) { // Apenas se o sidebar estiver aberto
+    if (isOpen) {
       const handleOutsideClick = (event: MouseEvent) => {
-        // Obtenha a referência ao próprio elemento aside
-        const sidebarElement = document.getElementById('main-sidebar'); // Vamos adicionar este ID ao aside
-        // Se o clique não foi dentro do sidebar, e o sidebar existe, feche-o
+        const sidebarElement = document.getElementById("main-sidebar");
+
         if (sidebarElement && !sidebarElement.contains(event.target as Node)) {
-          onClose(); // Chama a função onClose passada pelo pai (layout.tsx)
+          onClose();
         }
       };
-      document.addEventListener('mousedown', handleOutsideClick);
+      document.addEventListener("mousedown", handleOutsideClick);
       return () => {
-        document.removeEventListener('mousedown', handleOutsideClick);
+        document.removeEventListener("mousedown", handleOutsideClick);
       };
     }
-  }, [isOpen, onClose]); 
+  }, [isOpen, onClose]);
 
   const getEmailDisplay = (email: string | null) => {
-  if (!email) return "Usuário";
-  const [name, domain] = email.split("@");
-  const shortenedName = name.length > 15 ? name.slice(0, 8) + "…" : name;
-  return `${shortenedName}@${domain}`;
-};
+    if (!email) return "Usuário";
+    const [name, domain] = email.split("@");
+    const shortenedName = name.length > 15 ? name.slice(0, 8) + "…" : name;
+    return `${shortenedName}@${domain}`;
+  };
 
   return (
-    // 'cn' é usado para mesclar classes condicionalmente e as passadas externamente
     <aside
       id="main-sidebar"
       className={cn(
-        // Classes base que se aplicam em todos os tamanhos, mas podem ser sobrescritas
         "h-screen w-64 bg-card text-text shadow-lg px-4 py-2 flex flex-col transition-transform duration-300",
-        // Classes específicas para mobile (fixed, translate-x para esconder/mostrar)
-        "fixed top-0 left-0 z-50", // z-50 para mobile
-        isOpen ? "translate-x-0" : "-translate-x-full", // Controle de slide mobile
-        // Classes para desktop (md:), que sobrescrevem as de mobile
-        "md:translate-x-0 md:fixed md:w-64 md:z-0" // md:static aqui para garantir que sai do fixed
+        "fixed top-0 left-0 z-50",
+        isOpen ? "translate-x-0" : "-translate-x-full",
+
+        "md:translate-x-0 md:fixed md:w-64 md:z-0"
       )}
     >
-      <div className="flex-shrink-0 mt-10 mb-10"></div> 
+      <div className="flex-shrink-0 mt-10 mb-10"></div>
 
       <nav className="flex-grow">
         <ul className="space-y-2">
           <li>
-            <Link href="/dashboard" className={linkClass("/dashboard")} onClick={onClose}> 
+            <Link
+              href="/dashboard"
+              className={linkClass("/dashboard")}
+              onClick={onClose}
+            >
               <FaWpforms className="text-lg" />
               <span>Gerar Conteúdo</span>
             </Link>
           </li>
           <li>
-            <Link href="/history" className={linkClass("/history")} onClick={onClose}>
+            <Link
+              href="/history"
+              className={linkClass("/history")}
+              onClick={onClose}
+            >
               <FaHistory className="text-lg" />
               <span>Histórico</span>
             </Link>
           </li>
           <li>
-            <Link href="/analytics" className={linkClass("/analytics")} onClick={onClose}>
+            <Link
+              href="/analytics"
+              className={linkClass("/analytics")}
+              onClick={onClose}
+            >
               <FaChartBar className="text-lg" />
               <span>Analytics</span>
             </Link>
           </li>
           <li>
-            <Link href="/templates" className={linkClass("/templates")} onClick={onClose}>
+            <Link
+              href="/templates"
+              className={linkClass("/templates")}
+              onClick={onClose}
+            >
               <FaStar className="text-lg" />
               <span>Templates</span>
             </Link>
@@ -138,7 +145,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           <li>
             <Link
               href="/plans"
-              className={cn( // Usando cn para melhor legibilidade
+              className={cn(
                 `flex items-center space-x-3 p-2 rounded-md transition-colors font-medium`,
                 pathname === "/plans"
                   ? "text-white bg-button"
@@ -153,7 +160,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </ul>
       </nav>
 
-      {/* Dropdown do usuário */}
       <div className="mt-auto relative border-t pt-2" ref={dropdownRef}>
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -164,7 +170,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               {userEmail ? getUserInitials(userEmail) : <FiUser size={18} />}
             </div>
             <span className="text-xs font-normal truncate">
-              {(userNome) || getEmailDisplay(userEmail) || "Usuario"}
+              {userNome || getEmailDisplay(userEmail) || "Usuario"}
             </span>
           </div>
           <FaCog className="text-xl text-text ml-1" />
@@ -175,7 +181,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             <Link
               href="/settings"
               className="flex items-center space-x-3 px-4 py-2 text-sm text-text hover:bg-card"
-              onClick={() => { setIsDropdownOpen(false); onClose(); }} // Fecha dropdown E sidebar
+              onClick={() => {
+                setIsDropdownOpen(false);
+                onClose();
+              }}
             >
               <FaCog className="text-lg" />
               <span>Configurações da Conta</span>
@@ -194,9 +203,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               </div>
               <span className="text-xs text-gray-500 capitalize">{theme}</span>
             </div>
-            {/* 6. Mova o botão de Logout para dentro do dropdown para melhor organização no mobile */}
+
             <button
-              onClick={() => { logout(); setIsDropdownOpen(false); onClose(); }} // Fecha tudo ao deslogar
+              onClick={() => {
+                logout();
+                setIsDropdownOpen(false);
+                onClose();
+              }}
               className="flex items-center space-x-3 px-4 py-2 text-sm text-red-500 hover:bg-card w-full text-left"
             >
               <IoIosExit className="text-lg" />

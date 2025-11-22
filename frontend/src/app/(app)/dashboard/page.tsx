@@ -1,4 +1,3 @@
-// frontend/src/app/(app)/dashboard/page.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -37,45 +36,38 @@ export default function DashboardPage() {
   const [generatedContent, setGeneratedContent] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-  const [showCopyMessage, setShowCopyMessage] = useState<boolean>(false); // <<< ESTADO showCopyMessage
-  // Estados para controlar o modal de onboarding
+  const [showCopyMessage, setShowCopyMessage] = useState<boolean>(false); 
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(0);
 
-  // NOVO ESTADO: para passar valores iniciais ao PropertyDetailsForm
+ 
   const [initialFormValues, setInitialFormValues] = useState<
     Partial<PropertyDetailsFormSchema>
   >({});
 
-  // Efeito para verificar se é um novo usuário e iniciar o onboarding
+  
   useEffect(() => {
-    // Verifica se o usuário já completou o onboarding nesta versão
     const onboardingCompleted = localStorage.getItem("onboarding_completed_v1");
-
-    // Verifica se o usuário não completou o onboarding E se o email do usuário já foi carregado
-    // userEmail é um bom proxy para saber se o AuthContext já carregou
     if (!onboardingCompleted && userEmail) {
       setShowOnboarding(true);
-      setOnboardingStep(0); // Começa do primeiro passo
+      setOnboardingStep(0);
     }
   }, [userEmail]);
 
-  // Função para avançar para o próximo passo do onboarding ou finalizar
+ 
   const handleNextOnboardingStep = () => {
     if (onboardingStep < onboardingStepsData.length - 1) {
-      // Se não for o último passo, avança
       setOnboardingStep((prev) => prev + 1);
     } else {
-      // Se for o último passo, finaliza o onboarding
-      localStorage.setItem("onboarding_completed_v1", "true"); // Marca como completo no localStorage
-      setShowOnboarding(false); // Fecha o modal
+      localStorage.setItem("onboarding_completed_v1", "true"); /
+      setShowOnboarding(false); 
     }
   };
 
-  // Função para pular ou fechar o onboarding a qualquer momento
+
   const handleSkipOnboarding = () => {
-    localStorage.setItem("onboarding_completed_v1", "true"); // Marca como completo
-    setShowOnboarding(false); // Fecha o modal
+    localStorage.setItem("onboarding_completed_v1", "true"); 
+    setShowOnboarding(false); 
   };
 
   // Efeito para preencher o formulário com dados do histórico, se presentes na URL
@@ -238,14 +230,14 @@ export default function DashboardPage() {
     }
   };
 
-  // <<< FUNÇÃO handleCopy DEVE ESTAR AQUI >>>
+ 
   const handleCopy = () => {
     navigator.clipboard.writeText(generatedContent);
     setShowCopyMessage(true);
     setTimeout(() => setShowCopyMessage(false), 2000);
   };
 
-  // Renderização condicional enquanto a autenticação está sendo carregada
+ 
   if (isAuthLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -257,7 +249,7 @@ export default function DashboardPage() {
     );
   }
 
-  // Redireciona se não estiver autenticado após o carregamento
+  
   if (!isAuthenticated) {
     router.push("/login");
     return null;
@@ -342,8 +334,8 @@ export default function DashboardPage() {
       </div>
       <Modal
         isOpen={showOnboarding}
-        onClose={handleSkipOnboarding} // O botão de fechar do modal chama 'Pular Tour'
-        title={onboardingStepsData[onboardingStep].title} // Título do passo atual
+        onClose={handleSkipOnboarding}
+        title={onboardingStepsData[onboardingStep].title} 
         content={
           <>
             <p className="mb-4">
@@ -368,7 +360,7 @@ export default function DashboardPage() {
                   Começar!
                 </button>
               )}
-              {/* Botão Pular Tour / Fechar */}
+          
               <button
                 onClick={handleSkipOnboarding}
                 className="text-text hover:underline py-2 px-4 rounded-md"
@@ -380,13 +372,13 @@ export default function DashboardPage() {
             </div>
           </>
         }
-        className="max-w-xl" // Classe opcional para a caixa do modal (pode ajustar o tamanho)
+        className="max-w-xl" 
       />
     </div>
   );
 }
 
-// No topo do seu frontend/src/app/(app)/dashboard/page.tsx, ou em um arquivo de dados separado
+
 const onboardingStepsData = [
   {
     title: "Bem-vindo ao Gerador de Conteúdo!",

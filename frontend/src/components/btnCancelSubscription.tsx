@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { cancelSubscription } from "@/lib/api"; // Certifique-se de ter essa função
+import { cancelSubscription } from "@/lib/api"; 
 import { FaTimes } from "react-icons/fa";
 
 export function CancelarAssinaturaButton() {

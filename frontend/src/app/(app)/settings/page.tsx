@@ -1,4 +1,3 @@
-// frontend/src/app/(app)/settings/page.tsx
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -6,7 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "react-toastify";
-import { changeUserPassword, getUserAnalytics } from "@/lib/api"; // Importe getUserAnalytics
+import { changeUserPassword, getUserAnalytics } from "@/lib/api";
 import { useTheme } from "next-themes";
 import { FaMoon, FaPencilAlt, FaSun, FaTimes } from "react-icons/fa";
 import Loader from "@/components/loader";
@@ -23,7 +22,6 @@ export default function SettingsPage() {
   const [isLoadingPasswordChange, setIsLoadingPasswordChange] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
-  const [modalContent, setModalContent] = useState("");
   const [isEditInfoModal, setIsEditInfoModal] = useState(false);
   const [totalGeneratedContent, setTotalGeneratedContent] = useState<
     number | null
@@ -52,30 +50,29 @@ export default function SettingsPage() {
 
   const fetchAnalytics = useCallback(async () => {
     if (!isAuthenticated) {
-      console.log("Não autenticado, pulando fetchAnalytics."); // Debug
+      console.log("Não autenticado, pulando fetchAnalytics.");
       return;
     }
 
     try {
-      const data = await getUserAnalytics(); // Chama a API de analytics
-      // Verifique se data e data.total_generated_content existem e são números
+      const data = await getUserAnalytics();
+
       if (data && typeof data.total_generated_content === "number") {
         setTotalGeneratedContent(data.total_generated_content);
       } else {
         console.warn(
           "total_generated_content não é um número ou é nulo/indefinido:",
           data.total_generated_content
-        ); // Debug: Aviso
-        setTotalGeneratedContent(0); // Defina um valor padrão, como 0, se o valor não for um número válido
+        );
+        setTotalGeneratedContent(0);
       }
     } catch (err: any) {
-      console.error("Erro ao carregar analytics em settings:", err); // Debug: Erro completo
+      console.error("Erro ao carregar analytics em settings:", err);
       toast.error("Não foi possível carregar os dados.");
-      setTotalGeneratedContent(null); // Mantenha como null para indicar erro ou "carregando com erro"
+      setTotalGeneratedContent(null);
     }
-  }, [isAuthenticated]); // fetchAnalytics depende apenas de isAuthenticated
+  }, [isAuthenticated]);
 
-  // Efeito para verificar autenticação e carregar analytics
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
       router.push("/login");
@@ -83,7 +80,7 @@ export default function SettingsPage() {
     }
 
     if (isAuthenticated) {
-      fetchAnalytics(); // Chama a função memoizada
+      fetchAnalytics();
     }
 
     // if (isAuthenticated) {
@@ -100,8 +97,7 @@ export default function SettingsPage() {
     //   };
     //   fetchAnalytics();
     // }
-  }, [isAuthenticated, isAuthLoading, router, fetchAnalytics]); // Adicionado fetchAnalytics como dependência para garantir que rode
-
+  }, [isAuthenticated, isAuthLoading, router, fetchAnalytics]);
   const handleSubmitPasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -126,23 +122,19 @@ export default function SettingsPage() {
     }
 
     try {
-      await toast.promise(
-        changeUserPassword(currentPassword, newPassword), // A promessa a ser resolvida
-        {
-          pending: "Alterando senha...", // Mensagem exibida enquanto a promessa está pendente
-          success: "Senha alterada com sucesso! 🎉", // Mensagem de sucesso quando a promessa é resolvida
-          error: {
-            render({ data }: any) {
-              // 'data' contém o erro lançado pela promessa (catch)
-              const errorMessage =
-                data?.message || "Ocorreu um erro ao alterar a senha.";
-              console.error("Erro ao mudar senha (toast.promise):", data); // Log detalhado para depuração
-              setError(errorMessage); // Opcional: atualiza o estado de erro, se quiser exibir também abaixo do formulário
-              return errorMessage; // Mensagem de erro que será exibida no toast
-            },
+      await toast.promise(changeUserPassword(currentPassword, newPassword), {
+        pending: "Alterando senha...",
+        success: "Senha alterada com sucesso! 🎉",
+        error: {
+          render({ data }: any) {
+            const errorMessage =
+              data?.message || "Ocorreu um erro ao alterar a senha.";
+            console.error("Erro ao mudar senha (toast.promise):", data);
+            setError(errorMessage);
+            return errorMessage;
           },
-        }
-      );
+        },
+      });
 
       setCurrentPassword("");
       setNewPassword("");
@@ -166,9 +158,7 @@ export default function SettingsPage() {
   };
 
   if (isAuthLoading) {
-    return (
-      <Loader message="Carregando autenticação..." /> // Usa o componente Loader
-    );
+    return <Loader message="Carregando autenticação..." />;
   }
 
   const openEditInfoModal = () => {
@@ -181,7 +171,7 @@ export default function SettingsPage() {
     setIsModalOpen(false);
     setModalTitle("");
     setIsEditInfoModal(false);
-    reset(); // Reseta o formulário ao fechar
+    reset();
   };
 
   const onSubmitInfoModal = async (data: { nome: string; creci: string }) => {
@@ -197,7 +187,6 @@ export default function SettingsPage() {
     } catch (error: any) {
       console.error("Erro ao atualizar informações:", error);
 
-      // Verifica se o erro é um AxiosError e mostra a mensagem correta
       if (error.response?.data?.detail) {
         toast.error(error.response.data.detail);
       } else if (typeof error.message === "string") {
@@ -226,7 +215,6 @@ export default function SettingsPage() {
       )}
 
       <div className="grid grid-cols-1 items-start gap-6 max-w-xl mx-auto">
-        {/* Informações do Plano Section - ATUALIZADO */}
         <section className="p-4 w-full border-b">
           <div className="flex justify-between items-center mb-4 border-b pb-2">
             <h2 className="text-xl font-semibold text-text ">
@@ -256,7 +244,7 @@ export default function SettingsPage() {
                 {userMaxGenerations === 0 ? "Ilimitadas" : userMaxGenerations}
               </p>
             )}
-            {/* NOVA LINHA PARA O TOTAL DE GERAÇÕES */}
+
             <p>
               <strong>Total de Conteúdos Gerados:</strong>{" "}
               {totalGeneratedContent !== null
@@ -274,11 +262,9 @@ export default function SettingsPage() {
           )}
           {userPlanName && userPlanName !== "Free" && (
             <CancelarAssinaturaButton />
-          )
-          }
+          )}
         </section>
 
-        {/* Alterar Senha Section (mantido) */}
         <section className="w-full p-4 border-b">
           <h2 className="text-xl font-semibold text-text mb-4">
             Alterar Senha

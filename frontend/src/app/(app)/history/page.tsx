@@ -1,15 +1,12 @@
-// frontend/src/app/(app)/history/page.tsx
 "use client";
 
-import { useState, useEffect, useCallback } from "react"; // Import useCallback
+import { useState, useEffect, useCallback } from "react"; 
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { getGeneratedContentHistory, toggleFavoriteStatus } from "@/lib/api"; // Import toggleFavoriteStatus
+import { getGeneratedContentHistory, toggleFavoriteStatus } from "@/lib/api"; 
 import Link from "next/link";
 import { toast } from "react-toastify";
-import Modal from "@/components/modal"; 
-
-// Importar ícones para os botões de ação
+import Modal from "@/components/modal";
 import {
   FaEdit,
   FaShareAlt,
@@ -24,7 +21,6 @@ import {
   FaExpandAlt,
   FaHome,
   FaMapMarkerAlt,
-  FaWindowClose,
 } from "react-icons/fa";
 import { IoIosAlbums } from "react-icons/io";
 import Loader from "@/components/loader";
@@ -49,7 +45,6 @@ const extractPromptDetails = (prompt: string) => {
 
   return { propertyType, location };
 };
-// Função para truncar texto por linhas
 const truncateTextByLines = (text: string, maxLines: number): string => {
   const lines = text.split("\n");
   if (lines.length > maxLines) {
@@ -58,48 +53,16 @@ const truncateTextByLines = (text: string, maxLines: number): string => {
   return text;
 };
 
-// // --- Componente Modal (simples, pode ser mais complexo) ---
-// interface ModalProps {
-//   isOpen: boolean;
-//   onClose: () => void;
-//   title: string;
-//   content: string;
-//   className?: string;
-// }
-
-// const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, content }) => {
-//   if (!isOpen) return null;
-
-//   return (
-//     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-//       <div className="bg-card px-12 py-16 rounded-lg shadow-xl max-w-[40vw] w-full max-h-[90vh] overflow-y-auto relative">
-//         <h2 className="text-2xl font-semibold text-text text-center mb-8">{title}</h2>
-//         <pre className="whitespace-pre-wrap text-text mb-6 font-poppins">
-//           {content}
-//         </pre>
-//         <button
-//           onClick={onClose}
-//           className="absolute top-4 right-4  p-2 text-slate-600"
-//         >
-//           <FaWindowClose size={20} />
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
-
 export default function HistoryPage() {
   const [history, setHistory] = useState<GeneratedContentItem[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Estados para filtros
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false); //
   const [searchTerm, setSearchTerm] = useState(""); //
   const [startDate, setStartDate] = useState(""); //
   const [endDate, setEndDate] = useState(""); //
 
-  // Estados para o Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [modalContent, setModalContent] = useState("");
@@ -115,7 +78,7 @@ export default function HistoryPage() {
     setError(null);
     try {
       const data = await getGeneratedContentHistory(
-        showFavoritesOnly ? true : null, // Only send true if checkbox is checked
+        showFavoritesOnly ? true : null,
         searchTerm,
         startDate,
         endDate
@@ -141,9 +104,8 @@ export default function HistoryPage() {
     startDate,
     endDate,
     router,
-  ]); // Dependencies for useCallback
+  ]);
 
-  // Efeito para carregar histórico na montagem e quando filtros mudam
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
       router.push("/login");
@@ -151,15 +113,13 @@ export default function HistoryPage() {
     }
 
     if (isAuthenticated) {
-      fetchHistory(); // Call the memoized fetch function
+      fetchHistory();
     }
   }, [isAuthenticated, isAuthLoading, fetchHistory, router]);
 
-  // Função para lidar com a alternância de favorito
   const handleToggleFavorite = async (item: GeneratedContentItem) => {
     const newFavoriteStatus = !item.is_favorite;
 
-    // Atualização otimista imediata na UI
     setHistory((prevHistory) =>
       prevHistory.map((h) =>
         h.id === item.id ? { ...h, is_favorite: newFavoriteStatus } : h
@@ -167,10 +127,7 @@ export default function HistoryPage() {
     );
 
     try {
-      // Chamada à API sem esperar por retorno
       toggleFavoriteStatus(item.id, newFavoriteStatus);
-
-      // Toast de sucesso imediato
       toast.success(
         newFavoriteStatus
           ? "Conteúdo adicionado aos favoritos!"
@@ -178,8 +135,6 @@ export default function HistoryPage() {
       );
     } catch (err: any) {
       console.error("Erro ao alternar favorito:", err);
-
-      // Reverter em caso de erro
       setHistory((prevHistory) =>
         prevHistory.map((h) =>
           h.id === item.id ? { ...h, is_favorite: item.is_favorite } : h
@@ -190,7 +145,6 @@ export default function HistoryPage() {
     }
   };
 
-  // Função para lidar com a edição/reutilização de um item do histórico
   const handleEdit = (item: GeneratedContentItem) => {
     const promptParam = encodeURIComponent(item.prompt_used);
     const generatedTextParam = encodeURIComponent(item.generated_text);
@@ -223,7 +177,6 @@ export default function HistoryPage() {
     toast.success("Texto copiado para o Instagram! Agora cole-o na legenda.");
   };
 
-  // Exibe tela de carregamento da autenticação
   if (isAuthLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -232,7 +185,6 @@ export default function HistoryPage() {
     );
   }
 
-  // Função para abrir o modal com o conteúdo completo
   const openModal = (title: string, content: string) => {
     setModalTitle(title);
     setModalContent(content);
@@ -262,13 +214,11 @@ export default function HistoryPage() {
         </div>
       )}
 
-      {/* Seção de Filtros e Busca */}
       <div className="mb-6 p-4 bg-card-light border border-border rounded-lg">
         <h2 className="text-xl font-medium text-text mb-8 flex items-center gap-2">
           <FaFilter className="text-text" /> Filtrar e Buscar
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* Busca por texto */}
           <div>
             <label
               htmlFor="searchTerm"
@@ -296,7 +246,6 @@ export default function HistoryPage() {
             </div>
           </div>
 
-          {/* Filtro por Favoritos */}
           <div className="flex items-center mt-auto mb-3 md:mb-0">
             <input
               id="showFavoritesOnly"
@@ -314,7 +263,6 @@ export default function HistoryPage() {
             </label>
           </div>
 
-          {/* Filtro por Data (Início) */}
           <div>
             <label
               htmlFor="startDate"
@@ -332,7 +280,6 @@ export default function HistoryPage() {
             />
           </div>
 
-          {/* Filtro por Data (Fim) */}
           <div>
             <label
               htmlFor="endDate"
@@ -353,7 +300,10 @@ export default function HistoryPage() {
       </div>
 
       {isLoadingHistory ? (
-        <Loader message="Carregando histórico..." containerClassName="flex justify-center items-center h-48 bg-card" />
+        <Loader
+          message="Carregando histórico..."
+          containerClassName="flex justify-center items-center h-48 bg-card"
+        />
       ) : history.length === 0 ? (
         <div className="text-center text-text py-10">
           <p>Nenhum conteúdo encontrado com os filtros aplicados.</p>
@@ -370,27 +320,28 @@ export default function HistoryPage() {
             const { propertyType, location } = extractPromptDetails(
               item.prompt_used
             );
-            const truncatedPrompt = truncateTextByLines(item.prompt_used, 2); // Limita o prompt a 3 linhas
+            const truncatedPrompt = truncateTextByLines(item.prompt_used, 2);
             const truncatedGeneratedText = truncateTextByLines(
               item.generated_text,
               8
-            ); // Limita o texto gerado a 8 linhas
+            );
             return (
               <div
-                 key={item.id !== undefined && item.id !== null ? item.id : `history-item-${index}`}
-                // Adicione 'flex flex-col h-full' para que o conteúdo possa crescer e o rodapé fique no final
+                key={
+                  item.id !== undefined && item.id !== null
+                    ? item.id
+                    : `history-item-${index}`
+                }
                 className="bg-background border border-border rounded-lg shadow-lg relative flex flex-col h-full"
               >
-                {/* Container para o padding principal do card e o conteúdo rolante */}
                 <div className="p-6 flex-grow">
                   {" "}
-                  {/* 'p-6' como padding geral do card, 'flex-grow' para o conteúdo */}
                   <div className="flex justify-between items-start mb-2">
                     <p className="text-xs text-text">
                       Gerado em:{" "}
                       {new Date(item.created_at).toLocaleString("pt-BR")}
                     </p>
-                    {/* Botão de Favoritar */}
+
                     <button onClick={() => handleToggleFavorite(item)}>
                       {item.is_favorite ? (
                         <FaStar className="text-yellow-400" />
@@ -408,8 +359,6 @@ export default function HistoryPage() {
                       {location}
                     </p>
                   </div>
-                  {/* Conteúdo principal (prompt e conteúdo gerado) */}
-                  {/* Adicione 'pb-24' para garantir espaço para o rodapé fixo. Ajuste o valor conforme a altura real do rodapé */}
                   <div className="pb-24">
                     <h3 className="text-lg font-semibold text-text mb-2">
                       Prompt Utilizado:
@@ -432,7 +381,7 @@ export default function HistoryPage() {
                       Conteúdo Gerado:
                     </h3>
                     <div
-                      className="whitespace-pre-wrap text-text text-base overflow-hidden" // Remova flex-grow aqui, ele está no pai
+                      className="whitespace-pre-wrap text-text text-base overflow-hidden"
                       style={{ lineHeight: "1.6" }}
                     >
                       {truncatedGeneratedText}
@@ -454,12 +403,8 @@ export default function HistoryPage() {
                     </div>
                   </div>
                 </div>{" "}
-                {/* Fim do container para o padding principal */}
-                {/* Rodapé Fixo para os Botões */}
-                {/* Posicionamento absoluto, fundo, borda superior e padding */}
                 <div className="absolute bottom-0 left-0 right-0 p-6 bg-background border-t border-border ">
                   <div className="flex flex-wrap gap-4 justify-center items-center">
-                    {/* Botão Editar/Reutilizar */}
                     <button
                       onClick={() => handleEdit(item)}
                       className="bg-zinc-500 hover:bg-zinc-600 text-white font-medium py-1 px-3 rounded text-sm flex items-center space-x-1 transition-all"
@@ -469,7 +414,6 @@ export default function HistoryPage() {
                       <span>Editar/Reutilizar</span>
                     </button>
 
-                    {/* Grupo de botões de Compartilhamento */}
                     <div className="relative group">
                       <button
                         className="bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-1 px-3 rounded text-sm flex items-center space-x-1 transition-all"

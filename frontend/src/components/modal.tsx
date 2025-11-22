@@ -1,17 +1,16 @@
-// frontend/src/components/modal.tsx
 "use client";
 
 import React from "react";
 import { FaWindowClose } from "react-icons/fa";
-import { cn } from "@/lib/utils"; // Importa a função cn para mesclar classes
+import { cn } from "@/lib/utils"; 
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  content: React.ReactNode; // Permite passar JSX como conteúdo
-  className?: string; // Para classes extras na caixa principal do modal
-  overlayClassName?: string; // Para classes extras no fundo transparente
+  content: React.ReactNode; 
+  className?: string; 
+  overlayClassName?: string; 
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, content, className, overlayClassName }) => {

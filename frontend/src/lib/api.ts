@@ -1,4 +1,3 @@
-// frontend/src/lib/api.ts
 import Cookies from "js-cookie";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -8,7 +7,6 @@ if (!BACKEND_URL) {
   throw new Error("Backend URL not configured.");
 }
 
-// --- Funções de Autenticação ---
 
 interface LoginResponse {
   access_token: string;
@@ -65,7 +63,7 @@ export async function registerUser(
   return response.json();
 }
 
-// Adicione esta função em `frontend/src/lib/api.ts` (se ainda não existir uma para users/me completa):
+
 
 export async function getCurrentUser(): Promise<UserWithPlan> {
   const token = getAuthToken();
@@ -74,7 +72,6 @@ export async function getCurrentUser(): Promise<UserWithPlan> {
   }
   try {
     const response = await fetch(`${BACKEND_URL}/api/v1/users/me`, {
-      // Crie este endpoint no backend/users.py
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -95,14 +92,12 @@ export async function getCurrentUser(): Promise<UserWithPlan> {
   }
 }
 
-// --- Funções de Geração de Conteúdo (AGORA AUTENTICADA) ---
 
-// Função para obter o token JWT do localStorage
 const getAuthToken = (): string | null => {
   return Cookies.get("access_token") || null;
 };
 
-// --- NOVAS INTERFACES PARA ALINHAR COM O BACKEND ---
+
 export interface PropertyDetailsInput {
   property_type: string;
   bedrooms?: number;
@@ -124,7 +119,7 @@ export interface TextGenerationOutput {
   user_id: number;
   prompt_used: string;
   generated_text: string;
-  timestamp: string; // Ou Date, dependendo de como você lida com datas
+  timestamp: string; 
 }
 
 export const generateContent = async (
@@ -152,7 +147,7 @@ export const generateContent = async (
       if (response.status === 401) {
         throw new Error("Sessão expirada. Por favor, faça login novamente.");
       }
-      // Melhoria no tratamento do erro para exibir detalhes específicos do backend
+      
       let errorMessage = "Erro desconhecido ao gerar conteúdo.";
       if (errorData && typeof errorData === 'object' && errorData.detail) {
           if (Array.isArray(errorData.detail)) {
@@ -165,11 +160,6 @@ export const generateContent = async (
     }
 
     const data: TextGenerationOutput = await response.json();
-    // const generatedText = data.generated_text;
-
-    // // --- ADICIONE ESTA LINHA: CHAMADA PARA SALVAR O CONTEÚDO ---
-    // await saveGeneratedContent(data.prompt_used, generatedText);
-    // // --- FIM DA ADIÇÃO ---
     return data;
   } catch (error) {
     console.error("Erro ao chamar a API do backend:", error);
@@ -213,21 +203,20 @@ export async function saveGeneratedContent(
   }
 }
 
-// --- NOVA FUNÇÃO: Obter Histórico de Conteúdo com Filtros ---
 export interface GeneratedContentItem {
   id: number;
   prompt_used: string;
   generated_text: string;
   owner_id: number;
   created_at: string;
-  is_favorite: boolean; // Add this
+  is_favorite: boolean; 
 }
 
 export async function getGeneratedContentHistory(
-  isFavorite: boolean | null = null, // New filter parameter
-  searchQuery: string | null = null, // New search parameter
-  startDate: string | null = null, // New date filter
-  endDate: string | null = null // New date filter
+  isFavorite: boolean | null = null, 
+  searchQuery: string | null = null, 
+  startDate: string | null = null, 
+  endDate: string | null = null
 ): Promise<GeneratedContentItem[]> {
   const token = getAuthToken();
   if (!token) {
@@ -277,7 +266,6 @@ export async function getGeneratedContentHistory(
   }
 }
 
-// --- NOVA FUNÇÃO: Alternar Status de Favorito ---
 export async function toggleFavoriteStatus(
   contentId: number,
   isFavorite: boolean
@@ -293,12 +281,12 @@ export async function toggleFavoriteStatus(
     const response = await fetch(
       `${BACKEND_URL}/api/v1/history/contents/${contentId}/favorite`,
       {
-        method: "PATCH", // Use PATCH for partial update
+        method: "PATCH", 
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ is_favorite: isFavorite }), // Send the new status
+        body: JSON.stringify({ is_favorite: isFavorite }), 
       }
     );
 
@@ -313,14 +301,13 @@ export async function toggleFavoriteStatus(
       );
     }
 
-    return response.json(); // Return the updated item
+    return response.json(); 
   } catch (error) {
     console.error("Erro de rede ao tentar alternar favorito:", error);
     throw error;
   }
 }
 
-// --- FUNÇÃO: Alterar Senha do Usuário ---
 export async function changeUserPassword(
   currentPassword: string,
   newPassword: string
@@ -361,7 +348,6 @@ export async function changeUserPassword(
   }
 }
 
-// --- NOVA FUNÇÃO: Gerar Imagem com Overlay de Texto ---
 export async function generateImageWithTextOverlay(
   imageFile: File,
   textContent: string,
@@ -406,7 +392,6 @@ export async function generateImageWithTextOverlay(
   }
 }
 
-// Interface para o objeto de analytics do usuário
 interface UserAnalyticsResponse {
   total_generated_content: number;
 }
@@ -444,8 +429,6 @@ export async function getUserAnalytics(): Promise<UserAnalyticsResponse> {
   }
 }
 
-// --- NOVAS FUNÇÕES DE ASSINATURA ---
-
 // Interface para um plano de assinatura
 export interface SubscriptionPlan {
   id: number;
@@ -453,13 +436,13 @@ export interface SubscriptionPlan {
   description: string | null;
   max_generations: number;
   price_id_stripe: string;
-  unit_amount: number | null; // Adicionado: Preço em centavos (ou null para planos grátis sem valor Stripe)
-  currency: string | null; // Adicionado: Moeda (ex: "brl", ou null)
+  unit_amount: number | null; 
+  currency: string | null; 
   interval: "month" | "year" | null;
   is_active: boolean;
 }
 
-// Interface para o usuário com o plano de assinatura incluído
+
 export interface UserWithPlan {
   id: number;
   email: string;
@@ -507,7 +490,6 @@ export async function getSubscriptionPlans(): Promise<SubscriptionPlan[]> {
   }
 }
 
-// Função para criar uma sessão de checkout no Stripe
 export async function createStripeCheckoutSession(
   priceId: string
 ): Promise<{ checkout_url: string }> {
@@ -547,12 +529,6 @@ export async function createStripeCheckoutSession(
     throw error;
   }
 }
-
-// --- ATUALIZAR FUNÇÃO GET_CURRENT_USER NO AuthContext PARA PEGAR INFORMAÇÕES DE PLANO ---
-// Não há uma função `get_current_user` exportada aqui no api.ts para o frontend.
-// Mas o AuthContext precisará buscar as informações do usuário atualizadas, incluindo o plano.
-// Isso será abordado na seção do AuthContext e/ou na página de dashboard.
-// Por enquanto, a interface UserWithPlan é o mais importante para o frontend.
 
 export interface PromptTemplate {
   id: number;
@@ -601,7 +577,7 @@ export async function getPromptTemplates(): Promise<PromptTemplate[]> {
 }
 
 export const updateUserInfo = async (email: string, nome: string, creci: string): Promise<any> => {
-  const token = Cookies.get("access_token"); // Usar cookies em vez de localStorage
+  const token = Cookies.get("access_token"); 
   
   if (!token) {
     throw new Error('Token de autenticação não encontrado');
@@ -651,7 +627,7 @@ export async function cancelSubscription(): Promise<{ detail: string }> {
       throw new Error(errorData.detail || "Erro ao cancelar assinatura.");
     }
 
-    return response.json(); // deve retornar { detail: "Assinatura cancelada com sucesso." }
+    return response.json(); 
   } catch (error) {
     console.error("Erro de rede ao tentar cancelar assinatura:", error);
     throw error;

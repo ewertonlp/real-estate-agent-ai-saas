@@ -1,4 +1,4 @@
-// frontend/src/app/(app)/analytics/page.tsx
+
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
@@ -24,7 +24,7 @@ export default function AnalyticsPage() {
   }
 
   if (!isAuthenticated) {
-    return null; // O redirecionamento já acontece no useEffect
+    return null; 
   }
 
   return (

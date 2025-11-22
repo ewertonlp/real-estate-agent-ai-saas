@@ -1,20 +1,17 @@
-// frontend/src/components/propertyDetailsForm.tsx
-
 import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form'; // Agora estará disponível
-import { zodResolver } from '@hookform/resolvers/zod'; // Agora estará disponível
-import { z } from 'zod'; // Agora estará disponível
+import { useForm } from 'react-hook-form'; 
+import { zodResolver } from '@hookform/resolvers/zod'; 
+import { z } from 'zod'; 
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Switch } from './ui/switch'; // Adicionado para consistência com o snippet do Zod
+import { Switch } from './ui/switch'; 
 import { Loader2 } from 'lucide-react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import Tooltip from './tooltip';
 
-// Seu schema Zod, deve ser o mesmo que você usa no useForm
-// Mantido o schema aqui para clareza, mas considere exportá-lo de um arquivo schemas/form.ts
+
 export const PropertyDetailsFormSchema = z.object({
   propertyType: z.string().min(1, "Tipo de imóvel é obrigatório."),
   bedrooms: z.string().optional().refine(val => val === '' || !isNaN(Number(val)), { message: "Quartos deve ser um número." }),
@@ -37,9 +34,8 @@ export const PropertyDetailsFormSchema = z.object({
   propertyAddress: z.string().optional(),
 });
 
-export type PropertyDetailsFormSchema = z.infer<typeof PropertyDetailsFormSchema>; // EXPORTE ESTE TIPO
+export type PropertyDetailsFormSchema = z.infer<typeof PropertyDetailsFormSchema>; 
 
-// Props do componente PropertyDetailsForm
 interface PropertyDetailsFormProps {
   onSubmit: (formData: PropertyDetailsFormSchema) => void;
   loading: boolean;
@@ -61,19 +57,18 @@ const PropertyDetailsForm: React.FC<PropertyDetailsFormProps> = ({ onSubmit, loa
   });
 
   const onSubmitForm = (data: PropertyDetailsFormSchema) => {
-    // Esta função é chamada pelo react-hook-form após a validação.
-    // Ela apenas passa os dados validados para a função onSubmit que veio do componente pai.
-    console.log("PropertyDetailsForm: Dados coletados pelo react-hook-form:", data); // <<< ADICIONE ESTA LINHA
+   
+    console.log("PropertyDetailsForm: Dados coletados pelo react-hook-form:", data); 
     onSubmit(data);
   };
 
   useEffect(() => {
   if (initialData) {
-    reset(initialData); // <<< isso aplica os valores iniciais corretamente quando mudam
+    reset(initialData); 
   }
 }, [initialData, reset]);
 
-  // Observa os valores dos campos para renderização condicional ou display local
+  
   const optimizeForSeoGmb = watch("optimizeForSeoGmb");
   const propertyType = watch("propertyType");
   const bedrooms = watch("bedrooms");
@@ -95,8 +90,7 @@ const PropertyDetailsForm: React.FC<PropertyDetailsFormProps> = ({ onSubmit, loa
   const propertyAddress = watch("propertyAddress");
 
 
-  // A função buildPrompt() pode ser mantida AQUI se você a usa para exibir um 'preview' do prompt
-  // no próprio formulário, mas NÃO para a chamada de API.
+  
   const buildPrompt = () => {
     const details: string[] = [];
     if (propertyType) details.push(`Tipo de imóvel: ${propertyType}`);
@@ -134,9 +128,7 @@ const PropertyDetailsForm: React.FC<PropertyDetailsFormProps> = ({ onSubmit, loa
 
   return (
     <form onSubmit={hookFormHandleSubmit(onSubmitForm)} className="space-y-6">
-      {/* SEU JSX DO FORMULÁRIO COMPLETO AQUI */}
-      {/* Use os componentes shadcn/ui e os 'register' do react-hook-form */}
-      {/* Example structure for a field */}
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="propertyType" className="flex items-center">Tipo de Imóvel

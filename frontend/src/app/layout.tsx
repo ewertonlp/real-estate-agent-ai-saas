@@ -8,9 +8,9 @@ import { ThemeProvider } from "@/providers/theme-provider";
 
 const poppins = Poppins({
   subsets: ["latin"],
-  display: "swap", // Garante que o texto seja visível durante o carregamento da fonte
-  variable: "--font-poppins", // Define uma variável CSS para a fonte
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"], // Opcional: Especifique os pesos que você usará
+  display: "swap",
+  variable: "--font-poppins",
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"], 
 });
 
 export const metadata: Metadata = {

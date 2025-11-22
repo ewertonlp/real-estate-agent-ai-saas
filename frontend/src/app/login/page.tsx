@@ -1,22 +1,20 @@
-// frontend/src/app/login/page.tsx
 "use client";
 
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const { login, isLoading } = useAuth(); // Acessa a função de login do contexto
-  const router = useRouter();
+  const { login, isLoading } = useAuth(); 
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null); // Limpa erros anteriores
+    setError(null); 
 
     if (!email || !password) {
       setError("Por favor, preencha todos os campos.");

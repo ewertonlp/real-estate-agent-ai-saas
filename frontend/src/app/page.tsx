@@ -62,12 +62,6 @@ export default function Home() {
             </div>
           </div>
           <div className="bg-transparent mt-4  animate-fade-in-up md:ml-10">
-            {/* <Image
-            src="/corretora-de-imoveis.jpg"
-            alt="Corretora de imóveis"
-            width={600}
-            height={50}
-          /> */}
           </div>
         </section>
       </div>
@@ -120,7 +114,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How It Works Section (Optional, but adds clarity) */}
       <section className="text-center my-16 max-w-4xl w-full animate-fade-in-up-slow">
         <h2 className="text-[2.25rem] font-medium mb-2 text-text">
           Como Funciona?
@@ -128,7 +121,7 @@ export default function Home() {
         <p className="text-[1.5rem]">Simples e Rápido!</p>
         <div className="relative flex justify-center items-center mt-10 mx-3">
           <div className="absolute top-1/2 left-0 right-0 h-1 bg-button -z-10 hidden md:block"></div>{" "}
-          {/* Linha conectora */}
+          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             <div className="flex flex-col items-center bg-card text-text border border-button p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 relative circle-step">
               <div className="w-16 h-16 rounded-full bg-button text-white flex items-center justify-center text-3xl font-bold mb-4 z-10 step-number">
@@ -212,7 +205,7 @@ export default function Home() {
 
       <Pricing />
 
-      {/* NEW ROI SECTION */}
+      
       <section className="text-center px-6 md:px-12 py-16 bg-card  text-text rounded-lg shadow-xl max-w-4xl mx-3 animate-fade-in-up my-16">
         <h2 className="text-3xl md:text-4xl font-bold mb-6 text-text leading-tight">
           Pense no Retorno do Seu Investimento
@@ -239,13 +232,11 @@ export default function Home() {
           REGISTRE-SE AGORA!
         </Link>
       </section>
-      {/* END NEW ROI SECTION */}
 
       <section className="text-center px-4 py-16 bg-card  text-text rounded-lg shadow-xl max-w-4xl mx-3 animate-fade-in-up my-16">
         <FAQ />
       </section>
 
-      {/* Final Call to Action */}
       <section className="bg-card text-text text-center shadow-xl rounded-lg my-12 py-12 px-16 max-w-full transition-transform duration-500">
         <h2 className="text-2xl md:text-3xl font-bold mb-6 text-text leading-tight">
           Chega de Bloqueio Criativo

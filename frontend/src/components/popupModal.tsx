@@ -1,4 +1,3 @@
-// frontend/src/components/ConfirmModal.tsx
 import React from 'react';
 
 interface popupModalProps {

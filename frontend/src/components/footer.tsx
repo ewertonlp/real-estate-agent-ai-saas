@@ -7,7 +7,6 @@ export default function Footer() {
   return (
     
     <div className="relative w-full overflow-hidden md:h-[450px]  bg-gradient-to-tr from-[#1B45B4] to-[#1C2792] clip-polygon-footer">
-      {/* Fundo com esferas azuis */}
       <div className="absolute top-4 left-4 w-28 h-64 bg-button opacity-10 rounded-full blur-3xl pointer-events-none " />
       <div className="absolute bottom-0 right-2 w-24 h-40 bg-button opacity-10 rounded-full blur-3xl pointer-events-none " />
 

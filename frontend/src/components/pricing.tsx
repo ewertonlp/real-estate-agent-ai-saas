@@ -13,7 +13,7 @@ function Pricing() {
       Escolha o Plano Ideal
     </h2>
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 justify-center gap-12 md:gap-8 my-12">
-      {/* Free Tier */}
+     
       <div className="bg-background p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-slate-300 hover:border-blue-500">
         <div>
           <h3 className="text-3xl font-bold text-text mb-4">Grátis</h3>
@@ -47,7 +47,7 @@ function Pricing() {
         </Link>
       </div>
 
-      {/* Basic Tier - Example */}
+      
       <div className="bg-background p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-slate-300 hover:border-blue-500">
         <div>
           <h3 className="text-3xl font-bold text-text mb-4">Basic</h3>
@@ -81,7 +81,7 @@ function Pricing() {
         </Link>
       </div>
 
-      {/* Premium Tier - Example (or Unlimited) */}
+      
       <div className="bg-yellow-400 text-text p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full  border-4 border-white scale-105 relative z-10">
         <div>
           <div className="absolute -top-6 right-1/2 translate-x-1/2 bg-gradient-to-tr from-purple-700 to-pink-600 text-white text-md font-bold px-4 py-2 rounded-lg shadow-lg">
@@ -118,7 +118,6 @@ function Pricing() {
         </Link>
       </div>
 
-      {/* Premium Tier - Example (or Unlimited) */}
       <div className="bg-background p-6 rounded-lg shadow-lg text-center flex flex-col justify-between transform hover:scale-105 transition duration-300 w-full border-2 border-slate-300 hover:border-blue-500">
         <div>
           <h3 className="text-3xl font-bold text-text mb-4">Unlimited</h3>

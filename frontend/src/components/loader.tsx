@@ -1,23 +1,18 @@
-// frontend/src/components/loader.tsx
 import React from 'react';
-import { cn } from '@/lib/utils'; // Função utilitária para mesclar classes Tailwind
+import { cn } from '@/lib/utils'; 
 
 interface LoaderProps {
-  /** Texto para exibir abaixo do spinner (opcional) */
   message?: string;
-  /** Classes Tailwind para o container do loader (ex: "h-full flex items-center justify-center") */
   containerClassName?: string;
-  /** Classes Tailwind para o SVG do spinner (ex: "h-8 w-8 text-primary") */
   spinnerClassName?: string;
-  /** Classes Tailwind para o texto da mensagem (ex: "ml-3 text-text") */
   messageClassName?: string;
 }
 
 const Loader: React.FC<LoaderProps> = ({
-  message = "Carregando...", // Mensagem padrão
-  containerClassName = "min-h-screen flex items-center justify-center bg-background", // Classes padrão para ocupar a tela inteira
-  spinnerClassName = "h-12 w-12 text-primary", // Cor do spinner usando a variável primary do seu tema
-  messageClassName = "ml-3 text-text" // Cor do texto usando a variável text do seu tema
+  message = "Carregando...", 
+  containerClassName = "min-h-screen flex items-center justify-center bg-background", 
+  spinnerClassName = "h-12 w-12 text-primary", 
+  messageClassName = "ml-3 text-text" 
 }) => {
   return (
     <div className={cn(containerClassName)}>

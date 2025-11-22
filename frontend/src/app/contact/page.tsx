@@ -40,9 +40,7 @@ export default function ContactPage() {
     setLoading(true);
 
     try {
-      // Aqui você pode enviar para uma API, ex: via fetch/axios ou Resend
       await new Promise((resolve) => setTimeout(resolve, 1500));
-
       toast.success("Mensagem enviada com sucesso!");
       reset();
     } catch (error) {

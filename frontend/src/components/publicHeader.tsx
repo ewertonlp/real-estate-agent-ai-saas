@@ -1,25 +1,24 @@
-// frontend/src/components/publicHeader.tsx
-"use client"; // Mantenha esta diretiva
+"use client"; 
 
 import Link from "next/link";
-import { useState } from "react"; // Importe useState para controlar o estado do menu móvel
-import { FaBars, FaTimes } from "react-icons/fa"; // Importe ícones para o hambúrguer e fechar
+import { useState } from "react"; 
+import { FaBars, FaTimes } from "react-icons/fa"; 
 
 export default function PublicHeader() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // Estado para controlar a abertura/fechamento do menu móvel
+  const [isMenuOpen, setIsMenuOpen] = useState(false); 
 
   return (
-    <header className="bg-transparent relative py-6 w-full top-0 left-0"> {/* Adicione 'relative' para posicionamento absoluto do menu móvel */}
-      <div className="max-w-7xl w-full flex justify-between items-center mx-auto px-4 sm:px-6 lg:px-8"> {/* Adicionado px para padding em telas pequenas */}
-        {/* Título/Logo */}
+    <header className="bg-transparent relative py-6 w-full top-0 left-0">
+      <div className="max-w-7xl w-full flex justify-between items-center mx-auto px-4 sm:px-6 lg:px-8"> 
+        
         <Link
           href="/"
-          className="text-2xl font-bold text-white hover:scale-110 transition-all  ease-out z-20" // z-index para ficar acima do menu móvel
+          className="text-2xl font-bold text-white hover:scale-110 transition-all  ease-out z-20" 
         >
           Realtor AI
         </Link>
 
-        {/* Ícone do Hambúrguer para Mobile */}
+       
         <button
           className="md:hidden text-white text-2xl z-20" 
           onClick={() => setIsMenuOpen(!isMenuOpen)} 
@@ -27,8 +26,8 @@ export default function PublicHeader() {
           {isMenuOpen ? <FaTimes /> : <FaBars />}
         </button>
 
-        {/* Navegação e Botões para Desktop (visíveis apenas em telas maiores que 'md') */}
-        <nav className="hidden md:flex items-center justify-center gap-4"> {/* Oculta em telas pequenas, exibe em flex em md+ */}
+        
+        <nav className="hidden md:flex items-center justify-center gap-4"> 
           <ul className="flex items-center justify-center gap-4">
             <li>
               <Link
@@ -65,8 +64,8 @@ export default function PublicHeader() {
           </ul>
         </nav>
 
-        {/* Botões de Login/Cadastro para Desktop */}
-        <div className="hidden md:flex"> {/* Oculta em telas pequenas, exibe em flex em md+ */}
+       
+        <div className="hidden md:flex"> 
           <nav>
             <ul className="flex items-center justify-center gap-4">
               <li>
@@ -90,8 +89,7 @@ export default function PublicHeader() {
         </div>
       </div>
 
-      {/* Menu Móvel (Overlay) */}
-      {/* Renderizado condicionalmente baseado no estado isMenuOpen */}
+      
       {isMenuOpen && (
         <div className="md:hidden absolute top-full left-0 h-screen right-0 bg-gradient-to-tr from-[#2350cc] to-[#1C2792] shadow-lg py-6 border-t border-white/50 z-50">
           <ul className="flex flex-col items-center gap-4 text-white">
@@ -99,7 +97,7 @@ export default function PublicHeader() {
               <Link
                 href="/services"
                 className="hover:text-neutral-200 font-medium py-2 px-4 block w-full text-center"
-                onClick={() => setIsMenuOpen(false)} // Fecha o menu ao clicar no link
+                onClick={() => setIsMenuOpen(false)} 
               >
                 Serviços
               </Link>
@@ -131,7 +129,7 @@ export default function PublicHeader() {
                 Contato
               </Link>
             </li>
-            {/* Separador visual para os botões de autenticação */}
+          
             <li className="w-full border-t border-white/50 pt-4 mt-4">
             
               <Link

@@ -1,4 +1,3 @@
-// frontend/src/context/AuthContext.tsx
 "use client";
 
 import React, {
@@ -15,12 +14,12 @@ import { AxiosError } from "axios";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 
-// Definir as interfaces de tipos para o contexto
+
 interface AuthContextType {
   userToken: string | null;
   userEmail: string | null;
-  userNome: string | null; // 👈 adicionado
-  userCreci: string | null; // 👈 adicionado
+  userNome: string | null; 
+  userCreci: string | null; 
   userPlanName: string | null;
   userGenerationsCount: number | null;
   userMaxGenerations: number | null;
@@ -32,10 +31,8 @@ interface AuthContextType {
   fetchUserData: () => Promise<void>;
 }
 
-// Criar o Contexto
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Provedor do Contexto de Autenticação
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [userToken, setUserToken] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -64,14 +61,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   //   }
   // };
 
-  // Função para buscar dados completos do usuário
+ 
   const fetchUserData = useCallback(async () => {
     const token = Cookies.get("access_token");
     if (token) {
       try {
-        // Importe getCurrentUser de api.ts
-        const { getCurrentUser } = await import("../lib/api"); // Importação dinâmica
-        const userData = await getCurrentUser(); // Chama a nova função da API
+        const { getCurrentUser } = await import("../lib/api"); 
+        const userData = await getCurrentUser();
         setUserEmail(userData.email);
         setUserNome(userData.nome || null);
         setUserCreci(userData.creci || null);
@@ -87,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           (error as any).message ===
           "Sessão expirada. Por favor, faça login novamente."
         ) {
-          logout(); // Isso vai remover o token e redirecionar
+          logout(); 
           toast.error("Sessão expirada. Por favor, faça login novamente.");
         }
         setUserEmail(null);
@@ -99,17 +95,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Efeito para carregar o token do localStorage ao montar o componente
+  
   useEffect(() => {
     const token = Cookies.get("access_token");
     if (token) {
       setUserToken(token);
-      fetchUserData(); // Já vai buscar e setar o email real
+      fetchUserData(); 
     }
     setIsLoading(false);
   }, [fetchUserData]);
 
-  // Função de Login
+
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
@@ -119,8 +115,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         secure: process.env.NODE_ENV === "production",
       });
       setUserToken(data.access_token);
-      // decodeTokenAndSetUserEmail(data.access_token);
-      await fetchUserData(); // Busca dados do usuário após o login bem-sucedido
+      
+      await fetchUserData(); 
       router.push("/dashboard");
     } catch (error) {
       console.error("Erro no login:", error);
@@ -134,12 +130,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Função de Registro
+ 
   const register = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      await registerUser(email, password); // Chama a função de registro do backend
-      // Após o registro, pode-se logar automaticamente ou redirecionar para a página de login
+      await registerUser(email, password); 
       await login(email, password);
     } catch (error) {
       console.error("Erro no registro:", error);
@@ -191,7 +186,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Hook customizado para usar o contexto de autenticação
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

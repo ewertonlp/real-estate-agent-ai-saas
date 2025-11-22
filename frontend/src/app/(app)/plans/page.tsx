@@ -1,4 +1,3 @@
-// frontend/src/app/(app)/plans/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -11,13 +10,7 @@ import {
 } from "@/lib/api";
 import Image from "next/image";
 import { toast } from "react-toastify";
-import {
-  FaCcAmex,
-  FaCcMastercard,
-  FaCcVisa,
-  FaCheckCircle,
-  FaLock,
-} from "react-icons/fa"; // Importe FaLock para segurança
+import { FaCheckCircle, FaLock } from "react-icons/fa";
 import { planFeatures } from "@/data/subscriptionPlans";
 
 export default function PlansPage() {
@@ -122,7 +115,7 @@ export default function PlansPage() {
       style: "currency",
       currency: currency.toUpperCase(),
       minimumFractionDigits: 2,
-    }).format(amount / 100); // Stripe unit_amount é em centavos
+    }).format(amount / 100);
   };
 
   if (isAuthLoading || isLoading) {
@@ -150,7 +143,7 @@ export default function PlansPage() {
         Desbloqueie o potencial máximo do seu negócio imobiliário com o plano
         perfeito para você.
       </p>
-      {/* Period Toggle */}
+
       <div className="flex justify-center mb-10">
         <button
           onClick={() => setSelectedPeriod("year")}
@@ -246,7 +239,6 @@ export default function PlansPage() {
         ))}
       </div>
 
-      {/* NOVO: Bloco de Informações de Credibilidade do Pagamento */}
       <div className="mt-12 text-center text-text text-sm space-y-4">
         <div className="flex items-center justify-center gap-2">
           <FaLock className="text-primary" />
@@ -257,7 +249,6 @@ export default function PlansPage() {
           pelo Stripe, garantindo a máxima segurança. Nenhuma informação
           sensível é armazenada em nossos servidores.
         </p>
-        {/* Você pode adicionar logos de bandeiras de cartão aqui se quiser */}
 
         <div className="flex justify-center gap-4 mt-4 text-3xl">
           <Image
