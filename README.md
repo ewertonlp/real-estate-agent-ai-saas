@@ -47,7 +47,7 @@ STRIPE_UNLIMITED_ANNUAL_PLAN_PRICE_ID=price_xxxxxxxxxxxx_unlimited_annual
 ## 1.2 Variáveis do Frontend (frontend/.env.local)
 Este arquivo armazena variáveis que o Next.js precisa para se comunicar com o backend e o Stripe.
 
-```
+```bash
 # --- Configurações de API ---
 NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1 
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_live_xxxxxxxxxxxxxxxxxxxxxx" # Chave pública do Stripe
@@ -62,7 +62,7 @@ Navegue até o diretório backend e siga os passos:
 
 2.1 Configurar o Ambiente Virtual e Dependências
 
-```ambiente virtual
+```bash
 # 1. Navega para a pasta do backend
 cd backend
 
@@ -83,7 +83,7 @@ pip install -r requirements.txt
 ## 2.2 Configurar o Banco de Dados (Alembic)
 Se for a primeira vez que você está a rodar o projeto, você precisa aplicar as migrações do banco de dados definidas pelo Alembic:
 
-```
+```bash
 # Aplica todas as migrações (cria as tabelas no DB)
 (venv) alembic upgrade head
 ```
@@ -92,7 +92,7 @@ Nota: Se estiver a usar o SQLite (como no exemplo do .env), o arquivo do banco d
 
 ## 2.3 Iniciar o Servidor
 
-```
+```bash
 (venv) uvicorn app.main:app --reload
 ```
 
@@ -103,7 +103,7 @@ Abra um novo terminal, navegue até o diretório frontend e siga os passos:
 
 3.1 Instalar Dependências
 
-```
+```bash
 # 1. Navega para a pasta do frontend
 cd frontend
 
@@ -114,4 +114,5 @@ npm install
 ```
 
 O frontend estará acessível em http://localhost:3000
+
 
