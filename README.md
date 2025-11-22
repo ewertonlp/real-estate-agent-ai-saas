@@ -2,6 +2,9 @@
 
 Este repositório contém o backend (Python/FastAPI) e o frontend (Next.js) para a aplicação SaaS de geração de conteúdo para corretores de imóveis.
 
+<img width="1920" height="1080" alt="capa-realtor-ai" src="https://github.com/user-attachments/assets/baf33491-c99e-426d-809d-007d380425e9" />
+
+
 ## 1.  Configuração das Variáveis de Ambiente
 
 Antes de iniciar qualquer parte do projeto, você deve configurar as variáveis de ambiente necessárias.
@@ -111,3 +114,4 @@ npm install
 ```
 
 O frontend estará acessível em http://localhost:3000
+
