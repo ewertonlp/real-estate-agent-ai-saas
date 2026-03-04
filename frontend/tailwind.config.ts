@@ -16,9 +16,6 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        text: "hsl(var(--text))",
-        button: "hsl(var(--button))",
-        'overlay-bg': 'hsl(var(--overlay-bg) / var(--overlay-opacity))',
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -26,6 +23,22 @@ export default {
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+        },
+        ai: {
+          DEFAULT: "hsl(var(--ai))",
+          foreground: "hsl(var(--ai-foreground))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -39,25 +52,9 @@ export default {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
-        },
-
-        'my-card-light': 'hsl(var(--my-card-light))',
-        'my-button-primary': 'hsl(var(--my-button-primary))',
-        'my-button-hover': 'hsl(var(--my-button-hover))',
-
-        chart: {
-          "1": "hsl(var(--chart-1))",
-          "2": "hsl(var(--chart-2))",
-          "3": "hsl(var(--chart-3))",
-          "4": "hsl(var(--chart-4))",
-          "5": "hsl(var(--chart-5))",
         },
       },
       fontFamily: {

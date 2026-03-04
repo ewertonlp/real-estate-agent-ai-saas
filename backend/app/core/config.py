@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     ALGORITHM: str = Field("HS256", env="ALGORITHM")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(30, env="ACCESS_TOKEN_EXPIRE_MINUTES")
     GOOGLE_API_KEY: str = Field(..., env="GOOGLE_API_KEY")
+    DEEP_SEEK_API_KEY: str = Field(..., env="DEEP_SEEK_API_KEY")
+
 
     STRIPE_SECRET_KEY: str = Field(..., env="STRIPE_SECRET_KEY")
     STRIPE_WEBHOOK_SECRET: str = Field(..., env="STRIPE_WEBHOOK_SECRET")

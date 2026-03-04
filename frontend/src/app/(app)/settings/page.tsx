@@ -13,6 +13,9 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { useForm } from "react-hook-form";
 import { updateUserInfo } from "@/lib/api";
 import { CancelarAssinaturaButton } from "@/components/btnCancelSubscription";
+import { Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import PasswordChangeForm from "@/components/dashboard/changePassword";
 
 export default function SettingsPage() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -62,7 +65,7 @@ export default function SettingsPage() {
       } else {
         console.warn(
           "total_generated_content não é um número ou é nulo/indefinido:",
-          data.total_generated_content
+          data.total_generated_content,
         );
         setTotalGeneratedContent(0);
       }
@@ -98,6 +101,8 @@ export default function SettingsPage() {
     //   fetchAnalytics();
     // }
   }, [isAuthenticated, isAuthLoading, router, fetchAnalytics]);
+
+
   const handleSubmitPasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -145,20 +150,19 @@ export default function SettingsPage() {
     }
   };
 
-  if (isAuthLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-text">Carregando autenticação...</p>
-      </div>
-    );
-  }
+  
 
   const handleToggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
   };
 
   if (isAuthLoading) {
-    return <Loader message="Carregando autenticação..." />;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-card">
+        <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
+        <p className="ml-2 text-teal-600 dark:text-teal-300">Carregando...</p>
+      </div>
+    );
   }
 
   const openEditInfoModal = () => {
@@ -224,7 +228,7 @@ export default function SettingsPage() {
               <FaPencilAlt onClick={openEditInfoModal} className="text-text" />
             </button>
           </div>
-          <div className="space-y-2 text-text">
+          <div className="space-y-2 text-foreground text-sm">
             <p>
               <strong>Email:</strong> {userEmail || "N/A"}
             </p>
@@ -269,83 +273,9 @@ export default function SettingsPage() {
           <h2 className="text-xl font-semibold text-text mb-4">
             Alterar Senha
           </h2>
-          <form onSubmit={handleSubmitPasswordChange} className="space-y-4">
-            <div>
-              <input
-                id="current-password"
-                name="current_password"
-                type="password"
-                autoComplete="current-password"
-                placeholder="Senha atual"
-                required
-                className="appearance-none border rounded-md w-full py-3 px-4 bg-card border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-border focus:border-transparent"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-              />
-            </div>
-            <div>
-              <input
-                id="new-password"
-                name="new_password"
-                type="password"
-                autoComplete="new-password"
-                placeholder="Nova senha"
-                required
-                className="appearance-none border rounded-md w-full py-3 px-4 bg-card border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-            </div>
-            <div>
-              <input
-                id="confirm-new-password"
-                name="confirm_new_password"
-                type="password"
-                autoComplete="new-password"
-                placeholder="Confirme a nova senha"
-                required
-                className="appearance-none border rounded-md w-full py-3 px-4 bg-card border-button text-text leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={confirmNewPassword}
-                onChange={(e) => setConfirmNewPassword(e.target.value)}
-              />
-            </div>
-            <div className="py-4">
-              <button
-                type="submit"
-                disabled={isLoadingPasswordChange}
-                className="bg-button hover:bg-hover text-text font-medium font-md py-2 px-4 rounded-md focus:outline-none focus:shadow-outline w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-all
-                "
-              >
-                {isLoadingPasswordChange ? (
-                  <>
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Alterando...
-                  </>
-                ) : (
-                  "Alterar Senha"
-                )}
-              </button>
-            </div>
-          </form>
+
+          <PasswordChangeForm />
+         
         </section>
 
         {/* Theme Toggle Section (mantido) */}
@@ -357,7 +287,7 @@ export default function SettingsPage() {
             <span className="text-text">Modo Escuro / Claro</span>
             <button
               onClick={handleToggleTheme}
-              className="p-2 rounded-md bg-button/25 text-text hover:bg-button transition-colors flex items-center space-x-2"
+              className="p-2 rounded-md bg-button/25 text-text hover:bg-warning hover:text-card transition-colors flex items-center space-x-2"
             >
               {theme === "light" ? (
                 <>
@@ -365,7 +295,7 @@ export default function SettingsPage() {
                 </>
               ) : (
                 <>
-                  <FaSun className="text-yellow-300" /> <span>Modo Claro</span>
+                  <FaSun /> <span>Modo Claro</span>
                 </>
               )}
             </button>

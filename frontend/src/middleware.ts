@@ -40,5 +40,6 @@ export const config = {
     '/contato',
     '/aboutUs',
     '/faq',
-    '/services' 
+    '/services',
+  ]
 };

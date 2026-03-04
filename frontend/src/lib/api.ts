@@ -114,6 +114,15 @@ export interface PropertyDetailsInput {
   iptu_value?: number;
 }
 
+export interface ArticleDetailsInput {
+  prompt: string;
+  purpose?: string;
+  target_audience?: string;
+  tone?: string;
+  length?: string;
+  language?: string;
+}
+
 export interface TextGenerationOutput {
   id: number;
   user_id: number;
@@ -166,6 +175,52 @@ export const generateContent = async (
     throw error;
   }
 }
+
+export const generateArticleContent = async (
+  articleDetails: ArticleDetailsInput,
+  token: string
+): Promise<TextGenerationOutput> => {
+  if (!token) {
+    throw new Error("Usuário não autenticado. Faça login para gerar conteúdo.");
+  }
+
+  try {
+    console.log("Dados da requisição enviados:", JSON.stringify(articleDetails, null, 2)); 
+    const response = await fetch(`${BACKEND_URL}/api/v1/generate-content`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(articleDetails),
+    });
+
+   if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Erro na resposta do backend:", errorData);
+      if (response.status === 401) {
+        throw new Error("Sessão expirada. Por favor, faça login novamente.");
+      }
+      
+      let errorMessage = "Erro desconhecido ao gerar conteúdo.";
+      if (errorData && typeof errorData === 'object' && errorData.detail) {
+          if (Array.isArray(errorData.detail)) {
+              errorMessage = errorData.detail.map((err: any) => `${err.loc.join('.')} - ${err.msg}`).join('; ');
+          } else {
+              errorMessage = errorData.detail;
+          }
+      }
+      throw new Error(errorMessage);
+    }
+
+    const data: TextGenerationOutput = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Erro ao chamar a API do backend:", error);
+    throw error;
+  }
+}
+
 
 export async function saveGeneratedContent(
   promptUsed: string,
@@ -331,6 +386,11 @@ export async function changeUserPassword(
         new_password: newPassword,
       }),
     });
+
+    if (response.status === 204) {
+    console.log("Senha alterada com sucesso (204).");
+    return;
+  }
 
     if (!response.ok) {
       const errorData = await response.json();

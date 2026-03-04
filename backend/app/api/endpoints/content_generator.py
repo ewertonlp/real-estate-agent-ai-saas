@@ -9,7 +9,8 @@ from fastapi import (
 from sqlalchemy.orm import Session  # Tipo de sessão síncrona
 from app import crud, schemas, models
 from app.core.security import get_current_user
-from app.services.gemini_service import generate_content_for_real_estate
+# from app.services.gemini_service import generate_content_for_real_estate
+from app.services.deepseekService import generate_content_for_real_estate
 from app.api.deps import get_db  # get_db síncrono
 
 router = APIRouter()

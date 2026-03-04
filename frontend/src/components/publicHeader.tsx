@@ -79,7 +79,7 @@ export default function PublicHeader() {
               <li>
                 <Link
                   href="/register"
-                  className="text-white border border-white/70 bg-transparent hover:scale-110 font-medium py-2 px-6 rounded-full text-md flex items-center space-x-1 transition-all ease-in-out"
+                  className="text-white bg-gradient-to-tr from-orange-700 to-pink-600  hover:scale-105 font-medium py-2 px-6 rounded-sm text-md flex items-center space-x-1 transition-all ease-in-out"
                 >
                   Cadastro
                 </Link>

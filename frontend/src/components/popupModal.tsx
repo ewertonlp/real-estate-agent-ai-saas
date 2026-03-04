@@ -18,10 +18,10 @@ const PopupModal: React.FC<popupModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-      <div className="bg-card p-6 rounded-lg shadow-xl max-w-sm w-full relative border border-border">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
+      <div className="bg-card p-6 rounded-lg shadow-2xl max-w-sm w-full relative ">
         <h2 className="text-xl font-semibold text-text text-center mb-6">{title}</h2>
-        <p className="text-text mb-6">{message}</p>
+        <p className="text-text text-center mb-6">{message}</p>
         <div className="flex justify-end space-x-3">
           <button
             onClick={onClose}

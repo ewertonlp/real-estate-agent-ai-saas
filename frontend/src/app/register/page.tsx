@@ -5,7 +5,9 @@ import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
+
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface RegisterFormData {
   email: string;
@@ -16,8 +18,11 @@ export default function RegisterPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<RegisterFormData>();
+    formState: { errors, isSubmitting, isValid },
+  } = useForm<RegisterFormData>({
+    mode: 'onChange'
+  });
+  
   const [genericError, setGenericError] = useState<string | null>(null);
   const { register: authRegister, isLoading } = useAuth();
   const router = useRouter();
@@ -34,22 +39,17 @@ export default function RegisterPage() {
     }
   };
 
+ 
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-card p-10 border rounded-lg shadow-md">
-        <div>
-          <h2 className=" text-center text-3xl font-semibold text-text pb-4">
-            Crie sua conta
+        <div className="text-center">
+          <h2 className="text-2xl font-medium text-foreground pb-2">
+            Cadastro
           </h2>
-          <p className="text-center text-sm text-text">
-            Ou{" "}
-            <Link
-              href="/login"
-              className="font-medium text-button hover:text-hover"
-            >
-              faça login na sua conta existente
-            </Link>
-          </p>
+          <p className="text-sm text-foreground/75">Preencha os campos abaixo para novo cadastro</p>
+         
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
@@ -116,10 +116,10 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <button
+            <Button
               type="submit"
-              disabled={isSubmitting || isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-md font-medium rounded-md text-white bg-primary hover:bg-my-button-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              disabled={!isValid || isSubmitting || isLoading}
+              className="w-full disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               {isSubmitting || isLoading ? (
                 <svg
@@ -143,8 +143,19 @@ export default function RegisterPage() {
                   ></path>
                 </svg>
               ) : null}
-              {isSubmitting || isLoading ? "Registrando..." : "Registrar"}
-            </button>
+              {isSubmitting || isLoading ? "Cadastrando..." : "Cadastrar"}
+            </Button>
+          </div>
+          <div className="pt-4 font-light">
+             <p className="text-center text-sm text-foreground">
+           Já possui cadastro?{" "}
+            <Link
+              href="/login"
+              className="ml-2  text-primary hover:text-primary/75 transition"
+            >
+              Faça o login novamente
+            </Link>
+          </p>
           </div>
         </form>
       </div>

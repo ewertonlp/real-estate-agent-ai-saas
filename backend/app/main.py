@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.endpoints import content_generator, auth, history, users, image_generator, subscriptions, prompt_templates, emails # <-- Certifique-se que 'subscriptions' está aqui
+from app.api.endpoints import content_generator, auth, history, users, image_generator, subscriptions, prompt_templates, emails
 from app.core.database import Base, engine
 from app.core.config import settings
 from sqlalchemy.orm import Session

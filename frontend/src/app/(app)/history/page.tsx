@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react"; 
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { getGeneratedContentHistory, toggleFavoriteStatus } from "@/lib/api"; 
+import { getGeneratedContentHistory, toggleFavoriteStatus } from "@/lib/api";
 import Link from "next/link";
 import { toast } from "react-toastify";
-import Modal from "@/components/modal";
+import Modal from "@/components/dashboard/modal";
 import {
   FaEdit,
   FaShareAlt,
@@ -21,9 +21,12 @@ import {
   FaExpandAlt,
   FaHome,
   FaMapMarkerAlt,
+  FaInstagram,
 } from "react-icons/fa";
 import { IoIosAlbums } from "react-icons/io";
 import Loader from "@/components/loader";
+import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface GeneratedContentItem {
   id: number;
@@ -81,7 +84,7 @@ export default function HistoryPage() {
         showFavoritesOnly ? true : null,
         searchTerm,
         startDate,
-        endDate
+        endDate,
       );
       setHistory(data);
       toast.success("Histórico carregado com sucesso!");
@@ -122,8 +125,8 @@ export default function HistoryPage() {
 
     setHistory((prevHistory) =>
       prevHistory.map((h) =>
-        h.id === item.id ? { ...h, is_favorite: newFavoriteStatus } : h
-      )
+        h.id === item.id ? { ...h, is_favorite: newFavoriteStatus } : h,
+      ),
     );
 
     try {
@@ -131,14 +134,14 @@ export default function HistoryPage() {
       toast.success(
         newFavoriteStatus
           ? "Conteúdo adicionado aos favoritos!"
-          : "Conteúdo removido dos favoritos."
+          : "Conteúdo removido dos favoritos.",
       );
     } catch (err: any) {
       console.error("Erro ao alternar favorito:", err);
       setHistory((prevHistory) =>
         prevHistory.map((h) =>
-          h.id === item.id ? { ...h, is_favorite: item.is_favorite } : h
-        )
+          h.id === item.id ? { ...h, is_favorite: item.is_favorite } : h,
+        ),
       );
 
       toast.error(err.message || "Falha ao atualizar favorito.");
@@ -149,7 +152,7 @@ export default function HistoryPage() {
     const promptParam = encodeURIComponent(item.prompt_used);
     const generatedTextParam = encodeURIComponent(item.generated_text);
     router.push(
-      `/dashboard?prompt=${promptParam}&generatedText=${generatedTextParam}`
+      `/dashboard?prompt=${promptParam}&generatedText=${generatedTextParam}`,
     );
   };
 
@@ -163,7 +166,7 @@ export default function HistoryPage() {
     const encodedText = encodeURIComponent(text);
     window.open(
       `https://www.facebook.com/sharer/sharer.php?quote=${encodedText}`,
-      "_blank"
+      "_blank",
     );
   };
 
@@ -179,8 +182,11 @@ export default function HistoryPage() {
 
   if (isAuthLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-text">Carregando autenticação...</p>
+      <div className="flex items-center justify-center min-h-screen bg-card">
+        <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
+        <p className="ml-2 text-teal-600 dark:text-teal-300">
+          Carregando...
+        </p>
       </div>
     );
   }
@@ -198,7 +204,7 @@ export default function HistoryPage() {
   };
 
   return (
-    <main className="bg-card p-8 rounded-lg shadow-md w-full max-w-full">
+    <main className="bg-card p-8 rounded-md shadow-md w-full max-w-full">
       <div className="flex items-center justify-start gap-4 text-text mb-10">
         <IoIosAlbums size={25} />
         <h1 className="text-2xl font-medium ">Meu Histórico de Conteúdo</h1>
@@ -214,7 +220,7 @@ export default function HistoryPage() {
         </div>
       )}
 
-      <div className="mb-6 p-4 bg-card-light border border-border rounded-lg">
+      <div className="mb-6 p-4 bg-card border-2 border-border rounded-lg ">
         <h2 className="text-xl font-medium text-text mb-8 flex items-center gap-2">
           <FaFilter className="text-text" /> Filtrar e Buscar
         </h2>
@@ -231,18 +237,18 @@ export default function HistoryPage() {
                 type="text"
                 name="searchTerm"
                 id="searchTerm"
-                className="bg-background focus:ring-border focus:border-border block w-full rounded-md sm:text-sm border-border px-3 py-2"
+                className="bg-background border focus:ring-border focus:border-border block w-full rounded-md sm:text-sm border-border px-3 py-2"
                 placeholder="Buscar por prompt ou texto gerado..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <button
+              <Button
                 type="button"
                 onClick={fetchHistory}
-                className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-card bg-button hover:bg-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-border"
+                className=" ml-3"
               >
                 <FaSearch className="mr-2" /> Buscar
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -251,7 +257,7 @@ export default function HistoryPage() {
               id="showFavoritesOnly"
               name="showFavoritesOnly"
               type="checkbox"
-              className="focus:ring-border h-4 w-4 text-text border-border rounded"
+              className="focus:ring-border h-4 w-4 text-text rounded"
               checked={showFavoritesOnly}
               onChange={(e) => setShowFavoritesOnly(e.target.checked)}
             />
@@ -274,7 +280,7 @@ export default function HistoryPage() {
               type="date"
               id="startDate"
               name="startDate"
-              className="mt-1 bg-background focus:ring-border focus:border-border block w-full rounded-md sm:text-sm border-border placeholder:text-black px-3 py-2"
+              className="mt-1 bg-background border focus:ring-border focus:border-border block w-full rounded-md sm:text-sm border-border placeholder:text-black px-3 py-2"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
@@ -291,7 +297,7 @@ export default function HistoryPage() {
               type="date"
               id="endDate"
               name="endDate"
-              className="mt-1 bg-background focus:ring-border focus:border-border block w-full rounded-md sm:text-sm border-border placeholder:text-black px-3 py-2"
+              className="mt-1 bg-background border focus:ring-border focus:border-border block w-full rounded-md sm:text-sm border-border placeholder:text-black px-3 py-2"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
             />
@@ -309,7 +315,7 @@ export default function HistoryPage() {
           <p>Nenhum conteúdo encontrado com os filtros aplicados.</p>
           <Link
             href="/dashboard"
-            className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-button hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-border transition-all"
+            className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-card hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-border transition-all"
           >
             Gerar meu primeiro conteúdo
           </Link>
@@ -318,12 +324,12 @@ export default function HistoryPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
           {history.map((item, index) => {
             const { propertyType, location } = extractPromptDetails(
-              item.prompt_used
+              item.prompt_used,
             );
             const truncatedPrompt = truncateTextByLines(item.prompt_used, 2);
             const truncatedGeneratedText = truncateTextByLines(
               item.generated_text,
-              8
+              10,
             );
             return (
               <div
@@ -332,7 +338,7 @@ export default function HistoryPage() {
                     ? item.id
                     : `history-item-${index}`
                 }
-                className="bg-background border border-border rounded-lg shadow-lg relative flex flex-col h-full"
+                className="bg-background border border-border rounded-sm relative flex flex-col h-full"
               >
                 <div className="p-6 flex-grow">
                   {" "}
@@ -351,19 +357,19 @@ export default function HistoryPage() {
                     </button>
                   </div>
                   <div className="mb-4 text-sm text-gray-700">
-                    <p className="flex items-center mb-1 text-text">
-                      <FaHome className="mr-2 text-text" /> Tipo: {propertyType}
+                    <p className="flex items-center mb-1 text-foreground">
+                      <FaHome className="mr-2 text-foreground" /> Tipo: {propertyType}
                     </p>
-                    <p className="flex items-center text-text">
-                      <FaMapMarkerAlt className="mr-2 text-text" /> Localização:{" "}
+                    <p className="flex items-center text-foreground">
+                      <FaMapMarkerAlt className="mr-2 text-foreground" /> Localização:{" "}
                       {location}
                     </p>
                   </div>
                   <div className="pb-24">
-                    <h3 className="text-lg font-semibold text-text mb-2">
+                    <h3 className="text-md font-medium text-primary mb-2">
                       Prompt Utilizado:
                     </h3>
-                    <div className="whitespace-pre-wrap text-text text-sm mb-2 border-l-4 border-border pl-3 py-1 bg-card max-h-24 overflow-hidden">
+                    <div className="whitespace-pre-wrap text-text text-xs mb-2 border-l-4 border-border pl-3 py-1 bg-card max-h-96 overflow-hidden">
                       {truncatedPrompt}
                     </div>
                     {item.prompt_used.split("\n").length > 6 && (
@@ -377,11 +383,11 @@ export default function HistoryPage() {
                       </button>
                     )}
 
-                    <h3 className="text-lg font-semibold text-text mb-2">
+                    <h3 className="text-md font-medium text-primary mt-4 mb-2">
                       Conteúdo Gerado:
                     </h3>
                     <div
-                      className="whitespace-pre-wrap text-text text-base overflow-hidden"
+                      className="whitespace-pre-wrap text-text text-sm overflow-hidden"
                       style={{ lineHeight: "1.6" }}
                     >
                       {truncatedGeneratedText}
@@ -392,7 +398,7 @@ export default function HistoryPage() {
                           onClick={() =>
                             openModal(
                               "Conteúdo Gerado Completo",
-                              item.generated_text
+                              item.generated_text,
                             )
                           }
                           className="mt-8 py-1 px-2 rounded-md text-text hover:bg-card hover:text-slate-50 text-md font-medium flex items-center justify-center border border-border transition-colors"
@@ -405,53 +411,45 @@ export default function HistoryPage() {
                 </div>{" "}
                 <div className="absolute bottom-0 left-0 right-0 p-6 bg-background border-t border-border ">
                   <div className="flex flex-wrap gap-4 justify-center items-center">
-                    <button
+                    {/* <button
                       onClick={() => handleEdit(item)}
                       className="bg-zinc-500 hover:bg-zinc-600 text-white font-medium py-1 px-3 rounded text-sm flex items-center space-x-1 transition-all"
                       title="Editar ou Reutilizar no Dashboard"
                     >
                       <FaEdit />
-                      <span>Editar/Reutilizar</span>
-                    </button>
+                     
+                    </button> */}
 
-                    <div className="relative group">
+                      <p className="text-sm">Compartilhar</p>
+                    <div className="relative group flex">
                       <button
-                        className="bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-1 px-3 rounded text-sm flex items-center space-x-1 transition-all"
-                        title="Compartilhar Conteúdo"
-                      >
-                        <FaShareAlt />
-                        <span>Compartilhar</span>
-                      </button>
-                      <div className="absolute right-0 top-full mt-1 w-auto bg-card border border-border rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
-                        <button
                           onClick={() => shareOnWhatsapp(item.generated_text)}
-                          className="w-full text-left px-4 py-2 text-sm text-text hover:bg-background flex items-center space-x-2"
+                          className="w-full text-left px-4  text-sm text-text hover:bg-background flex items-center space-x-2"
                         >
-                          <FaWhatsapp className="text-green-500" />
-                          <span>WhatsApp</span>
+                          <FaWhatsapp className="text-green-500" size={24} />
                         </button>
-                        <button
+                          <button
                           onClick={() => shareOnFacebook(item.generated_text)}
-                          className="w-full text-left px-4 py-2 text-sm text-text hover:bg-background flex items-center space-x-2"
+                          className="w-full text-left px-4  text-sm text-text hover:bg-background flex items-center space-x-2"
                         >
-                          <FaFacebook className="text-blue-600" />
-                          <span>Facebook</span>
+                          <FaFacebook className="text-blue-600" size={24} />
+          
                         </button>
-                        <button
+
+                         <button
                           onClick={() => shareOnInstagram(item.generated_text)}
-                          className="w-full text-left px-4 py-2 text-sm text-text hover:bg-background flex items-center space-x-2"
+                          className="w-full text-left px-4  text-sm text-text hover:bg-background flex items-center space-x-2"
                         >
-                          <FaClipboard className="text-purple-500" />
-                          <span>Instagram (Copiar)</span>
+                          <FaInstagram className="text-text" size={24}  />
                         </button>
                         <button
                           onClick={() => shareOnEmail(item.generated_text)}
-                          className="w-full text-left px-4 py-2 text-sm text-text hover:bg-background flex items-center space-x-2"
+                          className="w-full text-left px-4  text-sm text-text hover:bg-background flex items-center space-x-2"
                         >
-                          <FaEnvelope className="text-orange-500" />
-                          <span>E-mail</span>
+                          <FaEnvelope className="text-orange-500" size={24} />
                         </button>
-                      </div>
+                    
+                     
                     </div>
                   </div>
                 </div>

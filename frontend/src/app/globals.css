@@ -1,120 +1,146 @@
-/* frontend/src/app/globals.css */
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  /* Tema Claro (default) */
   :root {
-    /* Tema Claro - Personalize com seus valores HSL */
-    --background: 0 0% 95%; /* Cinza claro */
-    --foreground: 222.2 47.4% 11.2%; /* Quase preto */
+    /* Cores base (neutras) */
+    --background: 0 0% 100%;          /* Branco */
+    --foreground: 222.2 47.4% 11.2%;  /* Cinza muito escuro (quase preto) */
 
-    --card: 0, 5%, 99%;
+    --card: 0 0% 96%;
     --card-foreground: 222.2 47.4% 11.2%;
-    --text: 222.2 47.4% 11.2%;
-    --button: 214 100% 65%;
+
+    --popover: 0 0% 100%;
     --popover-foreground: 222.2 47.4% 11.2%;
 
-    --primary: 217.2 91.2% 59.8%; /* Azul vibrante (ex: #3B82F6) */
-    --primary-foreground: 0 0% 98%; /* Texto claro sobre o primary */
+    /* Primária - Azul profissional */
+    --primary: 217 91% 50%;            
+    --primary-foreground: 0 0% 100%;   /* Branco */
 
-    --secondary: 210 40% 96.1%; /* Cinza claro */
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secundária - Verde (crescimento/vendas) */
+    --secondary: 160 84% 45%;           /* #10B981 */
+    --secondary-foreground: 0 0% 100%;  /* Branco */
 
-    --muted: 210 40% 96.1%;
+    /* Destaque IA - Roxo tecnológico */
+    --ai: 258 90% 66%;                  /* #8B5CF6 */
+    --ai-foreground: 0 0% 100%;         /* Branco */
+
+    /* Cores de fundo para elementos interativos */
+    --muted: 210 40% 96.1%;             /* Cinza claro */
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
+    --accent: 210 40% 96.1%;            /* Cinza claro (hover, etc) */
     --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 0 84.2% 60.2%; /* Vermelho */
-    --destructive-foreground: 0 0% 98%;
+    /* Destrutivo (erro) */
+    --destructive: 0 84.2% 60.2%;       /* Vermelho */
+    --destructive-foreground: 0 0% 100%;
 
-    --overlay-bg: 0 0% 0%; /* HSL para preto */
-    --overlay-opacity: 0.6; /* Transparência para o overlay */
+    /* Bordas, inputs e ring */
+    --border: 214.3 31.8% 91.4%;        /* Cinza claro */
+    --input: 214.3 31.8% 91.4%;
+    --ring: 217 89% 61%;                 /* Azul primário (foco) */
 
-    --border: 207 90% 78%;
-    --input: 0 0% 95%;
-    --ring: 222.2 47.4% 11.2%;
+    /* Overlay para modais/drawers */
+    --overlay-bg: 0 0% 0%;               /* Preto */
+    --overlay-opacity: 0.6;               /* Opacidade padrão */
 
+    /* Raio padrão */
     --radius: 0.5rem;
 
-    /* Suas variáveis personalizadas - certifique-se que são HSLs diretos, sem var() */
-    --my-card-light: 214 3.2% 92.5%; /* seu #ebebeb */
-    --my-button-primary: 207 90% 54%; /* seu #2196f3 */
-    --my-button-hover: 214 100% 45%; /* seu #007fff */
+    /* Tokens semânticos adicionais */
+    --success: 160 84% 45%;               /* Verde secundário */
+    --success-foreground: 0 0% 100%;
+    --warning: 48 96% 53%;                 /* Amarelo (#F59E0B) */
+    --warning-foreground: 0 0% 0%;
+    --info: 217 89% 61%;                   /* Azul primário */
+    --info-foreground: 0 0% 100%;
+
+    /* Cards e elementos personalizados (se necessário) */
+    --my-card-bg: 0 0% 100%;
+    --my-card-border: 214.3 31.8% 91.4%;
   }
 
+  /* Tema Escuro */
   .dark {
-    /* Tema Escuro - Personalize com seus valores HSL */
-    --background: 216, 37%, 13%; /* Azul muito escuro */
-    --foreground: 0, 8%, 98%; /* Quase branco */
+    --background: 222.2 47.4% 11.2%;     /* Quase preto */
+    --foreground: 210 20% 98%;            /* Quase branco */
 
-    --card: 237.6, 19%, 26%;
+    --card: 222.2 47.4% 15%;
     --card-foreground: 210 20% 98%;
-    --text: 210 20% 98%;
-    --button: 214 100% 65%;
-    --popover: 224 71.4% 4.1%;
+
+    --popover: 222.2 47.4% 11.2%;
     --popover-foreground: 210 20% 98%;
 
-    --primary: 217.2 91.2% 59.8%; /* O mesmo azul, ou um tom mais claro para contraste */
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* Primária no escuro: tom um pouco mais claro para manter contraste */
+    --primary: 217 91% 60%;               /* #3B82F6 (Azul 500) */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14.3% 10.9%;
-    --secondary-foreground: 210 20% 98%;
+    /* Secundária no escuro: verde mais suave */
+    --secondary: 160 84% 45%;              /* #10B981 (mantém) */
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 14.3% 10.9%;
+    /* IA no escuro: roxo mais vibrante */
+    --ai: 258 90% 66%;                     /* #8B5CF6 (mantém) */
+    --ai-foreground: 0 0% 100%;
+
+    --muted: 223 47% 15%;                   /* Tom escuro médio */
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 220 14.3% 10.9%;
+    --accent: 216 34% 17%;                  /* Para hovers */
     --accent-foreground: 210 20% 98%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;           /* Vermelho escuro */
+    --destructive-foreground: 0 0% 100%;
 
-    --overlay-bg: 0 0% 0%; /* HSL para preto, ou um tom mais escuro */
+    --border: 216 34% 22%;                  /* Borda escura */
+    --input: 216 34% 17%;
+    --ring: 217 91% 60%;                     /* Azul primário */
+
+    --overlay-bg: 0 0% 0%;
     --overlay-opacity: 0.9;
 
-    --border: 214 100% 65%;
-    --input: 216, 37%, 13%;
-    --ring: 210 20% 98%;
+    --success: 160 84% 45%;                  /* Verde mantido */
+    --success-foreground: 0 0% 100%;
+    --warning: 48 96% 53%;                    /* Amarelo */
+    --warning-foreground: 0 0% 0%;
+    --info: 217 91% 60%;                      /* Azul primário */
+    --info-foreground: 0 0% 100%;
 
-    /* Suas variáveis personalizadas para o tema escuro */
-    --my-card-light: 0 0% 33%;
-    --my-button-primary: 214 100% 65%;
-    --my-button-hover: 214 100% 75%;
+    --my-card-bg: 222.2 47.4% 11.2%;
+    --my-card-border: 216 34% 17%;
   }
 
-  /* Aplique as variáveis do shadcn/ui aos elementos base */
+  /* Aplicação global */
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-poppins);
+    font-family: var(--font-poppins); /* ou a fonte que você utiliza */
   }
 
   html {
     scroll-behavior: smooth;
-    list-style: none;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
-/* Shapes */
+/* ========== FORMAS E ANIMAÇÕES ========== */
 .clip-polygon {
-  clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 0% 100%);
+  clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 100%);
 }
 .clip-polygon-footer {
-  clip-path: polygon(0% 10%, 100% 0%, 100% 100%, 0% 100%);
+  clip-path: polygon(0% 5%, 100% 0%, 100% 100%, 0% 100%);
 }
 .clip-polygon-pricing {
-  clip-path: polygon(0% 10%, 100% 0%, 100% 90%, 0% 100%);
+  clip-path: polygon(0% 5%, 100% 0%, 100% 95%, 0% 100%);
 }
 
-
-/* Animation */
+/* Animações */
 .animate-fade-in-down {
   animation: fade-in-down 1s ease-out forwards;
 }
@@ -238,6 +264,7 @@
   }
 }
 
+/* Efeitos especiais */
 .glow-button {
   position: relative;
   z-index: 1;
@@ -249,36 +276,28 @@
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background: linear-gradient(45deg, #ffd700, #ffa500, #ffd700); /* Dourado */
+  background: linear-gradient(45deg, #ffd700, #ffa500, #ffd700);
   filter: blur(8px);
   z-index: -1;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
-  border-radius: 9999px; /* Para coincidir com rounded-full */
+  border-radius: 9999px;
 }
 .glow-button:hover::before {
   opacity: 1;
 }
+
 .circle-step {
   position: relative;
 }
 .step-number {
-  border: 4px solid white; /* Borda branca para destacar o número */
+  border: 4px solid white;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
-/* Responsividade da linha conectora */
+
+/* Linha conectora para steps (apenas desktop) */
 @media (min-width: 768px) {
-  /* md */
-  .circle-step:nth-child(1)::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    right: -50px; /* Metade da distância entre os círculos */
-    width: 100px; /* Distância entre os círculos */
-    height: 2px;
-    background-color: #60a5fa; /* Cor azul 400 */
-    z-index: -1;
-  }
+  .circle-step:nth-child(1)::after,
   .circle-step:nth-child(2)::after {
     content: "";
     position: absolute;
@@ -286,7 +305,7 @@
     right: -50px;
     width: 100px;
     height: 2px;
-    background-color: #60a5fa;
+    background-color: hsl(var(--primary)); /* Usando a variável CSS */
     z-index: -1;
   }
 }

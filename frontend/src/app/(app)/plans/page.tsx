@@ -12,12 +12,13 @@ import Image from "next/image";
 import { toast } from "react-toastify";
 import { FaCheckCircle, FaLock } from "react-icons/fa";
 import { planFeatures } from "@/data/subscriptionPlans";
+import PricingCard from "@/components/pricingCards";
 
 export default function PlansPage() {
   const [allPlans, setAllPlans] = useState<SubscriptionPlan[]>([]);
   const [displayedPlans, setDisplayedPlans] = useState<SubscriptionPlan[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<"month" | "year">(
-    "month"
+    "month",
   );
   const [currentLoadingPriceId, setCurrentLoadingPriceId] = useState<
     string | null
@@ -41,7 +42,9 @@ export default function PlansPage() {
           const fetchedPlans = await getSubscriptionPlans();
           const upgradeablePlans = fetchedPlans.filter(
             (p) =>
-              p.unit_amount !== null && p.interval !== null && p.name !== "Free"
+              p.unit_amount !== null &&
+              p.interval !== null &&
+              p.name !== "Free",
           );
 
           setAllPlans(
@@ -52,7 +55,7 @@ export default function PlansPage() {
                 return 0;
               }
               return a.max_generations - b.max_generations;
-            })
+            }),
           );
         } catch (err: any) {
           setError(err.message || "Erro ao carregar planos.");
@@ -67,7 +70,7 @@ export default function PlansPage() {
 
   useEffect(() => {
     const filtered = allPlans.filter(
-      (plan) => plan.interval === selectedPeriod
+      (plan) => plan.interval === selectedPeriod,
     );
 
     const customOrder = ["Basic", "Premium", "Unlimited"];
@@ -89,7 +92,7 @@ export default function PlansPage() {
     if (priceId === "price_free_plan") {
       toast.warning(
         "Você já está no plano Grátis ou pode se registrar para começar gratuitamente.",
-        { icon: "👋" }
+        { icon: "👋" },
       );
       return;
     }
@@ -101,7 +104,7 @@ export default function PlansPage() {
       window.location.href = checkout_url;
     } catch (err: any) {
       toast.error(
-        err.message || "Erro ao iniciar o pagamento. Tente novamente."
+        err.message || "Erro ao iniciar o pagamento. Tente novamente.",
       );
       setError(err.message || "Falha ao criar sessão de checkout.");
     } finally {
@@ -144,13 +147,13 @@ export default function PlansPage() {
         perfeito para você.
       </p>
 
-      <div className="flex justify-center mb-10">
+      <div className="flex justify-center mb-20">
         <button
           onClick={() => setSelectedPeriod("year")}
           className={`py-2 px-6 rounded-bl-lg rounded-tl-lg font-semibold text-lg transition-colors ${
             selectedPeriod === "year"
-              ? "bg-button text-white"
-              : "bg-background text-text hover:bg-button/50"
+              ? "bg-primary text-white"
+              : "bg-white text-gray-600 hover:bg-primary/50"
           } `}
         >
           Anual
@@ -160,18 +163,30 @@ export default function PlansPage() {
           className={`py-2 px-6 rounded-tr-lg rounded-br-lg font-semibold text-lg transition-colors
                 ${
                   selectedPeriod === "month"
-                    ? "bg-button text-white"
-                    : "bg-background text-text hover:bg-button/50"
+                    ? "bg-primary text-white"
+                    : "bg-white text-gray-600 hover:bg-primary/50"
                 } `}
         >
           Mensal
         </button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        
         {displayedPlans.map((plan) => (
+          <PricingCard
+            key={plan.id}
+            plan={plan}
+            features={planFeatures[plan.name]?.[plan.interval] || []}
+            isLoading={isCheckoutLoading}
+            isCurrentLoading={currentLoadingPriceId === plan.price_id_stripe}
+            onSubscribe={handleSubscribe}
+            formatPrice={formatPrice}
+          />
+        ))}
+        {/* {displayedPlans.map((plan) => (
           <div
             key={plan.id}
-            className="bg-background rounded-lg shadow-md p-8 flex flex-col justify-between border hover:border-hover transition-all duration-300"
+            className="bg-gradient-to-b from-ai via-card to-card rounded-lg shadow-md p-8 flex flex-col justify-between border hover:border-hover transition-all duration-300"
           >
             <div className="text-center">
               <h2 className="text-3xl font-semibold text-text mb-4">
@@ -236,7 +251,7 @@ export default function PlansPage() {
               {plan.name === "Free" ? "Plano Atual" : "Escolher Plano"}{" "}
             </button>
           </div>
-        ))}
+        ))} */}
       </div>
 
       <div className="mt-12 text-center text-text text-sm space-y-4">

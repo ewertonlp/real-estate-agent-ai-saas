@@ -2,20 +2,25 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import PropertyDetailsForm from "@/components/propertyDetailsForm";
-import { PropertyDetailsFormSchema } from "@/components/propertyDetailsForm";
+import PropertyDetailsForm from "@/components/dashboard/propertyDetailsForm";
+import { PropertyDetailsFormSchema } from "@/components/dashboard/propertyDetailsForm";
 import {
+  ArticleDetailsInput,
   generateContent,
+  generateArticleContent,
   PropertyDetailsInput,
   TextGenerationOutput,
 } from "@/lib/api";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import { toast } from "react-toastify";
-import Modal from "@/components/modal";
+import { toast } from "sonner";
+import Modal from "@/components/dashboard/modal";
 import { FaWpforms } from "react-icons/fa";
 import Link from "next/link";
+import Tabs from "@/components/dashboard/tabs";
+import ArticleForm, { ArticleFormSchema } from "@/components/dashboard/articleForm";
+import PlanInfoCards from "@/components/dashboard/planInfoCards";
 
 export default function DashboardPage() {
   const {
@@ -28,24 +33,21 @@ export default function DashboardPage() {
     fetchUserData,
   } = useAuth();
 
-  console.log(userMaxGenerations)
   const router = useRouter();
   const searchParams = useSearchParams();
   const { userEmail } = useAuth();
-
   const [generatedContent, setGeneratedContent] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-  const [showCopyMessage, setShowCopyMessage] = useState<boolean>(false); 
+  const [showCopyMessage, setShowCopyMessage] = useState<boolean>(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(0);
+  const [showGeneratedContent, setShowGeneratedContent] = useState(false);
 
- 
   const [initialFormValues, setInitialFormValues] = useState<
     Partial<PropertyDetailsFormSchema>
   >({});
 
-  
   useEffect(() => {
     const onboardingCompleted = localStorage.getItem("onboarding_completed_v1");
     if (!onboardingCompleted && userEmail) {
@@ -54,20 +56,18 @@ export default function DashboardPage() {
     }
   }, [userEmail]);
 
- 
   const handleNextOnboardingStep = () => {
     if (onboardingStep < onboardingStepsData.length - 1) {
       setOnboardingStep((prev) => prev + 1);
     } else {
-      localStorage.setItem("onboarding_completed_v1", "true"); /
-      setShowOnboarding(false); 
+      localStorage.setItem("onboarding_completed_v1", "true");
+      setShowOnboarding(false);
     }
   };
 
-
   const handleSkipOnboarding = () => {
-    localStorage.setItem("onboarding_completed_v1", "true"); 
-    setShowOnboarding(false); 
+    localStorage.setItem("onboarding_completed_v1", "true");
+    setShowOnboarding(false);
   };
 
   // Efeito para preencher o formulário com dados do histórico, se presentes na URL
@@ -83,7 +83,7 @@ export default function DashboardPage() {
         additionalDetails: decodeURIComponent(templateTextFromUrl),
       }));
       toast.success(
-        "Template aplicado ao campo 'Outros Detalhes Importantes'!"
+        "Template aplicado ao campo 'Outros Detalhes Importantes'!",
       );
       router.replace("/dashboard", undefined);
     } else if (promptFromHistory) {
@@ -101,51 +101,51 @@ export default function DashboardPage() {
     const paymentStatus = searchParams.get("payment_status");
     if (paymentStatus === "success") {
       toast.success(
-        "Pagamento realizado com sucesso! Seu plano foi atualizado."
+        "Pagamento realizado com sucesso! Seu plano foi atualizado.",
       );
       fetchUserData();
       router.replace("/dashboard", undefined);
     } else if (paymentStatus === "cancelled") {
       toast.error(
-        "Pagamento cancelado. Tente novamente ou entre em contato com o suporte."
+        "Pagamento cancelado. Tente novamente ou entre em contato com o suporte.",
       );
       router.replace("/dashboard", undefined);
     }
   }, [searchParams, router, fetchUserData]);
 
 
-  const handleSubmit = async (formData: PropertyDetailsFormSchema) => {
-    
+  // FUNÇÃO PARA IMÓVEIS
+  const handlePropertySubmit = async (formData: PropertyDetailsFormSchema) => {
     if (!isAuthenticated || !userToken) {
       setError(
-        "Você não está logado ou a sessão expirou. Por favor, faça login novamente."
+        "Você não está logado ou a sessão expirou. Por favor, faça login novamente.",
       );
-      toast.error("Você não está logado. por favor, faça login novamente.")
+      toast.error("Você não está logado. por favor, faça login novamente.");
       console.error(
         "Erro: Usuário não autenticado no handleSubmit. isAuthenticated:",
         isAuthenticated,
         "userToken:",
-        userToken
+        userToken,
       );
       return;
     }
 
-  if (
-  userMaxGenerations !== null &&
-  userMaxGenerations !== 0 &&
-  userGenerationsCount !== null &&
-  userGenerationsCount >= userMaxGenerations
-) {
-  toast.error(
-    "Você atingiu o limite de gerações do seu plano. Faça o upgrade para continuar gerando conteúdos."
-  );
-  setError(
-    "Você atingiu o limite de gerações do seu plano. Faça o upgrade para continuar."
-  );
-  return;
-}
+    if (
+      userMaxGenerations !== null &&
+      userMaxGenerations !== 0 &&
+      userGenerationsCount !== null &&
+      userGenerationsCount >= userMaxGenerations
+    ) {
+      toast.error(
+        "Você atingiu o limite de gerações do seu plano. Faça o upgrade para continuar gerando conteúdos.",
+      );
+      setError(
+        "Você atingiu o limite de gerações do seu plano. Faça o upgrade para continuar.",
+      );
+      return;
+    }
 
-    if (loading) return
+    if (loading) return;
     setLoading(true);
     setError("");
     setGeneratedContent("");
@@ -180,7 +180,7 @@ export default function DashboardPage() {
         (formData.optimizeForSeoGmb && isSeoGmbFormEmpty))
     ) {
       setError(
-        "Por favor, preencha pelo menos um campo para gerar o conteúdo."
+        "Por favor, preencha pelo menos um campo para gerar o conteúdo.",
       );
       setLoading(false);
       return;
@@ -211,6 +211,7 @@ export default function DashboardPage() {
       setGeneratedContent(result.generated_text);
       toast.success("Conteúdo de texto gerado e salvo com sucesso!");
       await fetchUserData();
+      console.log(generatedContent);
     } catch (err: any) {
       console.error("Erro na geração de conteúdo:", err);
       if (err.message === "Sessão expirada. Por favor, faça login novamente.") {
@@ -223,45 +224,152 @@ export default function DashboardPage() {
         toast.error(err.message || "Ocorreu um erro ao gerar o conteúdo.");
       }
       setError(
-        err.message || "Ocorreu um erro ao gerar o conteúdo. Tente novamente."
+        err.message || "Ocorreu um erro ao gerar o conteúdo. Tente novamente.",
       );
     } finally {
       setLoading(false);
     }
   };
 
- 
+
+  const handleArticleFormSubmit = async (formData: ArticleFormSchema) => {
+    if (!isAuthenticated || !userToken) {
+      setError(
+        "Você não está logado ou a sessão expirou. Por favor, faça login novamente.",
+      );
+      toast.error("Você não está logado. por favor, faça login novamente.");
+      console.error(
+        "Erro: Usuário não autenticado no handleSubmit. isAuthenticated:",
+        isAuthenticated,
+        "userToken:",
+        userToken,
+      );
+      return;
+    }
+
+    if (
+      userMaxGenerations !== null &&
+      userMaxGenerations !== 0 &&
+      userGenerationsCount !== null &&
+      userGenerationsCount >= userMaxGenerations
+    ) {
+      toast.error(
+        "Você atingiu o limite de gerações do seu plano. Faça o upgrade para continuar gerando conteúdos.",
+      );
+      setError(
+        "Você atingiu o limite de gerações do seu plano. Faça o upgrade para continuar.",
+      );
+      return;
+    }
+
+    if (loading) return;
+    setLoading(true);
+    setError("");
+    setGeneratedContent("");
+
+    // const isBasicFormEmpty =
+    //  !formData.prompt &&
+    //   !formData.tone &&
+    //   !formData.purpose &&
+    //   !formData.targetAudience &&
+    //   !formData.length &&
+    //   !formData.language &&
+
+
+    const ArticleDetailsForApi: ArticleDetailsInput = {
+      prompt: formData.prompt,
+      purpose: formData.purpose,
+      target_audience: formData.targetAudience || undefined,
+      tone: formData.tone || undefined,
+      length: formData.length || undefined,
+      language: formData.language || undefined,
+      
+    };
+
+    try {
+      const result = await generateArticleContent(ArticleDetailsForApi, userToken);
+      setGeneratedContent(result.generated_text);
+      toast.success("Conteúdo de texto gerado e salvo com sucesso!");
+      await fetchUserData();
+      console.log(generatedContent);
+    } catch (err: any) {
+      console.error("Erro na geração de conteúdo:", err);
+      if (err.message === "Sessão expirada. Por favor, faça login novamente.") {
+        router.push("/login");
+        toast.error("Sessão expirada. Por favor, faça login novamente.");
+      } else if (err.message.includes("atingiu o limite")) {
+        toast.error(err.message);
+        setError(err.message);
+      } else {
+        toast.error(err.message || "Ocorreu um erro ao gerar o conteúdo.");
+      }
+      setError(
+        err.message || "Ocorreu um erro ao gerar o conteúdo. Tente novamente.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCopy = () => {
     navigator.clipboard.writeText(generatedContent);
     setShowCopyMessage(true);
     setTimeout(() => setShowCopyMessage(false), 2000);
   };
 
- 
   if (isAuthLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-        <p className="ml-2 text-gray-700 dark:text-gray-300">
-          Carregando autenticação...
+      <div className="flex items-center justify-center min-h-screen bg-card">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="ml-2 text-primary">
+          Carregando...
         </p>
       </div>
     );
   }
 
-  
   if (!isAuthenticated) {
     router.push("/login");
     return null;
   }
 
+  const tabs = [
+    {
+      label: "Imóveis",
+      content: (
+        <PropertyDetailsForm
+          onSubmit={handlePropertySubmit}
+          loading={loading}
+         
+        />
+      ),
+    },
+    {
+      label: "Legendas/Artigos",
+      content: (
+        <ArticleForm
+          onSubmit={handleArticleFormSubmit}
+          loading={loading}
+         
+        />
+      ),
+    },
+  ];
+
+
   return (
-    <div className="min-h-screen bg-card text-text p-4 sm:p-6 lg:p-8 rounded-lg">
+    <>
+        <div className="bg-card p-4 sm:p-6 mb-4 rounded-sm">
+          <PlanInfoCards />
+        </div>
+  
+    <div className="min-h-screen bg-card text-text p-4 sm:p-6 lg:p-8 rounded-sm">
       <div className="flex items-start justify-between gap-4 mb-12 mx-auto">
         <div className="flex items-center gap-4">
           <FaWpforms className="text-2xl" />
           <h1 className="text-lg lg:text-3xl font-medium ">Gerar Conteúdo</h1>
         </div>
+
         {/* <div>
           <p>
             <strong>Plano Atual:</strong> {userPlanName || "Carregando..."}
@@ -285,27 +393,23 @@ export default function DashboardPage() {
         </div> */}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-8xl mx-auto">
-        
-        <div className="bg-card dark:bg-card p-6 rounded-lg border border-border overflow-hidden">
-          <h2 className="mb-12 text-lg text-center text-text">Preencha o formulário abaixo para gerar conteúdo extraordinário!
-          </h2>
-          <PropertyDetailsForm
-            onSubmit={handleSubmit}
-            loading={loading}
-            initialData={initialFormValues}
-          />
-          {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
-        </div>
+      <div className="max-w-7xl mx-auto">
 
-        <div className="bg-background p-6 rounded-lg border border-border flex flex-col">
+        <div className="">
+        <Tabs tabs={tabs} />
+         {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
+        </div>
+          
+
+        <div className="p-6
+         rounded-sm border border-border flex flex-col">
           <h2 className="text-2xl font-semibold mb-4 border-b pb-2">
             Conteúdo Gerado
           </h2>
           {loading ? (
             <div className="flex flex-col items-center justify-center flex-grow">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-              <p className="mt-2 text-gray-600 dark:text-gray-400">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="mt-2 text-muted">
                 Gerando seu conteúdo...
               </p>
             </div>
@@ -315,12 +419,12 @@ export default function DashboardPage() {
                 <>
                   <div className="flex flex-col justify-center border border-gray-300 dark:border-gray-600 rounded-md p-4 bg-card dark:bg-card h-full overflow-auto">
                     <p className="whitespace-pre-wrap">{generatedContent}</p>
-                  <button
-                    onClick={handleCopy} 
-                    className="mt-4 px-6 py-2 mx-auto bg-primary hover:bg-blue-600 text-text font-semibold rounded-md shadow-md transition duration-300 ease-in-out"
-                  >
-                    {showCopyMessage ? "Copiado!" : "Copiar Conteúdo"}
-                  </button>
+                    <button
+                      onClick={handleCopy}
+                      className="mt-4 px-6 py-2 mx-auto bg-primary hover:bg-blue-600 text-white font-semibold rounded-sm transition duration-300 ease-in-out"
+                    >
+                      {showCopyMessage ? "Copiado!" : "Copiar Conteúdo"}
+                    </button>
                   </div>
                 </>
               ) : (
@@ -332,10 +436,13 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
+
+
+      {/* Modal para Tour pelo app */}
       <Modal
         isOpen={showOnboarding}
         onClose={handleSkipOnboarding}
-        title={onboardingStepsData[onboardingStep].title} 
+        title={onboardingStepsData[onboardingStep].title}
         content={
           <>
             <p className="mb-4">
@@ -346,7 +453,7 @@ export default function DashboardPage() {
               {onboardingStep < onboardingStepsData.length - 1 && (
                 <button
                   onClick={handleNextOnboardingStep}
-                  className="bg-button hover:bg-hover text-white font-medium py-2 px-4 rounded-md transition duration-300"
+                  className="bg-primary hover:bg-ai text-white font-medium py-2 px-4 rounded-md transition duration-300"
                 >
                   Próximo {onboardingStep + 1}/{onboardingStepsData.length}
                 </button>
@@ -355,15 +462,15 @@ export default function DashboardPage() {
               {onboardingStep === onboardingStepsData.length - 1 && (
                 <button
                   onClick={handleNextOnboardingStep} // No último passo, ele também finaliza o tour
-                  className="bg-button hover:bg-hover text-white font-medium py-2 px-4 rounded-md transition duration-300"
+                  className="bg-primary hover:bg-ai text-white font-medium py-2 px-4 rounded-md transition duration-300"
                 >
                   Começar!
                 </button>
               )}
-          
+
               <button
                 onClick={handleSkipOnboarding}
-                className="text-text hover:underline py-2 px-4 rounded-md"
+                className="text-foreground hover:underline py-2 px-4 rounded-md"
               >
                 {onboardingStep < onboardingStepsData.length - 1
                   ? "Pular Tour"
@@ -372,12 +479,12 @@ export default function DashboardPage() {
             </div>
           </>
         }
-        className="max-w-xl" 
+        className="max-w-xl"
       />
     </div>
+      </>
   );
 }
-
 
 const onboardingStepsData = [
   {

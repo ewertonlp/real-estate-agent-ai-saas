@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "sonner";
 import { ThemeProvider } from "@/providers/theme-provider";
 
 const poppins = Poppins({
@@ -33,18 +32,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
           <AuthProvider>
-            <ToastContainer
-              position="top-right" 
-              autoClose={5000} 
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="colored" 
-            />
+          <Toaster richColors position="top-right" /> 
             {children}
           </AuthProvider>
         </ThemeProvider>

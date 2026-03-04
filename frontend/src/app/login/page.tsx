@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -18,40 +19,34 @@ export default function LoginPage() {
 
     if (!email || !password) {
       setError("Por favor, preencha todos os campos.");
-      toast.error("Por favor, preencha todos os campos.");
+      // toast.error("Por favor, preencha todos os campos.");
       return;
     }
 
     try {
       await login(email, password);
-      toast.success("Login realizado com sucesso! Redirecionando...");
+      toast.success("Login sucesso")
     } catch (err: any) {
-      setError(err.message || "Falha no login. Verifique suas credenciais.");
-      toast.error(err.message || "Falha no login. Verifique suas credenciais.");
+      setError(err.message || "Falha no login. Email ou senha incorretos.");
     }
   };
 
+  const isFormValid = email.trim() !== "" && password.trim() !== "";
+
   return (
-    <div className="min-h-screen bg-background dark:bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-card border border-border p-10 rounded-lg shadow-md">
-        <div>
-          <h2 className="mt-4 text-center text-3xl font-semibold text-text bg:text-text pb-2">
-            Faça login na sua conta
+    <div className="min-h-screen bg-background flex items-center justify-center py-5 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-card border border-border p-5 rounded-sm shadow-md">
+        <div className="text-center">
+          <h2 className="mt-4 text-3xl font-medium text-foreground pb-2">
+           Bom te ver por aqui
           </h2>
-          <p className="mt-2 text-center text-sm text-text">
-            Ou{" "}
-            <Link
-              href="/register"
-              className="font-medium text-button hover:text-hover"
-            >
-              Crie uma nova Conta
-            </Link>
-          </p>
+          <p className="text-sm text-foreground/75">Faça login para acessar o dashboard</p>
+         
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
             <div
-              className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+              className="bg-red-100 border border-red-400 text-destructive px-4 py-3 rounded relative"
               role="alert"
             >
               <strong className="font-bold">Erro:</strong>
@@ -61,7 +56,7 @@ export default function LoginPage() {
           <div className="rounded-md shadow-sm space-y-4">
             <div>
               <label htmlFor="email-address" className="sr-only">
-                Endereço de E-mail
+                E-mail
               </label>
               <input
                 id="email-address"
@@ -69,8 +64,8 @@ export default function LoginPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border bg-background border-border placeholder-text text-text rounded-t-md focus:outline-none focus:ring-border focus:border-border focus:z-10 sm:text-sm"
-                placeholder="Endereço de E-mail"
+                className="appearance-none rounded-sm relative block w-full px-3 py-2 border bg-background border-border placeholder-text text-text rounded-t-md focus:z-10 sm:text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-border  focus:ring-offset-2"
+                placeholder="E-mail"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -85,19 +80,22 @@ export default function LoginPage() {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border bg-background border-border placeholder-text text-text rounded-t-md focus:outline-none focus:ring-border focus:border-border focus:z-10 sm:text-sm"
+                className="appearance-none rounded-sm relative block w-full px-3 py-2 border bg-background border-border placeholder-text text-text rounded-t-md focus:z-10 sm:text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-border  focus:ring-offset-2"
                 placeholder="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
           </div>
+          <div className="text-right">
+            <Link href="/forgotPassword"><span className="text-sm text-primary font-light hover:text-white transition-all">Esqueceu a senha?</span></Link>
+          </div>
 
           <div>
-            <button
+            <Button
               type="submit"
-              disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-md font-medium rounded-md text-white bg-button hover:bg-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              disabled={!isFormValid || isLoading}
+              className="w-full disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               {isLoading ? (
                 <svg
@@ -122,7 +120,18 @@ export default function LoginPage() {
                 </svg>
               ) : null}
               {isLoading ? "Entrando..." : "Entrar"}
-            </button>
+            </Button>
+          </div>
+          <div className="pt-4">
+             <p className="mt-2 text-center text-sm text-foreground font-light">
+            Novo por aqui?{" "}
+            <Link
+              href="/register"
+              className="pl-1 text-primary hover:text-primary/75 transition"
+            >
+              Crie uma Conta
+            </Link>
+          </p>
           </div>
         </form>
       </div>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
-import Sidebar from "@/components/sidebar";
+import Sidebar from "@/components/dashboard/sidebar";
 import Header from "@/components/header";
 
 export default function AppLayout({

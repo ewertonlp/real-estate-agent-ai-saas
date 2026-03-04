@@ -88,8 +88,8 @@ export default function FAQ() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6 bg-card">
-      <h1 className="text-3xl font-bold mb-6 flex items-center justify-center gap-3 text-text ">
+    <div className="max-w-7xl mx-auto p-6 bg-gray-100">
+      <h1 className="text-3xl font-bold mb-6 flex items-center justify-center gap-3 text-gray-700 ">
         <FaQuestionCircle /> Perguntas Frequentes (FAQ)
       </h1>
 
@@ -98,21 +98,21 @@ export default function FAQ() {
         <input
           type="search"
           placeholder="Buscar perguntas..."
-          className="w-full border border-border rounded-md py-3 pl-10 pr-4 text-text bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full border border-border rounded-md py-3 pl-10 pr-4 text-text bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary placeholder:text-gray-600"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           aria-label="Buscar perguntas"
         />
-        <FaSearch className="absolute left-3 top-3.5 text-gray-400" />
+        <FaSearch className="absolute left-3 top-3.5 text-gray-600" />
       </div>
 
       {/* Filtro por categoria */}
       <div className="flex flex-wrap gap-3 mb-8">
         <button
-          className={`px-4 py-2 rounded-md font-semibold transition ${
+          className={`px-4 py-2 rounded-sm transition ${
             activeCategory === null
               ? "bg-primary text-white shadow"
-              : "bg-background text-text hover:bg-primary hover:text-white"
+              : "bg-gray-500 text-text hover:bg-primary hover:text-white"
           }`}
           onClick={() => setActiveCategory(null)}
         >
@@ -121,10 +121,10 @@ export default function FAQ() {
         {categories.map((cat) => (
           <button
             key={cat}
-            className={`px-4 py-2 rounded-md font-semibold transition ${
+            className={`px-4 py-2 rounded-sm transition ${
               activeCategory === cat
                 ? "bg-primary text-white shadow"
-                : "bg-background text-text hover:bg-primary hover:text-white"
+                : "bg-gray-300 text-gray-600 hover:bg-primary hover:text-white"
             }`}
             onClick={() => setActiveCategory(cat)}
           >
@@ -146,7 +146,7 @@ export default function FAQ() {
           >
             <button
               onClick={() => toggleOpen(id)}
-              className="w-full text-left px-5 py-4 flex justify-between items-center bg-background hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none"
+              className="w-full text-left px-5 py-4 flex justify-between items-center bg-gray-300 text-primary hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none"
               aria-controls={`faq-answer-${id}`}
               aria-expanded={openItemId === id}
             >
@@ -158,7 +158,7 @@ export default function FAQ() {
 
             <div
               id={`faq-answer-${id}`}
-              className={`px-5 text-text bg-card transition-max-height duration-300 ease-in-out overflow-hidden ${
+              className={`px-5 text-gray-600 text-left bg-gray-300 transition-max-height duration-300 ease-in-out overflow-hidden ${
                 openItemId === id ? "max-h-96" : "max-h-0"
               }`}
               style={{ transitionProperty: "max-height" }}

@@ -17,7 +17,7 @@ router = APIRouter()
 
 
 @router.put("/me/password", status_code=status.HTTP_204_NO_CONTENT) # <<< MUDADO PARA 204 NO CONTENT
-def change_my_password(
+async def change_my_password(
     password_change: schemas.PasswordChange,
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db), # Necessita de DB para commit

@@ -123,7 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error instanceof AxiosError && error.response?.data?.detail) {
         throw new Error(error.response.data.detail);
       } else {
-        throw new Error("Falha no login. Verifique suas credenciais.");
+        throw new Error("Falha no login. Email ou senha incorretos.");
       }
     } finally {
       setIsLoading(false);

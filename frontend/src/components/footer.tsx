@@ -6,11 +6,11 @@ import Link from "next/link";
 export default function Footer() {
   return (
     
-    <div className="relative w-full overflow-hidden md:h-[450px]  bg-gradient-to-tr from-[#1B45B4] to-[#1C2792] clip-polygon-footer">
+    <div className="relative w-full overflow-hidden mt-6 md:h-[400px] bg-gradient-to-tr from-primary to-primary/75 clip-polygon-footer">
       <div className="absolute top-4 left-4 w-28 h-64 bg-button opacity-10 rounded-full blur-3xl pointer-events-none " />
       <div className="absolute bottom-0 right-2 w-24 h-40 bg-button opacity-10 rounded-full blur-3xl pointer-events-none " />
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-7xl w-full mx-auto px-3 lg:px-0 pt-16 mt-16 z-10">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-7xl w-full mx-auto px-3 lg:px-0 pt-8 mt-8 z-10">
         {" "}
         <Link
           href="/"
@@ -129,7 +129,7 @@ export default function Footer() {
           </nav>
         </div>
       </div>
-      <div className="mt-8 border-t-[1px] border-border/50 max-w-7xl mx-auto pb-4">
+      <div className="mt-8 border-t-[1px] border-white/50 max-w-7xl mx-auto pb-4">
         <div className="px-3 lg:px-0 mt-4 flex flex-col items-center gap-4 md:flex-row md:justify-between md:items-center">
           <div className="flex flex-col gap-2 md:flex-row md:gap-4">
             <Link
@@ -148,7 +148,7 @@ export default function Footer() {
           </div>
 
           <div className="w-full md:w-auto text-center md:text-right">
-            <p className="text-xs text-neutral-300">&copy; 2025 - AuraSync AI</p>
+            <p className="text-xs text-white/75">&copy; 2025 - AuraSync AI</p>
           </div>
         </div>
       </div>
